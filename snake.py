@@ -32,16 +32,16 @@ class Snake(Game):
 
     def handle_collision_checks(self):
         # TODO: They can hit each other head on
-        if does_collide(player_one, player_one):
+        if self.does_collide(self.player_one, self.player_one):
             print('Player 1 self died')
             exit(1)
-        elif does_collide(player_two, player_two):
+        elif self.does_collide(self.player_two, self.player_two):
             print('Player 2 self died')
             exit(1)
-        elif does_collide(player_one, player_two):
+        elif self.does_collide(self.player_one, self.player_two):
             print('Player 1 hit player 2')
             exit(1)
-        elif does_collide(player_two, player_one):
+        elif self.does_collide(self.player_two, self.player_one):
             print('Player 2 hit player 1')
             exit(1)
 

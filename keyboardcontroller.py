@@ -1,3 +1,5 @@
+from directions import Direction
+
 class KeyboardController:
     def tick(self, player):
-        pass
+        return Direction.RIGHT
