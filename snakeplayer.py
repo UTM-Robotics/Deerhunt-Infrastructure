@@ -4,8 +4,8 @@ from directions import Direction
 class SnakePlayer:
     
     def __init__(self, controller, second_player=False):
-        self.score = 0
         self.size = 1
+        self.segments = []
         self.controller = controller
 
         self.x = 74 if second_player else 24
@@ -37,9 +37,12 @@ class SnakePlayer:
     def is_on_food(self, x, y):
         return self.x == x and self.y == y
 
-    def in_boundary(self, value):
-        return False if value < 0 or value >= 100 else True
-
     def tick(self):
+        self.segments.append((self.x, self.y))
         move = self.controller.tick(self)
-        self.movement[move]()
+
+        if move in self.movement:
+            self.movement[move]()
+        else:
+            print('Invalid move')
+            exit(1)
