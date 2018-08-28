@@ -3,14 +3,13 @@ from directions import Direction
 
 class SnakePlayer:
 
-    def __init__(self, controller, second_player=False):
+    def __init__(self, controller, start_point):
         self.size = 1
         self.segments = []
         self.controller = controller
         self.has_died = False
 
-        self.x = 20 if second_player else 10
-        self.y = 20 if second_player else 10
+        self.x, self.y = start_point
 
         self.movement = {
             Direction.UP : self.handle_up,

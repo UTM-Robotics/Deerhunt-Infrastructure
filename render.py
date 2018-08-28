@@ -16,7 +16,7 @@ class SnakeRenderer:
         self.food_sprite = pyglet.sprite.Sprite(
             img=pyglet.image.load('assets/food.png'))
 
-    def create_properly_sized_window(width, height):
+    def create_window(width, height):
         return pyglet.window.Window(width=TILE_SIZE*width, height=TILE_SIZE*height)
 
     def _draw_tile(self, sprite, x, y):

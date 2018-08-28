@@ -5,32 +5,44 @@ from pyglet.window import key
 
 from snake import Snake
 from render import SnakeRenderer
+from keyboardcontroller import KeyboardController
 
-game = Snake()
+MAP_WIDTH  = 100
+MAP_HEIGHT = 100
+
 clock = 0
 
-window = SnakeRenderer.create_properly_sized_window()
+window = SnakeRenderer.create_window(MAP_WIDTH, MAP_HEIGHT)
 renderer = SnakeRenderer(window)
+
+key_handler = key.KeyStateHandler()
+window.push_handlers(key_handler)
+
+controller_one = KeyboardController(key_handler,
+                                    key.LEFT,
+                                    key.RIGHT,
+                                    key.UP,
+                                    key.DOWN)
+controller_two = KeyboardController(key_handler,
+                                    key.A,
+                                    key.D,
+                                    key.W,
+                                    key.S)
+
+game = Snake(controller_one, controller_two)
 
 def update(dt):
     global clock
 
+    if key_handler[key.ESCAPE]:
+        pyglet.app.exit()
+
     clock += dt
-    fps_period = 1 / 60
+    fps_period = 1 / 10
 
     if clock > fps_period:
         clock -= fps_period
         game.tick()
-
-
-@window.event
-def on_key_press(symbol, modifiers):
-    print('Symbol:', symbol)
-    if symbol == key.ESCAPE:
-        print('Die!')
-        pyglet.app.exit()
-    elif symbol in [key.LEFT, key.RIGHT, key.DOWN, key.UP]:
-        print('Pressed an arrow!!!!111!!!')
 
 @window.event
 def on_draw():

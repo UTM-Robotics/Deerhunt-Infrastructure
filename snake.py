@@ -2,12 +2,11 @@ from random import randrange
 
 from game import Game
 from snakeplayer import SnakePlayer
-from keyboardcontroller import KeyboardController
 
 class Snake(Game):
-    def __init__(self):
-        self.player_one = SnakePlayer(KeyboardController(), False)
-        self.player_two = SnakePlayer(KeyboardController(), True)
+    def __init__(self, player_one_controller, player_two_controller):
+        self.player_one = SnakePlayer(player_one_controller, (10, 10))
+        self.player_two = SnakePlayer(player_two_controller, (20, 20))
         self.current_food = self.generate_new_food()
 
     def generate_new_food(self):
