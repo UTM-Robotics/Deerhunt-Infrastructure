@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pyglet
+from pyglet.window import key
 
 from snake import Snake
 from render import SnakeRenderer
@@ -26,7 +27,9 @@ def update(dt):
 
 @window.event
 def on_key_press(symbol, modifiers):
+    print('Symbol:', symbol)
     if symbol == key.ESCAPE:
+        print('Die!')
         pyglet.app.exit()
     elif symbol in [key.LEFT, key.RIGHT, key.DOWN, key.UP]:
         print('Pressed an arrow!!!!111!!!')
