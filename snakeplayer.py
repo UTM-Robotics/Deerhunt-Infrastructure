@@ -51,13 +51,14 @@ class SnakePlayer:
     def get_visible_segments(self):
         return self.segments[-self.size:]
 
-    def tick(self, other_player_position, other_player_segments):
+    def tick(self, other_player_position, other_player_segments, food_position):
         self.segments.append((self.x, self.y))
 
         if len(self.segments) > self.size:
             self.segments.pop(0)
         
-        move = self.controller.tick(self, other_player_position, other_player_segments)
+        move = self.controller.tick(self, other_player_position,
+                                    other_player_segments, food_position)
 
         if move in self.movement:
             self.movement[move]()
