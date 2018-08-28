@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import pyglet
 from pyglet.window import key
 
 from snake import Snake
@@ -10,14 +9,7 @@ from keyboardcontroller import KeyboardController
 MAP_WIDTH  = 100
 MAP_HEIGHT = 100
 
-clock = 0
-
-window = SnakeRenderer.create_window(MAP_WIDTH, MAP_HEIGHT)
-renderer = SnakeRenderer(window)
-
 key_handler = key.KeyStateHandler()
-window.push_handlers(key_handler)
-
 controller_one = KeyboardController(key_handler,
                                     key.LEFT,
                                     key.RIGHT,
@@ -31,30 +23,14 @@ controller_two = KeyboardController(key_handler,
 
 game = Snake(controller_one, controller_two)
 
-def update(dt):
-    global clock
+renderer = SnakeRenderer(MAP_WIDTH, MAP_HEIGHT, game, key_handler)
 
-    if key_handler[key.ESCAPE]:
-        pyglet.app.exit()
-
-    clock += dt
-    fps_period = 1 / 10
-
-    if clock > fps_period:
-        clock -= fps_period
-        game.tick()
-
-@window.event
+@renderer.window.event
 def on_draw():
-    window.clear()
-    renderer.draw_player_one(game.player_one.get_visible_segments())
-    renderer.draw_player_two(game.player_two.get_visible_segments())
-    renderer.draw_food(*game.current_food)
+    renderer.window.clear()
+    renderer.draw_player_one(renderer.game.player_one.get_visible_segments())
+    renderer.draw_player_two(renderer.game.player_two.get_visible_segments())
+    renderer.draw_food(*renderer.game.current_food)
 
 if __name__ == '__main__':
-    pyglet.clock.schedule(update)
-    try:
-        pyglet.app.run()
-    except Exception:
-        pyglet.app.exit()
-        raise
+    renderer.run()

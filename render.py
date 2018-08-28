@@ -4,10 +4,15 @@ from pyglet.window import key
 TILE_SIZE = 10
 
 class SnakeRenderer:
-    def __init__(self, window):
-        self.window = window
-        self.map_width  = int(window.width / TILE_SIZE)
-        self.map_height = int(window.height / TILE_SIZE)
+    def __init__(self, width, height, game, key_handler):
+        self.window = self.create_window(width, height)
+
+        self.map_width  = int(self.window.width / TILE_SIZE)
+        self.map_height = int(self.window.height / TILE_SIZE)
+        self.game = game
+        self.key_handler = key_handler
+        self.window.push_handlers(key_handler)
+        self.clock = 0
 
         self.player_one_sprite = pyglet.sprite.Sprite(
             img=pyglet.image.load('assets/player1.png'))
@@ -16,7 +21,7 @@ class SnakeRenderer:
         self.food_sprite = pyglet.sprite.Sprite(
             img=pyglet.image.load('assets/food.png'))
 
-    def create_window(width, height):
+    def create_window(self, width, height):
         return pyglet.window.Window(width=TILE_SIZE*width, height=TILE_SIZE*height)
 
     def _draw_tile(self, sprite, x, y):
@@ -25,7 +30,7 @@ class SnakeRenderer:
         sprite.draw()
 
     def _draw_segments(self, sprite, segments):
-        for x,y in segments:
+        for x, y in segments:
             self._draw_tile(sprite, x, y)
 
     def draw_food(self, x, y):
@@ -37,3 +42,21 @@ class SnakeRenderer:
     def draw_player_two(self, segments):
         self._draw_segments(self.player_two_sprite, segments)
 
+    def update(self, dt):
+        if self.key_handler[key.ESCAPE]:
+            pyglet.app.exit()
+
+        self.clock += dt
+        fps_period = 1 / 10
+
+        if self.clock > fps_period:
+            self.clock -= fps_period
+            self.game.tick()
+
+    def run(self):
+        pyglet.clock.schedule(self.update)
+        try:
+            pyglet.app.run()
+        except Exception:
+            pyglet.app.exit()
+            raise
