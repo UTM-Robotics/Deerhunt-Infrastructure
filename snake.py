@@ -34,26 +34,33 @@ class Snake(Game):
     def handle_collision_checks(self):
         if self.player_one.x == self.player_two.x and self.player_one.y == self.player_two.y:
             print('Head on collision')
-            self.running = False
+            self.player_one.has_died = True
+            self.player_two.has_died = True
         elif self.does_collide(self.player_one, self.player_one):
             print('Player 1 self died')
-            self.running = False
+            self.player_one.has_died = True
         elif self.does_collide(self.player_two, self.player_two):
             print('Player 2 self died')
-            self.running = False
+            self.player_two.has_died = True
         elif self.does_collide(self.player_one, self.player_two):
             print('Player 1 hit player 2')
-            self.running = False
+            self.player_one.has_died = True
         elif self.does_collide(self.player_two, self.player_one):
             print('Player 2 hit player 1')
-            self.running = False
+            self.player_two.has_died = True
 
     def player_has_died(self):
         return self.player_one.has_died or self.player_two.has_died
 
+    def noop(self):
+        pass
+
     def tick(self):
         self.handle_food_checks()
         self.handle_collision_checks()
-        if not self.player_has_died():
-            self.player_one.tick()
-            self.player_two.tick()
+
+        if self.player_has_died():
+            self.tick = self.noop
+
+        self.player_one.tick()
+        self.player_two.tick()
