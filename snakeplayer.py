@@ -50,6 +50,10 @@ class SnakePlayer:
 
     def tick(self):
         self.segments.append((self.x, self.y))
+
+        if len(self.segments) > self.size:
+            self.segments.pop(0)
+        
         move = self.controller.tick(self)
 
         if move in self.movement:
