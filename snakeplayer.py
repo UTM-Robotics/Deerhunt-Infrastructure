@@ -7,9 +7,10 @@ class SnakePlayer:
         self.size = 1
         self.segments = []
         self.controller = controller
+        self.has_died = False
 
-        self.x = 74 if second_player else 24
-        self.y = 74 if second_player else 24
+        self.x = 20 if second_player else 10
+        self.y = 20 if second_player else 10
 
         self.movement = {
             Direction.UP : self.handle_up,
@@ -19,19 +20,23 @@ class SnakePlayer:
         }
 
     def handle_up(self):
-        if self.y - 1 < 0: exit(1)
+        if self.y - 1 < 0:
+            has_died = True
         self.y -= 1
 
     def handle_down(self):
-        if self.y + 1 >= 100: exit(1)
+        if self.y + 1 >= 100:
+            has_died = True
         self.y += 1
 
     def handle_left(self):
-        if self.x - 1 < 0: exit(1)
+        if self.x - 1 < 0:
+            has_died = True
         self.x -= 1
 
     def handle_right(self):
-        if self.x + 1 >= 100: exit(1)
+        if self.x + 1 >= 100:
+            has_died = True
         self.x += 1
 
     def is_on_food(self, x, y):
@@ -44,5 +49,4 @@ class SnakePlayer:
         if move in self.movement:
             self.movement[move]()
         else:
-            print('Invalid move')
-            exit(1)
+            self.has_died = True

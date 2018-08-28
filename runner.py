@@ -23,6 +23,7 @@ def update(dt):
         clock -= FPS_PERIOD
         game.tick()
 
+
 @window.event
 def on_key_press(symbol, modifiers):
     if symbol == key.ESCAPE:
@@ -39,4 +40,7 @@ def on_draw():
 
 if __name__ == '__main__':
     pyglet.clock.schedule(update)
-    pyglet.app.run()
+    try:
+        pyglet.app.run()
+    except Exception:
+        pyglet.app.exit()
