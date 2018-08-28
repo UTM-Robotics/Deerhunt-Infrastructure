@@ -9,19 +9,17 @@ from render import SnakeRenderer
 game = Snake()
 clock = 0
 
-WINDOW_WIDTH  = 640
-WINDOW_HEIGHT = 480
-window = pyglet.window.Window(width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+window = SnakeRenderer.create_properly_sized_window()
 renderer = SnakeRenderer(window)
 
 def update(dt):
     global clock
 
     clock += dt
-    FPS_PERIOD = 1 / 60
+    fps_period = 1 / 60
 
-    if clock > FPS_PERIOD:
-        clock -= FPS_PERIOD
+    if clock > fps_period:
+        clock -= fps_period
         game.tick()
 
 
@@ -37,8 +35,8 @@ def on_key_press(symbol, modifiers):
 @window.event
 def on_draw():
     window.clear()
-    renderer.draw_player_one(game.player_one.segments)
-    renderer.draw_player_two(game.player_two.segments)
+    renderer.draw_player_one(game.player_one.get_visible_segments())
+    renderer.draw_player_two(game.player_two.get_visible_segments())
     renderer.draw_food(*game.current_food)
 
 if __name__ == '__main__':
@@ -47,3 +45,4 @@ if __name__ == '__main__':
         pyglet.app.run()
     except Exception:
         pyglet.app.exit()
+        raise

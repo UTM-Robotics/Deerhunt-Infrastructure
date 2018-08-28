@@ -2,7 +2,7 @@ from directions import Direction
 
 
 class SnakePlayer:
-    
+
     def __init__(self, controller, second_player=False):
         self.size = 1
         self.segments = []
@@ -22,25 +22,32 @@ class SnakePlayer:
     def handle_up(self):
         if self.y - 1 < 0:
             has_died = True
-        self.y -= 1
+        else:
+            self.y -= 1
 
     def handle_down(self):
         if self.y + 1 >= 100:
             has_died = True
-        self.y += 1
+        else:
+            self.y += 1
 
     def handle_left(self):
         if self.x - 1 < 0:
             has_died = True
-        self.x -= 1
+        else:
+            self.x -= 1
 
     def handle_right(self):
         if self.x + 1 >= 100:
             has_died = True
-        self.x += 1
+        else:
+            self.x += 1
 
     def is_on_food(self, x, y):
         return self.x == x and self.y == y
+
+    def get_visible_segments(self):
+        return self.segments[-self.size:]
 
     def tick(self):
         self.segments.append((self.x, self.y))
