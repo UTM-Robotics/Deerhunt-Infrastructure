@@ -12,33 +12,36 @@ class SnakePlayer:
         self.x, self.y = start_point
 
         self.movement = {
-            Direction.UP : self.handle_up,
-            Direction.DOWN : self.handle_down,
-            Direction.LEFT : self.handle_left,
-            Direction.RIGHT : self.handle_right,
+            Direction.UP: self.handle_up,
+            Direction.DOWN: self.handle_down,
+            Direction.LEFT: self.handle_left,
+            Direction.RIGHT: self.handle_right,
         }
+
+    def get_pos_tupple(self):
+        return (self.x, self.y)
 
     def handle_up(self):
         if self.y - 1 < 0:
-            has_died = True
+            self.has_died = True
         else:
             self.y -= 1
 
     def handle_down(self):
         if self.y + 1 >= 100:
-            has_died = True
+            self.has_died = True
         else:
             self.y += 1
 
     def handle_left(self):
         if self.x - 1 < 0:
-            has_died = True
+            self.has_died = True
         else:
             self.x -= 1
 
     def handle_right(self):
         if self.x + 1 >= 100:
-            has_died = True
+            self.has_died = True
         else:
             self.x += 1
 
@@ -48,13 +51,13 @@ class SnakePlayer:
     def get_visible_segments(self):
         return self.segments[-self.size:]
 
-    def tick(self):
+    def tick(self, other_player_position, other_player_segments):
         self.segments.append((self.x, self.y))
 
         if len(self.segments) > self.size:
             self.segments.pop(0)
         
-        move = self.controller.tick(self)
+        move = self.controller.tick(self, other_player_position, other_player_segments)
 
         if move in self.movement:
             self.movement[move]()

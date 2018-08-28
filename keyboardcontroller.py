@@ -20,6 +20,6 @@ class KeyboardController:
                 return direction
         return self.direction
 
-    def tick(self, player):
+    def tick(self, current_player, other_player_position, other_player_segments):
         self.direction = self._get_new_direction()
         return self.direction

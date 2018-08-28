@@ -61,5 +61,5 @@ class Snake(Game):
         if self.player_has_died():
             self.tick = self.noop
 
-        self.player_one.tick()
-        self.player_two.tick()
+        self.player_one.tick(self.player_two.get_pos_tupple(), self.player_two.segments)
+        self.player_two.tick(self.player_one.get_pos_tupple(), self.player_one.segments)
