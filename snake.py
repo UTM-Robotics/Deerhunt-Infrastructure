@@ -2,14 +2,17 @@ from random import randrange
 
 from game import Game
 from snakeplayer import SnakePlayer
+from controller import Controller
 
 class Snake(Game):
-    def __init__(self, player_one_controller, player_two_controller):
+    def __init__(self, player_one_controller: Controller,
+               player_two_controller: Controller):
         self.player_one = SnakePlayer(player_one_controller, (10, 10))
         self.player_two = SnakePlayer(player_two_controller, (20, 20))
         self.current_food = self.generate_new_food()
 
     def generate_new_food(self):
+        # FIXME don't hard code!
         return (randrange(0, 100), randrange(0, 100))
 
     def handle_food_checks(self):
@@ -61,7 +64,5 @@ class Snake(Game):
         if self.player_has_died():
             self.tick = self.noop
 
-        self.player_one.tick(self.player_two.get_pos_tupple(),
-                             self.player_two.segments, self.current_food)
-        self.player_two.tick(self.player_one.get_pos_tupple(),
-                             self.player_one.segments, self.current_food)
+        self.player_one.tick(self, self.player_two)
+        self.player_two.tick(self, self.player_one)
