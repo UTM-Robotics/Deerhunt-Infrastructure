@@ -10,7 +10,7 @@ from render import SnakeRenderer
 
 from controller import * 
 
-parser = argparse.ArgumentParser(description='Process some integers.')
+parser = argparse.ArgumentParser()
 parser.add_argument('port', type=int,
                     help='The port to listen on')
 parser.add_argument('--keyboard', dest='keyboard',

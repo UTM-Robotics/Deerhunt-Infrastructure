@@ -24,18 +24,22 @@ class NetworkedController(Controller):
             'food_point': game.current_food,
         }).encode('utf-8'))
 
-        response = self.conn.recv(16)
+        response = self.conn.recv(8)
 
-        if response == b'left\n':
+        while len(response) == 0:
+            print('Zero response!')
+            response = self.conn.recv(8)
+
+        if response == b'left':
             return Direction.LEFT
-        elif response == b'right\n':
+        elif response == b'right':
             return Direction.RIGHT
-        elif response == b'up\n':
+        elif response == b'up':
             return Direction.UP
-        elif response == b'down\n':
+        elif response == b'down':
             return Direction.DOWN
         else:
-            print('Invalid response from client: ' + response)
+            print('Invalid response from client: ' + str(response))
             exit(1)
 
 class KeyboardController(Controller):
