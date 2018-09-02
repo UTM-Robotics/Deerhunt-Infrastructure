@@ -41,10 +41,9 @@ else:
     conn, addr = sock.accept()
     controller_two = NetworkedController(conn)
 
-game = Snake(controller_one, controller_two)
-
 MAP_WIDTH  = 100
 MAP_HEIGHT = 100
+game = Snake(controller_one, controller_two, MAP_WIDTH, MAP_HEIGHT)
 renderer = SnakeRenderer(MAP_WIDTH, MAP_HEIGHT, game, key_handler)
 
 @renderer.window.event

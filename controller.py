@@ -22,13 +22,11 @@ class NetworkedController(Controller):
             'my_segments': my_player.segments,
             'their_segments': their_player.segments,
             'food_point': game.current_food,
+            'map_width': game.map_width,
+            'map_height': game.map_height,
         }).encode('utf-8'))
 
         response = self.conn.recv(8)
-
-        while len(response) == 0:
-            print('Zero response!')
-            response = self.conn.recv(8)
 
         if response == b'left':
             return Direction.LEFT

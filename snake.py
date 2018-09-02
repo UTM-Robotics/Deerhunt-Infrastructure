@@ -6,14 +6,27 @@ from controller import Controller
 
 class Snake(Game):
     def __init__(self, player_one_controller: Controller,
-               player_two_controller: Controller):
-        self.player_one = SnakePlayer(player_one_controller, (10, 10))
-        self.player_two = SnakePlayer(player_two_controller, (20, 20))
+               player_two_controller: Controller,
+               map_width: int, map_height: int):
+        self.map_width = map_width
+        self.map_height = map_height
+
+        player_one_pos_x = int(map_width * 1/3)
+        player_two_pos_x = int(map_width * 2/3)
+        player_pos_y     = int(map_height / 2)
+
+        player_one_pos = (player_one_pos_x, player_pos_y)
+        player_two_pos = (player_two_pos_x, player_pos_y)
+
+        self.player_one = SnakePlayer(player_one_controller,
+                                      player_one_pos)
+        self.player_two = SnakePlayer(player_two_controller,
+                                      player_two_pos)
         self.current_food = self.generate_new_food()
 
     def generate_new_food(self):
-        # FIXME don't hard code!
-        return (randrange(0, 100), randrange(0, 100))
+        return (randrange(0, self.map_width),
+                randrange(0, self.map_height))
 
     def handle_food_checks(self):
         one = self.player_one.is_on_food(*self.current_food)
