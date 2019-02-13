@@ -5,7 +5,7 @@ import socket
 
 from grid_fighters import GridFighters
 from client_connection import ClientConnection
-from tiles import WallTile, GroundTile
+from lib.tiles import WallTile, GroundTile
 
 parser = argparse.ArgumentParser()
 parser.add_argument('port', type=int, help='The port to listen on')

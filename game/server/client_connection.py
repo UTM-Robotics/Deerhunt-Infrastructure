@@ -1,7 +1,7 @@
 import json
 import copy
 
-from lib.move import Move
+from lib.move import GroundMove, StasisMove, AttackMove
 
 class ClientConnection:
 
@@ -26,6 +26,14 @@ class ClientConnection:
     def units_to_dict(self, units):
         return [u.__dict__ for u in units.values()]
 
+    def create_move(self, id, body):
+        if body == 'DUPLICATE':
+            return StasisMove(id)
+        elif isinstance(body, list) and len(body) > 1 and body[0] == 'ATTACK':
+            return AttackMove(id, body[1:])
+        else:
+            return GroundMove(id, body)
+
     def tick(self, game_state, me, them):
         d = {
             'map'         : [self.objs_to_strs(r) for r in game_state.grid],
@@ -40,4 +48,4 @@ class ClientConnection:
 
         j = json.loads(response)
 
-        return {k: Move(k, v) for k, v in j.items()}
+        return [(k, self.create_move(k, v)) for k, v in j]

@@ -6,6 +6,7 @@ class GridPlayer:
 
     def tick(self, game_state):
         if self.foo:
-            return {'0': ['DOWN']}
+            self.foo = False
+            return [('0', ['DOWN'])]
 
-        return {}
+        return [('0', ['ATTACK', 'DOWN'])]
