@@ -1,6 +1,8 @@
 import json
 import copy
 
+from lib.move import Move
+
 class ClientConnection:
 
     def __init__(self, socket):
@@ -36,4 +38,6 @@ class ClientConnection:
 
         self.print_map(d, game_state)
 
-        return json.loads(response)
+        j = json.loads(response)
+
+        return {k: Move(k, v) for k, v in j.items()}

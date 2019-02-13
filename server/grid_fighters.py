@@ -24,14 +24,25 @@ class GridFighters(Game):
 
     def add_unit(self, player, unit):
         unit.id = self.next_id
-        player['units'][self.next_id] = unit
+        player['units'][str(self.next_id)] = unit
         self.next_id += 1
 
-    def verify_response(self, response, player_state):
-        pass
+    def verify_response(self, moves, player_state):
+        for k, v in moves.items():
+            if isinstance(player_state['units'][k], MeleeUnit) \
+               and len(v) < 0 and len(v) > 2:
+                return False
+            elif isinstance(player_state['units'][k], RangedUnit) \
+               and len(v) < 0 and len(v) > 1:
+                return False
+
+        return True
 
     def make_moves(self, moves, player_state):
-        pass
+        for k, v in moves.items():
+            m = v.get_relative_moves()
+            print(m)
+            player_state['units'][k].set_relative_location(*m)
 
     def tick(self):
         moves = self.p1_conn.tick(self, self.p1_state, self.p2_state)
