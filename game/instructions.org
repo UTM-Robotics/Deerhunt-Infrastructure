@@ -1,3 +1,5 @@
+#+TITLE: Deerhunt Game Rules
+
 * Rules
   Ranges:
   - http://prntscr.com/mka8g4
@@ -29,3 +31,17 @@
   - The game ends when all of the units of one player is eliminated, where the victor is the player with remaining units.
 
 * Client Spec
+  In order to make moves you will use the =Move= class.
+
+  There are three types of moves:
+  - Regular movement =Move('LEFT', 'LEFT', 'RIGHT')=
+  - Attack movement =Move('ATTACK, 'RIGHT')=
+    - This won't move your unit it will simply attack in that direction if valid
+  - Duplicate movement =Move('DUPLICATE, 'DOWN)=
+    - This will lock your unit in duplication and the unit will appear in 
+      the direction specified when completed
+      
+
+  Your tick function will return a =list= of these =Move= objects and they will be
+  executed in order. Failure to comply with the spec will result in =ALL= of your moves
+  for that turn being ignored.

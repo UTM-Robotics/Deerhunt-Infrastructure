@@ -25,7 +25,9 @@ class GridFighters(Game):
         self.grid = self.build_grid(top, self.p1_state, 0) + self.build_grid(bottom, self.p2_state, len(top))
 
     def build_grid(self, lines, player, base_y):
-        return [[self.create_tile_or_unit(lines[y][x], player, x, y, base_y) for x in range(len(lines[y]))] for y in range(len(lines))]
+        return [[self.create_tile_or_unit(lines[y][x], player, x, y, base_y) \
+            for x in range(len(lines[y]))] \
+            for y in range(len(lines))]
 
     def create_tile_or_unit(self, tile_code, player, x, y, base_y):
         if tile_code.lower() == 'x':
