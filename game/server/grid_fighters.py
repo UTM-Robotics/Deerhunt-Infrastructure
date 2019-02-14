@@ -2,12 +2,11 @@ from game import Game
 from units import Unit, MeleeUnit, RangedUnit
 from lib.move import GroundMove, StasisMove, AttackMove, Move
 from lib.tiles import GroundTile, WallTile
+from copy import deepcopy
 
 class GridFighters(Game):
 
     def __init__(self, player_one_connection, player_two_connection, map_file):
-        self.grid = map_file
-
         self.next_id = 0
         self.currently_duplicating = {}
         self.all_units = {}
@@ -18,8 +17,25 @@ class GridFighters(Game):
         self.p1_state = {}
         self.p2_state = {}
 
-        self.add_unit(self.p1_state, MeleeUnit(2, 1))
-        self.add_unit(self.p2_state, MeleeUnit(2, 3))
+        top = [line.rstrip() for line in map_file]
+        bottom = deepcopy(top)
+        bottom = [row[::-1] for row in bottom]
+        bottom.reverse()
+
+        self.grid = self.build_grid(top, self.p1_state, 0) + self.build_grid(bottom, self.p2_state, len(top))
+
+    def build_grid(self, lines, player, base_y):
+        return [[self.create_tile_or_unit(lines[y][x], player, x, y, base_y) for x in range(len(lines[y]))] for y in range(len(lines))]
+
+    def create_tile_or_unit(self, tile_code, player, x, y, base_y):
+        if tile_code.lower() == 'x':
+            return WallTile()
+        elif tile_code.lower() == 'm':
+            self.add_unit(player, MeleeUnit(x, y+base_y))
+        elif tile_code.lower() == 'r':
+            self.add_unit(player, RangedUnit(x, y+base_y))
+
+        return GroundTile()
 
     def add_unit(self, player, unit):
         unit.id = self.next_id

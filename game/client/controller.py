@@ -11,11 +11,14 @@ class NetworkedController(Controller):
         self.player = player
 
     def tick(self):
-        response = self.conn.recv(1024)
+        size = int(self.conn.recv(10).decode())
+        response = self.conn.recv(size).decode()
 
-        moves = self.player.tick(json.loads(response.decode()))
+        moves = self.player.tick(json.loads(response))
 
         data = list(map(lambda x: x.to_tuple(), moves))
+        body = json.dumps(data).encode()
 
-        self.conn.send(json.dumps(data).encode())
+        self.conn.sendall('{:10}'.format(len(body)).encode())
+        self.conn.sendall(body)
 

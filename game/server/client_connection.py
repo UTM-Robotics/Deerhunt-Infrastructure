@@ -1,5 +1,6 @@
 import json
 import copy
+from ctypes import c_uint32
 
 from lib.move import GroundMove, StasisMove, AttackMove
 
@@ -40,9 +41,13 @@ class ClientConnection:
             'my_units'    : self.units_to_dict(me),
             'their_units' : self.units_to_dict(them)
         }
-        self.sock.sendall(json.dumps(d).encode())
 
-        response = self.sock.recv(1024).decode()
+        data = json.dumps(d).encode()
+        self.sock.sendall('{:10}'.format(len(data)).encode())
+        self.sock.sendall(data)
+
+        size = int(self.sock.recv(10).decode())
+        response = self.sock.recv(size).decode()
 
         self.print_map(d, game_state)
 

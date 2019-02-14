@@ -25,14 +25,7 @@ print('Waiting for client 2...')
 conn2, addr2 = sock.accept()
 p2 = ClientConnection(conn2)
 
-map = [
-    [WallTile(), WallTile(), WallTile(), WallTile(), WallTile()],
-    [WallTile(), GroundTile(), GroundTile(), GroundTile(), WallTile()],
-    [WallTile(), GroundTile(), GroundTile(), GroundTile(), WallTile()],
-    [WallTile(), GroundTile(), GroundTile(), GroundTile(), WallTile()],
-    [WallTile(), WallTile(), WallTile(), WallTile(), WallTile()]
-]
-game = GridFighters(p1, p2, map)
+game = GridFighters(p1, p2, open('maps/first.map', 'r'))
 
 while True:
     game.tick()
