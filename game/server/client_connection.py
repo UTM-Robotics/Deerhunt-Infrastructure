@@ -13,9 +13,9 @@ class ClientConnection:
 
     def print_map(self, state, game):
         display = copy.deepcopy(state['map'])
-        for u in game.p1_state['units'].values():
+        for u in game.p1_state.values():
             display[u.y][u.x] = str(u)
-        for u in game.p2_state['units'].values():
+        for u in game.p2_state.values():
             display[u.y][u.x] = str(u)
 
         for row in display:
@@ -27,8 +27,8 @@ class ClientConnection:
         return [u.__dict__ for u in units.values()]
 
     def create_move(self, id, body):
-        if body == 'DUPLICATE':
-            return StasisMove(id)
+        if isinstance(body, list) and len(body) > 1 and body[0] == 'DUPLICATE':
+            return StasisMove(id, body[1])
         elif isinstance(body, list) and len(body) > 1 and body[0] == 'ATTACK':
             return AttackMove(id, body[1:])
         else:
@@ -37,8 +37,8 @@ class ClientConnection:
     def tick(self, game_state, me, them):
         d = {
             'map'         : [self.objs_to_strs(r) for r in game_state.grid],
-            'my_units'    : self.units_to_dict(me['units']),
-            'their_units' : self.units_to_dict(them['units'])
+            'my_units'    : self.units_to_dict(me),
+            'their_units' : self.units_to_dict(them)
         }
         self.sock.sendall(json.dumps(d).encode())
 

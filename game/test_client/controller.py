@@ -13,7 +13,9 @@ class NetworkedController(Controller):
     def tick(self):
         response = self.conn.recv(1024)
 
-        move = self.player.tick(json.loads(response.decode()))
+        moves = self.player.tick(json.loads(response.decode()))
 
-        self.conn.send(json.dumps(move).encode())
+        data = list(map(lambda x: x.to_tuple(), moves))
+
+        self.conn.send(json.dumps(data).encode())
 

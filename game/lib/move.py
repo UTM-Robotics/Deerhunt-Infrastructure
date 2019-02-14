@@ -4,23 +4,24 @@ from units import Unit
 
 
 class Move:
+    def transform(x, y, direction):
+        if direction == 'UP'    : y -= 1
+        if direction == 'DOWN'  : y += 1
+        if direction == 'RIGHT' : x += 1
+        if direction == 'LEFT'  : x -= 1
+        return x, y
+
     def _get_relative_moves(self, lst):
         x = 0
         y = 0
         for m in lst:
-            if m == 'UP'    : y -= 1
-            if m == 'DOWN'  : y += 1
-            if m == 'RIGHT' : x += 1
-            if m == 'LEFT'  : x -= 1
+            x, y = Move.transform(x, y, m)
 
         return x, y
 
     def _can_follow_path(self, lst, board, x, y):
         for m in lst:
-            if m == 'UP'    : y -= 1
-            if m == 'DOWN'  : y += 1
-            if m == 'RIGHT' : x += 1
-            if m == 'LEFT'  : x -= 1
+            x, y = Move.transform(x, y, m)
 
             if isinstance(board[y][x], WallTile):
                 return False
@@ -44,8 +45,12 @@ class AttackMove(Move):
 
 class StasisMove(Move):
 
-    def __init__(self, unit):
+    def __init__(self, unit, direction):
         self.unit = unit
+        self.direction = direction
+
+    def len(self):
+        return 0
 
 class GroundMove(Move):
 

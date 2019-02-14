@@ -1,3 +1,5 @@
+from move import Move
+
 class GridPlayer:
 
     def __init__(self):
@@ -7,6 +9,6 @@ class GridPlayer:
     def tick(self, game_state):
         if self.foo:
             self.foo = False
-            return [('0', ['DOWN'])]
+            return [Move('0', 'DUPLICATE', 'DOWN')]
 
-        return [('0', ['ATTACK', 'DOWN'])]
+        return []
