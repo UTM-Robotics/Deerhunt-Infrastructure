@@ -19,11 +19,14 @@ class Move:
 
         return x, y
 
-    def _can_follow_path(self, lst, board, x, y):
+    def _can_follow_path(self, lst, board, all_units, x, y):
         for m in lst:
             x, y = Move.transform(x, y, m)
 
-            if isinstance(board[y][x], WallTile):
+            if all_units.get(f'{x},{y}') is not None:
+                return False
+
+            if not isinstance(board[y][x], GroundTile):
                 return False
 
         return True
@@ -37,8 +40,8 @@ class AttackMove(Move):
     def len(self):
         return len(self.target)
 
-    def blocked(self, grid, x, y):
-        return not self._can_follow_path(self.target, grid, x, y)
+    def blocked(self, grid, all_units, x, y):
+        return not self._can_follow_path(self.target, grid, all_units, x, y)
 
     def get_relative_moves(self):
         return self._get_relative_moves(self.target)
@@ -64,8 +67,18 @@ class GroundMove(Move):
     def get_dict(self):
         return {self.unit.id: self.moves}
 
-    def valid_path(self, board, x, y):
-        return self._can_follow_path(self.moves, board, x, y)
+    def valid_path(self, board, all_units, x, y):
+        return self._can_follow_path(self.moves, board, all_units, x, y)
         
     def get_relative_moves(self):
         return self._get_relative_moves(self.moves)
+
+
+class MineMove(Move):
+
+    def __init__(self, unit, direction):
+        self.unit = unit
+        self.direction = direction
+
+    def len(self):
+        return 0

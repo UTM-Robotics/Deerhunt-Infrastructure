@@ -2,21 +2,24 @@ import json
 import copy
 from ctypes import c_uint32
 
-from lib.move import GroundMove, StasisMove, AttackMove
+from lib.move import GroundMove, StasisMove, AttackMove, MineMove
 
 class ClientConnection:
 
-    def __init__(self, socket):
+    def __init__(self, socket, player_name, verbose=False):
         self.sock = socket
+        self.name = player_name
+        self.verbose = verbose
+        self.vision_range = 4
 
     def objs_to_strs(self, lst):
         return list(map(str, lst))
 
     def print_map(self, state, game):
         display = copy.deepcopy(state['map'])
-        for u in game.p1_state.values():
+        for u in game.p1_units.values():
             display[u.y][u.x] = str(u)
-        for u in game.p2_state.values():
+        for u in game.p2_units.values():
             display[u.y][u.x] = str(u)
 
         for row in display:
@@ -32,14 +35,33 @@ class ClientConnection:
             return StasisMove(id, body[1])
         elif isinstance(body, list) and len(body) > 1 and body[0] == 'ATTACK':
             return AttackMove(id, body[1:])
+        elif isinstance(body, list) and len(body) > 1 and body[0] == 'MINE':
+            return MineMove(id, body[1])
         else:
             return GroundMove(id, body)
 
-    def tick(self, game_state, me, them):
+    def filter_fog_of_war(self, current, opponent):
+        ret = copy.deepcopy(opponent)
+        for o_id, o_unit in list(ret.items()):
+            should_include = False
+            for id, unit in current.items():
+                if o_unit.x > unit.x-self.vision_range and o_unit.x < unit.x+self.vision_range and \
+                   o_unit.y > unit.y-self.vision_range and o_unit.y < unit.y+self.vision_range:
+                    should_include = True
+
+            if not should_include:
+                del ret[o_id]
+
+        return ret
+
+
+    def tick(self, game_state, me, them, resources, turns):
         d = {
             'map'         : [self.objs_to_strs(r) for r in game_state.grid],
             'my_units'    : self.units_to_dict(me),
-            'their_units' : self.units_to_dict(them)
+            'their_units' : self.units_to_dict(self.filter_fog_of_war(me, them)),
+            'my_resources': resources[self.name],
+            'turns_left'  : turns
         }
 
         data = json.dumps(d).encode()
@@ -49,8 +71,14 @@ class ClientConnection:
         size = int(self.sock.recv(10).decode())
         response = self.sock.recv(size).decode()
 
-        self.print_map(d, game_state)
+        if self.verbose:
+            self.print_map(d, game_state)
 
         j = json.loads(response)
 
-        return [(k, self.create_move(k, v)) for k, v in j]
+        moves = [(k, self.create_move(k, v)) for k, v in j]
+
+        if self.verbose:
+            print(self.name, ':', moves)
+
+        return moves

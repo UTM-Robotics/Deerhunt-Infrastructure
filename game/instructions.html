@@ -3,10 +3,10 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-02-14 Thu 14:50 -->
+<!-- 2019-02-15 Fri 13:32 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>&lrm;</title>
+<title>Deerhunt Game Rules</title>
 <meta name="generator" content="Org mode" />
 <meta name="author" content="Josh Wolfe" />
 <style type="text/css">
@@ -229,17 +229,19 @@ for the JavaScript code in this tag.
 </head>
 <body>
 <div id="content">
+<h1 class="title">Deerhunt Game Rules</h1>
 <div id="table-of-contents">
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgb60724b">1. Rules</a></li>
-<li><a href="#org4e44f2d">2. Client Spec</a></li>
+<li><a href="#orgeba1a7f">1. Rules</a></li>
+<li><a href="#orgf099e7b">2. Client Spec</a></li>
 </ul>
 </div>
 </div>
-<div id="outline-container-orgb60724b" class="outline-2">
-<h2 id="orgb60724b"><span class="section-number-2">1</span> Rules</h2>
+
+<div id="outline-container-orgeba1a7f" class="outline-2">
+<h2 id="orgeba1a7f"><span class="section-number-2">1</span> Rules</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 Ranges:
@@ -296,8 +298,8 @@ Winning condition and turns:
 </div>
 </div>
 
-<div id="outline-container-org4e44f2d" class="outline-2">
-<h2 id="org4e44f2d"><span class="section-number-2">2</span> Client Spec</h2>
+<div id="outline-container-orgf099e7b" class="outline-2">
+<h2 id="orgf099e7b"><span class="section-number-2">2</span> Client Spec</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 In order to make moves you will use the <code>Move</code> class.
@@ -307,18 +309,26 @@ In order to make moves you will use the <code>Move</code> class.
 There are three types of moves:
 </p>
 <ul class="org-ul">
-<li>Regular movement <code>Move('LEFT', 'LEFT', 'RIGHT')</code></li>
-<li>Attack movement <code>Move('ATTACK, 'RIGHT')</code>
+<li>Regular movement <code>Move('unitid', 'LEFT', 'LEFT', 'RIGHT')</code></li>
+<li>Attack movement <code>Move('unitid', 'ATTACK, 'RIGHT')</code>
 <ul class="org-ul">
 <li>This won't move your unit it will simply attack in that direction if valid</li>
 </ul></li>
-<li>Duplicate movement <code>Move('DUPLICATE, 'DOWN)</code>
+<li>Duplicate movement <code>Move('unitid', 'DUPLICATE, 'DOWN)</code>
 <ul class="org-ul">
 <li>This will lock your unit in duplication and the unit will appear in 
 the direction specified when completed</li>
 </ul></li>
+<li>Mining movement <code>Move('unitid', 'MINE', 'UP')</code>
+<ul class="org-ul">
+<li>This will lock your unit into mining until the resource is gathered</li>
+</ul></li>
 </ul>
 
+
+<p>
+Note that only melee units may deplicate and only mining worker units may mine
+</p>
 
 <p>
 Your tick function will return a <code>list</code> of these <code>Move</code> objects and they will be
@@ -330,7 +340,7 @@ for that turn being ignored.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Josh Wolfe</p>
-<p class="date">Created: 2019-02-14 Thu 14:50</p>
+<p class="date">Created: 2019-02-15 Fri 13:32</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

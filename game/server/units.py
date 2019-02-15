@@ -1,12 +1,9 @@
 
 class Unit:
-    def __init__(self, x, y, duplication_time):
+    def __init__(self, x, y):
         self.x = x
         self.y = y
         self.id = -1
-        self.duplication_time = duplication_time
-        self.duplication_status = 0
-        self.stasis_direction = None
 
     def pos_tuple(self):
         return self.x, self.y
@@ -15,7 +12,27 @@ class Unit:
         self.x += x
         self.y += y
 
-    def can_duplicate(self):
+    def can_duplicate(self, resouces):
+        raise NotImplemented()
+
+    def is_duplicating(self):
+        raise NotImplemented()
+
+
+class MeleeUnit(Unit):
+    def __init__(self, x, y):
+        self.duplication_time = 4
+        self.resource_cost = 100
+
+        self.duplication_status = 0
+        self.stasis_direction = None
+
+        super().__init__(x, y)
+
+    def __repr__(self):
+        return 'm'
+
+    def can_duplicate(self, resouces):
         return self.duplication_status <= 0
 
     def is_duplicating(self):
@@ -26,15 +43,32 @@ class Unit:
         self.stasis_direction = direction
         return self
 
-class MeleeUnit(Unit):
-    def __init__(self, x, y): super().__init__(x, y, 4)
+
+class WorkerUnit(Unit):
+    def __init__(self, x, y):
+        self.mining_time = 5
+
+        self.mining_status = 0
+        self.mining_direction = None
+
+        super().__init__(x, y)
 
     def __repr__(self):
-        return 'm'
+        return 'w'
 
+    def can_mine(self):
+        return self.mining_status <= 0
 
-class RangedUnit(Unit):
-    def __init__(self, x, y): super().__init__(x, y, 8)
+    def is_mining(self):
+        return self.mining_status > 0
 
-    def __repr__(self):
-        return 'r'
+    def start_mining(self, direction):
+        self.mining_status = self.mining_time
+        self.mining_direction = direction
+        return self
+
+    def can_duplicate(self, resources):
+        return False
+
+    def is_duplicating(self):
+        return False

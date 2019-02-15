@@ -9,3 +9,7 @@ class WallTile(Tile):
 class GroundTile(Tile):
     def __repr__(self):
         return ' '
+
+class ResourceTile(Tile):
+    def __repr__(self):
+        return 'R'

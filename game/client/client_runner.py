@@ -16,7 +16,7 @@ sock.connect((args.host, args.port))
 player = GridPlayer()
 controller = NetworkedController(sock, player)
 
-while True:
-    controller.tick()
+while controller.tick():
+    pass
 
 sock.close()

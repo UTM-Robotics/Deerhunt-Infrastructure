@@ -1,6 +1,9 @@
 import json
 import socket
 
+class SocketClosed(Exception):
+    pass
+
 class Controller:
     def tick(self, connection, player):
         raise NotImplementedError('Should have implemented this')
@@ -10,15 +13,28 @@ class NetworkedController(Controller):
         self.conn = connection
         self.player = player
 
+    def safe_recv(self, size):
+        tmp = self.conn.recv(size)
+        if tmp == b'':
+            raise SocketClosed()
+        return tmp
+
     def tick(self):
-        size = int(self.conn.recv(10).decode())
-        response = self.conn.recv(size).decode()
+        try:
+            size = int(self.safe_recv(10).decode())
+            response = self.safe_recv(size).decode()
 
-        moves = self.player.tick(json.loads(response))
+            js = json.loads(response)
+            moves = self.player.tick(js)
 
-        data = list(map(lambda x: x.to_tuple(), moves))
-        body = json.dumps(data).encode()
+            data = list(map(lambda x: x.to_tuple(), moves))
+            body = json.dumps(data).encode()
 
-        self.conn.sendall('{:10}'.format(len(body)).encode())
-        self.conn.sendall(body)
+            self.conn.sendall('{:10}'.format(len(body)).encode())
+            self.conn.sendall(body)
+
+            return True
+
+        except SocketClosed:
+            return False
 

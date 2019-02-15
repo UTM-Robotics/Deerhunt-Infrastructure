@@ -1,14 +1,20 @@
 from move import Move
+from pprint import pprint
 
 class GridPlayer:
 
     def __init__(self):
-        self.foo = True
+        self.counter = 0
         pass
 
     def tick(self, game_state):
-        if self.foo:
-            self.foo = False
-            return [Move('0', 'DUPLICATE', 'DOWN')]
+        moves = []
 
-        return []
+        if self.counter == 15:
+            moves.append(Move('1', 'MINE', 'DOWN'))
+        else:
+            moves.append(Move('1', 'DOWN'))
+
+        self.counter += 1
+
+        return moves
