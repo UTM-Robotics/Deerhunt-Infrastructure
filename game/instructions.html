@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2019-02-15 Fri 13:32 -->
+<!-- 2019-02-15 Fri 16:15 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Deerhunt Game Rules</title>
@@ -234,20 +234,24 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgeba1a7f">1. Rules</a></li>
-<li><a href="#orgf099e7b">2. Client Spec</a></li>
+<li><a href="#orgedec6bf">1. Rules</a></li>
+<li><a href="#org714357d">2. Client Spec</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgeba1a7f" class="outline-2">
-<h2 id="orgeba1a7f"><span class="section-number-2">1</span> Rules</h2>
+<div id="outline-container-orgedec6bf" class="outline-2">
+<h2 id="orgedec6bf"><span class="section-number-2">1</span> Rules</h2>
 <div class="outline-text-2" id="text-1">
+<p>
+Whenever there is * next to a number, it means that the value will likely be tweaked as we test the game. The offensive unit, worker unit, and resources still need names.
+</p>
+
 <p>
 Ranges:
 </p>
 <ul class="org-ul">
-<li><a href="http://prntscr.com/mka8g4">http://prntscr.com/mka8g4</a></li>
+<li><a href="http://prntscr.com/mka8g4">http://prntscr.com/mka8g4</a> (to be updated).</li>
 </ul>
 
 <p>
@@ -258,48 +262,62 @@ Fog of war:
 </ul>
 
 <p>
-Melee unit:
+Map:
 </p>
 <ul class="org-ul">
-<li>Can make a single attack dealing one health point in the 3x3 grid (range 1) around them.</li>
-<li>Or can make two moves in a single turn.</li>
-<li>Takes two turns to duplicate/ spawn another melee unit.</li>
-<li>Has one health point.</li>
-<li>Has range 2 vision.</li>
-</ul>
-
-<p>
-Ranged unit:
-</p>
-<ul class="org-ul">
-<li>Can take a single attack dealing one health point in the 5x5(-4) grid (range 2) around them.</li>
-<li>Or can make a single move in a turn.</li>
-<li>Takes four turns to duplicate.</li>
-<li>Has one health point.</li>
-<li>Has range 3 vision.</li>
-</ul>
-
-<p>
-Map and spawns:
-</p>
-<ul class="org-ul">
-<li>Player 1 and player 2's starting squad (1 ranged unit, 1 melee unit) start in opposite, mirrored locations.</li>
+<li>The map will be 40x40*.</li>
 <li>The map will be symmetrical about the axis which equidistantly separates player 1 and 2's spawn points.</li>
-<li>After X amount of time, the map will begin to shrink.</li>
+<li>There will be 5* resource hubs, 4 of which will respect the symmetry and the last placed in the center of the map.</li>
+</ul>
+
+<p>
+Resources:
+</p>
+<ul class="org-ul">
+<li>Players have a certain number of 'resources' throughout the game.</li>
+<li>Players will begin with 0* units of 'resource' each.</li>
+<li>The resource hubs will become saturated after 10* units of 'resource' is collected.</li>
+</ul>
+
+<p>
+Offensive unit:
+</p>
+<ul class="org-ul">
+<li>Can make a single attack dealing 1 health point with range 1*.</li>
+<li>Or can make a single move.</li>
+<li>Or it can begin to duplicate, which takes 5* turns and 1* unit of resource, and will be incapable of performing any action for this duration.</li>
+<li>Has 3 health points.</li>
+<li>Has range 4* vision.</li>
+</ul>
+
+<p>
+Worker unit:
+</p>
+<ul class="org-ul">
+<li>When on a resource hub, it can take 5* turns to collect 1* unit of 'resource'.</li>
+<li>These cannot duplicate.</li>
+<li>When a player has vision of any opposition worker unit, they will be able to see the number of resources their opponent has.</li>
+</ul>
+
+<p>
+Spawn:
+</p>
+<ul class="org-ul">
+<li>Each player begins with 3* workers and 1* offensive unit.</li>
 </ul>
 
 <p>
 Winning condition and turns:
 </p>
 <ul class="org-ul">
-<li>The game is turn-based with player 1 starting.</li>
-<li>The game ends when all of the units of one player is eliminated, where the victor is the player with remaining units.</li>
+<li>The game is asynchronous turn-based with player 1 starting.</li>
+<li>The game ends when all of the units of one player is eliminated, where the victor is the player with remaining units OR after 100* turns, where the victor is the player with the most resources. If the two players have the same amount, then player 2 wins.</li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgf099e7b" class="outline-2">
-<h2 id="orgf099e7b"><span class="section-number-2">2</span> Client Spec</h2>
+<div id="outline-container-org714357d" class="outline-2">
+<h2 id="org714357d"><span class="section-number-2">2</span> Client Spec</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 In order to make moves you will use the <code>Move</code> class.
@@ -340,7 +358,7 @@ for that turn being ignored.
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Josh Wolfe</p>
-<p class="date">Created: 2019-02-15 Fri 13:32</p>
+<p class="date">Created: 2019-02-15 Fri 16:15</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
