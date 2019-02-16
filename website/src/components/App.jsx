@@ -7,7 +7,7 @@ class AppWrapper extends React.Component {
       <div className='app-container'>
         <Link to={'/'}>Home</Link>
         <Link to={'/about'}>About</Link>
-        <Link to={'/about/subroute'}>Subcomponent</Link>
+        <Link to={'/login'}>Login</Link>
         {this.props.children}
       </div>
     )

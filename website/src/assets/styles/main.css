@@ -1,16 +1,74 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans')
-
-body, html {
-  height: 100%;
-  width: 100%;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 body {
-  font-family: Open Sans;
+  font-family: Arial, Helvetica, sans-serif;
 }
+
+.auth-form-container {
+  position: fixed;
+  z-index: 1;
+  background-size: 100% 75%;
+  background-position: top center;
+  max-width: 400px;
+  margin: 0 auto 100px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.auth-form-container input {
+  font-family: "Roboto", sans-serif;
+  outline: 0;
+  background: #f2f2f2;
+  opacity: 0.9;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.auth-form-container .auth-button {
+  font-family: "Roboto", sans-serif;
+  text-transform: uppercase;
+  outline: 0;
+  background: grey;
+  width: 100%;
+  border: 0;
+  padding: 15px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+.auth-form-container .auth-button:hover, .auth-form-container .auth-button:active, .auth-form-container .auth-button:focus {
+  background: darkgrey;
+}
+
+.error-message {
+  color: red;
+  font-size: 16px;
+}
+
+.success-message {
+  color: green;
+  font-size: 16px;
+}
+
+.register-redirect {
+  padding-top: 10px;
+}
+.register-redirect:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.login-redirect {
+  text-align: left;
+  padding-bottom: 10px;
+}
+.login-redirect:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/*# sourceMappingURL=main.css.map */
