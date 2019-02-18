@@ -23,7 +23,7 @@ class Move:
         for m in lst:
             x, y = Move.transform(x, y, m)
 
-            if all_units.get(f'{x},{y}') is not None:
+            if all_units.get('{},{}'.format(x, x)) is not None:
                 return False
 
             if not isinstance(board[y][x], GroundTile):
