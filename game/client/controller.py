@@ -1,5 +1,6 @@
 import json
 import socket
+from helper_classes import *
 
 class SocketClosed(Exception):
     pass
@@ -25,7 +26,12 @@ class NetworkedController(Controller):
             response = self.safe_recv(size).decode()
 
             js = json.loads(response)
-            moves = self.player.tick(js)
+            moves = self.player.tick(Map(js['map']), 
+                    Units(js['my_units']),
+                    Units(js['thier_units']),
+                    js['my_resources'],
+                    js['turns_left'])
+
 
             data = list(map(lambda x: x.to_tuple(), moves))
             body = json.dumps(data).encode()

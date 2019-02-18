@@ -57,11 +57,17 @@ class GridFighters(Game):
         potential_moves = {}
         move_type = {}
         for k, v in moves:
+            if k not in player_state:
+                print(f'ERROR: Cannot move enemy unit: {k}')
+                return False
+
             if isinstance(player_state[k], Unit):
                 if player_state[k].is_duplicating():
+                    print(f'ERROR: {k} cannot act while duplicating')
                     return False
 
                 if k in move_type and move_type[k] != type(v):
+                    print(f'ERROR: Cannot make multiple actions for unit {k}')
                     return False
 
                 potential_moves[k] = potential_moves.get(k, 0) + v.len()
@@ -70,19 +76,25 @@ class GridFighters(Game):
             x, y = player_state[k].pos_tuple()
 
             if isinstance(v, GroundMove) and not v.valid_path(self.grid, self.all_units, x, y):
+                print(f'ERROR: Invalid path for unit {k}')
                 return False
             elif isinstance(v, AttackMove) and (v.blocked(self.grid, self.all_units, x, y) or \
                  self.get_matching_unit(x, y, enemy_units, v) is None):
+                print(f'ERROR: Unit {k} cannot attack there')
                 return False
             elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources):
+                print(f'ERROR: Unit {k} cannot duplicate now')
                 return False
             elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y, v.direction)):
+                print(f'ERROR: Unit {k} cannot mine now')
                 return False
 
         for k, v in potential_moves.items():
             if isinstance(player_state[k], MeleeUnit) and v < 0 and v > 2:
+                print(f'ERROR: Unit {k} took too many moves')
                 return False
             elif isinstance(player_state[k], WorkerUnit) and v < 0 and v > 1:
+                print(f'ERROR: Unit {k} took too many moves')
                 return False
 
         return True

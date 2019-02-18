@@ -9,7 +9,7 @@ from lib.tiles import WallTile, GroundTile
 
 parser = argparse.ArgumentParser()
 parser.add_argument('port', type=int, help='The port to listen on')
-parser.add_argument('--verbose', help='Should display the game turn by turn')
+parser.add_argument('--verbose', help='Should display the game turn by turn', action='store_true')
 args = parser.parse_args()
 
 sock = socket.socket()

@@ -7,7 +7,7 @@ class GridPlayer:
         self.counter = 0
         pass
 
-    def tick(self, game_state):
+    def tick(self, game_map, your_units, enemy_units, resources, turns_left):
         moves = []
 
         if self.counter == 15:

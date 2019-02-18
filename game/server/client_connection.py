@@ -76,7 +76,7 @@ class ClientConnection:
 
         j = json.loads(response)
 
-        moves = [(k, self.create_move(k, v)) for k, v in j]
+        moves = [(str(k), self.create_move(k, v)) for k, v in j]
 
         if self.verbose:
             print(self.name, ':', moves)
