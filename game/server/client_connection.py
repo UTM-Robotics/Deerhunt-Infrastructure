@@ -35,8 +35,8 @@ class ClientConnection:
             return StasisMove(id, body[1])
         elif isinstance(body, list) and len(body) > 1 and body[0] == 'ATTACK':
             return AttackMove(id, body[1:])
-        elif isinstance(body, list) and len(body) > 1 and body[0] == 'MINE':
-            return MineMove(id, body[1])
+        elif isinstance(body, list) and len(body) > 0 and body[0] == 'MINE':
+            return MineMove(id)
         else:
             return GroundMove(id, body)
 

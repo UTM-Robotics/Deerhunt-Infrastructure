@@ -9,7 +9,7 @@ class GridPlayer:
 
     def tick(self, game_map, your_units, enemy_units, resources, turns_left):
         moves = []
-        moves.append(Move('0', 'DOWN'))
-        moves.append(Move('3', 'DOWN'))
+        moves.append(your_units.get_unit('0').move('DOWN'))
+        moves.append(your_units.get_unit('3').move('DOWN'))
 
         return moves

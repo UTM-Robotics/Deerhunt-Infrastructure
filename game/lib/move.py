@@ -26,7 +26,7 @@ class Move:
             if all_units.get('{},{}'.format(x, x)) is not None:
                 return False
 
-            if not isinstance(board[y][x], GroundTile):
+            if isinstance(board[y][x], WallTile):
                 return False
 
         return True
@@ -76,9 +76,8 @@ class GroundMove(Move):
 
 class MineMove(Move):
 
-    def __init__(self, unit, direction):
+    def __init__(self, unit):
         self.unit = unit
-        self.direction = direction
 
     def len(self):
         return 0

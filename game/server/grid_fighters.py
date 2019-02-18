@@ -98,7 +98,7 @@ class GridFighters(Game):
             elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources):
                 print('ERROR: Unit {} cannot duplicate now'.format(k))
                 return False
-            elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y, v.direction)):
+            elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y)):
                 print('ERROR: Unit {} cannot mine now'.format(k))
                 return False
 
@@ -112,8 +112,7 @@ class GridFighters(Game):
 
         return True
 
-    def is_mining_resource(self, x, y, direction):
-        x, y = Move.transform(x, y, direction)
+    def is_mining_resource(self, x, y):
         return isinstance(self.grid[y][x], ResourceTile)
     
 
