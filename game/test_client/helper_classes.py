@@ -19,7 +19,7 @@ class Map:
         x, y = unit.position()
         for row in range(len(self.grid)):
             for col in range(len(self.grid[row])):
-                if self.is_resource(self, col, row):
+                if self.is_resource(col, row):
                     locations.append((row, col))
 
         result = None
