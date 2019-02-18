@@ -35,18 +35,18 @@ class Map:
         return result
 
 class Units:
-    def __init__(self, unit_dict):
+    def __init__(self, units):
         self.units = {}
-        for k, v in unit_dict.items():
-            self.units[k] = Unit(v)
+        for unit in units:
+            self.units[str(unit['id'])] = Unit(unit)
 
     def get_unit(self, id):
         return self.units[id]
 
 
 class Unit:
-    def __init__(self, id, attr):
-        self.id = id
+    def __init__(self, attr):
+        self.id = attr['id']
         self.attr = attr
 
         self.x = attr['x']
@@ -56,11 +56,11 @@ class Unit:
         return self.x, self.y
 
     def move(self, *directions):
-        return (str(self.id), list(directions))
+        return Move(self.id, *directions)
 
     def attack(self, *directions):
-        return (str(self.id), ['ATTACK'] + list(directions))
+        return Move(self.id, *(['ATTACK'] + list(directions)))
 
     def mine(self):
-        return (str(self.id), ['MINE'])
+        return Move(self.id, 'MINE')
 

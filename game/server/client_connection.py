@@ -2,7 +2,7 @@ import json
 import copy
 from ctypes import c_uint32
 
-from lib.move import GroundMove, StasisMove, AttackMove, MineMove
+from move import GroundMove, StasisMove, AttackMove, MineMove
 
 class ClientConnection:
 

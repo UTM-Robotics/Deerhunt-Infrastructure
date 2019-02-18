@@ -32,7 +32,6 @@ class NetworkedController(Controller):
                     js['my_resources'],
                     js['turns_left'])
 
-
             data = list(map(lambda x: x.to_tuple(), moves))
             body = json.dumps(data).encode()
 

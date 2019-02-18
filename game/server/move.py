@@ -1,5 +1,5 @@
-from lib.direction import Direction
-from lib.tiles import GroundTile, WallTile
+from direction import Direction
+from tiles import GroundTile, WallTile
 from units import Unit
 
 

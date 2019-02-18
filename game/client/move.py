@@ -4,4 +4,4 @@ class Move:
         self.directions = args
 
     def to_tuple(self):
-        return (self.unit, self.directions)
+        return (str(self.unit), self.directions)

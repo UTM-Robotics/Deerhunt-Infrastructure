@@ -1,7 +1,7 @@
 from game import Game
 from units import Unit, MeleeUnit, WorkerUnit
-from lib.move import GroundMove, StasisMove, AttackMove, Move, MineMove
-from lib.tiles import GroundTile, WallTile, ResourceTile
+from move import GroundMove, StasisMove, AttackMove, Move, MineMove
+from tiles import GroundTile, WallTile, ResourceTile
 from copy import deepcopy
 
 class GridFighters(Game):
@@ -129,6 +129,7 @@ class GridFighters(Game):
             if isinstance(v, GroundMove):
                 m = v.get_relative_moves()
                 x, y = player_state[k].pos_tuple()
+                print(m)
                 player_state[k].set_relative_location(*m)
                 self.move_unit(x, y, player_state[k])
             elif isinstance(v, AttackMove):
