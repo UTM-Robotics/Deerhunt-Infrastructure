@@ -28,7 +28,7 @@ class NetworkedController(Controller):
             js = json.loads(response)
             moves = self.player.tick(Map(js['map']), 
                     Units(js['my_units']),
-                    Units(js['thier_units']),
+                    Units(js['their_units']),
                     js['my_resources'],
                     js['turns_left'])
 

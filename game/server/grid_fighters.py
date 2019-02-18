@@ -51,23 +51,36 @@ class GridFighters(Game):
         player[str(self.next_id)] = unit
         self.next_id += 1
 
-        self.all_units[f'{unit.x},{unit.y}'] = unit
+        self.set_unit(unit.x, unit.y, unit)
+
+    def move_unit(self, x, y, unit):
+        del self.all_units['{},{}'.format(x, y)]
+        self.set_unit(unit.x, unit.y, unit)
+
+    def set_unit(self, x, y, unit):
+        self.all_units['{},{}'.format(x, y)] = unit
+
+    def get_unit(self, x, y):
+        return self.all_units['{},{}'.format(x, y)]
+
+    def del_unit(self, x, y):
+        del self.add_unit['{},{}'.format(x,y)]
 
     def verify_response(self, moves, player_state, player_resources, enemy_units):
         potential_moves = {}
         move_type = {}
         for k, v in moves:
             if k not in player_state:
-                print(f'ERROR: Cannot move enemy unit: {k}')
+                print('ERROR: Cannot move enemy unit: {}'.format(k))
                 return False
 
             if isinstance(player_state[k], Unit):
                 if player_state[k].is_duplicating():
-                    print(f'ERROR: {k} cannot act while duplicating')
+                    print('ERROR: {} cannot act while duplicating'.format(k))
                     return False
 
                 if k in move_type and move_type[k] != type(v):
-                    print(f'ERROR: Cannot make multiple actions for unit {k}')
+                    print('ERROR: Cannot make multiple actions for unit {}'.format(k))
                     return False
 
                 potential_moves[k] = potential_moves.get(k, 0) + v.len()
@@ -76,25 +89,25 @@ class GridFighters(Game):
             x, y = player_state[k].pos_tuple()
 
             if isinstance(v, GroundMove) and not v.valid_path(self.grid, self.all_units, x, y):
-                print(f'ERROR: Invalid path for unit {k}')
+                print('ERROR: Invalid path for unit {}'.format(k))
                 return False
             elif isinstance(v, AttackMove) and (v.blocked(self.grid, self.all_units, x, y) or \
                  self.get_matching_unit(x, y, enemy_units, v) is None):
-                print(f'ERROR: Unit {k} cannot attack there')
+                print('ERROR: Unit {} cannot attack there'.format(k))
                 return False
             elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources):
-                print(f'ERROR: Unit {k} cannot duplicate now')
+                print('ERROR: Unit {} cannot duplicate now'.format(k))
                 return False
             elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y, v.direction)):
-                print(f'ERROR: Unit {k} cannot mine now')
+                print('ERROR: Unit {} cannot mine now'.format(k))
                 return False
 
         for k, v in potential_moves.items():
             if isinstance(player_state[k], MeleeUnit) and v < 0 and v > 2:
-                print(f'ERROR: Unit {k} took too many moves')
+                print('ERROR: Unit {} took too many moves'.format(k))
                 return False
             elif isinstance(player_state[k], WorkerUnit) and v < 0 and v > 1:
-                print(f'ERROR: Unit {k} took too many moves')
+                print('ERROR: Unit {} took too many moves'.format(k))
                 return False
 
         return True
@@ -110,24 +123,26 @@ class GridFighters(Game):
         x += rx
         y += ry
 
-        return self.all_units.get(f'{x},{y}', None)
+        return self.all_units.get('{},{}'.format(x, y), None)
 
     def make_moves(self, moves, player_state, player_name, opponent_state):
         for k, v in moves:
             if isinstance(v, GroundMove):
                 m = v.get_relative_moves()
+                x, y = player_state[k].pos_tuple()
                 player_state[k].set_relative_location(*m)
+                self.move_unit(x, y, player_state[k])
             elif isinstance(v, AttackMove):
                 x, y = player_state[k].pos_tuple()
                 rx, ry = v.get_relative_moves()
-                uid = str(self.all_units[f'{x+rx},{y+ry}'].id)
+                uid = str(self.get_unit(x+rx, y+ry).id)
                 try:
                     del opponent_state[uid]
                 except KeyError:
                     # User tried to delete their own unit
                     pass
 
-                del self.all_units[f'{x+rx},{y+ry}']
+                self.del_unit(x+rx, y+ry)
             elif isinstance(v, StasisMove):
                 self.currently_duplicating[k] = (player_state, player_state[k].start_duplication(v.direction))
             elif isinstance(v, MineMove):

@@ -9,12 +9,7 @@ class GridPlayer:
 
     def tick(self, game_map, your_units, enemy_units, resources, turns_left):
         moves = []
-
-        if self.counter == 15:
-            moves.append(Move('1', 'MINE', 'DOWN'))
-        else:
-            moves.append(Move('1', 'DOWN'))
-
-        self.counter += 1
+        moves.append(Move('0', 'DOWN'))
+        moves.append(Move('3', 'DOWN'))
 
         return moves
