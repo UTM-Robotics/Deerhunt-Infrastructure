@@ -58,6 +58,16 @@ class Unit:
     def move(self, *directions):
         return Move(self.id, *directions)
 
+    def ghetto_move(self, cur, dest):
+        if self.x < dest[0]:
+            return Move(self.id, 'UP')
+        elif self.x > dest[0]:
+            return Move(self.id, 'DOWN')
+        elif self.y < dest[1]:
+            return Move(self.id, 'RIGHT')
+        elif self.y > dest[1]:
+            return Move(self.id, 'LEFT')
+
     def attack(self, *directions):
         return Move(self.id, *(['ATTACK'] + list(directions)))
 
