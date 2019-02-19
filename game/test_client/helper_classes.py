@@ -40,23 +40,26 @@ class Map: # all outputs will be of the form (x, y). i.e., (c, r).
 
 class Units:
     def __init__(self, units):
-        self.units = {}
+        self.units = {} # a dictionary of unit objects.
         for unit in units:
             self.units[str(unit['id'])] = Unit(unit)
 
     def get_unit(self, id):
         return self.units[id]
 
-    def get_all_unit_ids(self, type = 'all'):
+    def get_all_unit_ids(self):
         # Returns the id of all current units.
+        all_units_ids = []
+        for id in self.units:
+            all_units_ids.append(id)
+        return all_units_ids
+    
+    def get_all_unit_of_type(self, type):
+        # Returns a list of unit objects of a given type.
         all_units = []
-        if type == 'all':
-            for unit in self.units:
-                all_units.append(unit)
-        else:
-            for unit in self.units:
-                if unit.type == type:
-                    all_units.append(unit)
+        for id in self.units:
+            if self.units[id].type == type:
+                all_units.append(self.units[id])
                     
         return all_units
 
@@ -100,8 +103,14 @@ class Unit:
     def attack(self, *directions):
         return Move(self.id, 'ATTACK', *directions)
 
+    def can_duplicate(self, resources):
+        if self.type == 'melee' and self.attr['resource_cost'] <= resources and self.attr['duplication_status'] <= 0:
+            return True
+        else:
+            return False
+    
     def can_mine(self, game_map):
-        if self.type == 'worker' and game_map.is_resource(self.x, self.y) and self.attr['mining_status'] == 0:
+        if self.type == 'worker' and game_map.is_resource(self.x, self.y) and self.attr['mining_status'] <= 0:
             return True
         else:
             return False
@@ -109,7 +118,7 @@ class Unit:
     def mine(self):
         return Move(self.id, 'MINE')
 
-    def duplicate(self):
+    def duplicate(self, direction):
         return Move(self.id, 'DUPLICATE', direction)
 
     def bfs(self, game_map, dest):

@@ -13,23 +13,26 @@ class GridPlayer:
 
         moves = []
 
-        all_units = your_units.get_all_unit_ids()
-        for ids in all_units:
-            print(ids, " : ", your_units.get_unit(ids).type)
+        #all_units = your_units.get_all_unit_ids()
+        #for ids in all_units:
+        #    print(ids, " : ", your_units.get_unit(ids).type)
 
-        first = your_units.get_unit('0')
-        closest_node = game_map.closest_resources(first)
 
-        s_path = first.bfs(game_map, closest_node)
+        
+        workers = your_units.get_all_unit_of_type('worker')
+        melee = your_units.get_all_unit_of_type('melee')
 
-        print(first.x, first.y)
-        print("close: ", closest_node)
-        print(s_path)
-        print("---")
-        if s_path == None:
-            print("No move available.")
-        else:
-            moves.append(first.move_towards(s_path[1]))
-        print("move: ", moves)
-    
+        for unit in workers:
+            if unit.can_mine(game_map):
+                moves.append(unit.mine())
+            else:
+                closest_node = game_map.closest_resources(unit)
+                s_path = unit.bfs(game_map, closest_node)
+                if s_path:
+                    moves.append(unit.move_towards(s_path[1]))
+
+        for unit in melee:
+            if unit.can_duplicate(resources):
+                moves.append(unit.duplicate('LEFT'))
+        
         return moves
