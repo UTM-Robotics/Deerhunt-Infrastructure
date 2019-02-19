@@ -1,17 +1,28 @@
 from move import Move
 
-class Map: # all outputs will be of the form (x, y). i.e., (c, r).
+class Map: # all outputs will be of the form (x, y). i.e., (c, r). 
     def __init__(self, map_grid):
         self.grid = map_grid
 
-    def get_tile(self, c, r):
-        return self.grid[r][c]
+    def get_tile(self, x, y):
+        return self.grid[y][x]
 
-    def is_wall(self, c, r):
-        return self.grid[r][c].lower() == 'x'
+    def is_wall(self, x, y):
+        return self.grid[y][x].lower() == 'x'
 
-    def is_resource(self, c, r):
-        return self.grid[r][c].lower() == 'r'
+    def is_resource(self, x, y):
+        return self.grid[y][x].lower() == 'r'
+
+    def coordinate_from_direction(x, y, direction):
+        # Returns the (x, y) coordinates given a position and a direction.
+        if direction == 'LEFT':
+            return (x-1, y)
+        if direction == 'RIGHT':
+            return (x+1, y)
+        if direction == 'UP':
+            return (x, y-1)
+        if direction == 'DOWN':
+            return (x, y+1)
 
     def find_all_resources(self):
         # Returns the (x, y) coordinates for all resource nodes.
@@ -74,34 +85,46 @@ class Unit:
     def position(self):
         return self.x, self.y
 
+    def direction_to(self, pos):
+        # returns the direction from a unit to a certain position (pos[0], pos[1]).
+        if self.y < pos[1]:
+            return 'DOWN'
+        elif self.y > pos[1]:
+            return 'UP'
+        elif self.x > pos[0]:
+            return 'LEFT'
+        elif self.x < pos[0]:
+            return 'RIGHT'
+
     def move(self, *directions):
         return Move(self.id, *directions)
  
     def move_towards(self, dest):
-        r = self.y
-        c = self.x
-        if r < dest[1]:
-            return Move(self.id, 'DOWN')
-        elif r > dest[1]:
-            return Move(self.id, 'UP')
-        elif c > dest[0]:
-            return Move(self.id, 'LEFT')
-        elif c < dest[0]:
-            return Move(self.id, 'RIGHT')
+        direction = self.direction_to(dest)
+        return Move(self.id, direction)
 
-    def nearby_enemies_by_distance(self, their_units):
+    def nearby_enemies_by_distance(self, enemy_units):
         # returns a sorted list of ids and their distances.
         x = self.x
         y = self.y
         enemies = []
         
-        for unit in their_units:
+        for unit in enemy_units:
             dist = abs(x - unit.x) + abs(y - unit.y)
             enemies.append((unit.id, dist))
         return enemies.sort(key=lambda tup: tup[1])
-        
+
+    
     def attack(self, *directions):
         return Move(self.id, 'ATTACK', *directions)
+
+    def can_attack(self, enemy_units): # make this a new function called attack_list and make can_attack a directed function at an enemy unit.
+        enemies = []
+        for unit in enemy_units:
+            direction = self.direction_to((unit.x, unit.y))
+            if coordinate_from_direction(self.x, self.y, direction) == (unit.x, unit.y):
+                enemies.append((unit, direction))
+        return enemies
 
     def can_duplicate(self, resources):
         if self.type == 'melee' and self.attr['resource_cost'] <= resources and self.attr['duplication_status'] <= 0:
