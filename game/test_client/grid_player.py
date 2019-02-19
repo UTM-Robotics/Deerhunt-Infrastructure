@@ -19,13 +19,17 @@ class GridPlayer:
 
         first = your_units.get_unit('0')
         closest_node = game_map.closest_resources(first)
-        current_pos = (first.x, first.y)
 
-        print(closest_node, " | ", current_pos)
+        s_path = first.bfs(game_map, closest_node)
 
-        if current_pos[0] != closest_node[0] or current_pos[1] != closest_node[1]:
-            moves.append(first.ghetto_move(current_pos, closest_node))
+        print(first.x, first.y)
+        print("close: ", closest_node)
+        print(s_path)
+        print("---")
+        if s_path == None:
+            print("No move available.")
         else:
-            moves.append(first.mine())
-
+            moves.append(first.move_towards(s_path[1]))
+        print("move: ", moves)
+    
         return moves
