@@ -33,7 +33,7 @@ class Map: # all outputs will be of the form (x, y). i.e., (c, r).
             dr = r_2-r
             dist = abs(dc) + abs(dr)
             if dist < so_far:
-                result = (c, r)
+                result = (c_2, r_2)
                 so_far = dist
         return result
 
