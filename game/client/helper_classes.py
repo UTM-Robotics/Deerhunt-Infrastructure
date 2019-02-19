@@ -59,8 +59,12 @@ class Unit:
         return Move(self.id, *directions)
 
     def attack(self, *directions):
-        return Move(self.id, *(['ATTACK'] + list(directions)))
+        return Move(self.id, 'ATTACK', *directions)
 
     def mine(self):
         return Move(self.id, 'MINE')
+
+    def duplicate(self, duplicate):
+        return Move(self.id, 'DUPLICATE', direction)
+
 

@@ -17,5 +17,5 @@ class GridPlayer:
         if current_pos[0] != closest_node[0] and current_pos[1] != closest_node[1]:
             moves.append(first.ghetto_move(current_pos, closest_node))
         else:
-            moves.append(first.mine)
+            moves.append(first.mine())
         return moves
