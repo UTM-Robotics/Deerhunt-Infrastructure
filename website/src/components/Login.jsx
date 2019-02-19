@@ -33,7 +33,6 @@ class Login extends React.Component {
     }
 
     handleEnterKeyPress(e: any) {
-        console.log("keypress");
         if (e.charCode == 13 || e.keyCode == 13) {
             this.login();
         }
