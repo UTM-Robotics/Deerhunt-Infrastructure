@@ -32,7 +32,7 @@ turn = 0
 winner = None
 print('Game starting...')
 while turn < 50 and winner == None:
-    winner = game.tick(turn)
+    winner = game.tick(50 - turn)
     turn += 1
 
 if winner == None:

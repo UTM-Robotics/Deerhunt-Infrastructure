@@ -1,5 +1,9 @@
 #!/bin/bash
 
+if [ -z "$1" ]; then
+    echo 'You must provide a port'
+    exit 1
+fi
 tmux new -d -s 'deerhunt'
 tmux send-keys "server/server_runner.py --verbose $1" C-m
 tmux new-window

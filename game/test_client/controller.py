@@ -1,6 +1,7 @@
 import json
 import socket
 from helper_classes import *
+from move import Move
 
 class SocketClosed(Exception):
     pass
@@ -32,7 +33,14 @@ class NetworkedController(Controller):
                     js['my_resources'],
                     js['turns_left'])
 
-            data = list(map(lambda x: x.to_tuple(), moves))
+
+            data = []
+            for move in moves:
+                if isinstance(move, Move):
+                    data.append(move.to_tuple())
+                else:
+                    print('Expected type of Move but got {}'.format(type(move)))
+
             body = json.dumps(data).encode()
 
             self.conn.sendall('{:10}'.format(len(body)).encode())

@@ -95,7 +95,7 @@ class GridFighters(Game):
                  self.get_matching_unit(x, y, enemy_units, v) is None):
                 print('ERROR: Unit {} cannot attack there'.format(k))
                 return False
-            elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources):
+            elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources) and player_resources >= 100:
                 print('ERROR: Unit {} cannot duplicate now'.format(k))
                 return False
             elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y)):
@@ -145,6 +145,7 @@ class GridFighters(Game):
                 self.del_unit(x+rx, y+ry)
             elif isinstance(v, StasisMove):
                 self.currently_duplicating[k] = (player_state, player_state[k].start_duplication(v.direction))
+                self.resources[player_name] -= 100
             elif isinstance(v, MineMove):
                 self.currently_mining[k] = (player_name, player_state[k].start_mining(v.direction))
             
