@@ -12,9 +12,10 @@ class GridPlayer:
         #print("--------{0} TURNS LEFT--------".format(turns_left))
         first = your_units.get_unit('0')
         closest_node = game_map.closest_resources(first)
-        current_pos = first.position
-        if current_pos != closest_node:
+        current_pos = (first.x, first.y)
+        print(closest_node, " | ", current_pos);
+        if current_pos[0] != closest_node[0] and current_pos[1] != closest_node[1]:
             moves.append(first.ghetto_move(current_pos, closest_node))
-        elif current_post == closest_node:
-            moves.append(first.Move('MINE'))
+        else:
+            moves.append(first.mine)
         return moves

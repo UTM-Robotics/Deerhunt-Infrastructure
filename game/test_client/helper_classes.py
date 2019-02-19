@@ -29,7 +29,7 @@ class Map:
             dx = c-x
             dist = sqrt(dx**2 + dy**2)
             if dist < so_far:
-                result = (r, c)
+                result = (c, r)
                 so_far = dist
 
         return result
@@ -60,13 +60,13 @@ class Unit:
 
     def ghetto_move(self, cur, dest):
         if self.x < dest[0]:
-            return Move(self.id, 'UP')
-        elif self.x > dest[0]:
-            return Move(self.id, 'DOWN')
-        elif self.y < dest[1]:
             return Move(self.id, 'RIGHT')
-        elif self.y > dest[1]:
+        elif self.x > dest[0]:
             return Move(self.id, 'LEFT')
+        elif self.y < dest[1]:
+            return Move(self.id, 'DOWN')
+        elif self.y > dest[1]:
+            return Move(self.id, 'UP')
 
     def attack(self, *directions):
         return Move(self.id, *(['ATTACK'] + list(directions)))
