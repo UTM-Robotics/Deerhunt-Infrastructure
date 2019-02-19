@@ -23,10 +23,12 @@ class Move:
         for m in lst:
             x, y = Move.transform(x, y, m)
 
-            if all_units.get('{},{}'.format(x, x)) is not None:
+            if all_units.get('{},{}'.format(x, y)) is not None:
+                print("--- all_units.get(...) failing ---")
                 return False
 
             if isinstance(board[y][x], WallTile):
+                print("--- isinstance(...) failing ---")
                 return False
 
         return True
