@@ -85,7 +85,7 @@ class Unit:
         if self.attr['mining_status'] == 0:
             return Move(self.id, 'MINE')
         else:
-            return NULL
+            return None
 
     def duplicate(self):
         return Move(self.id, 'DUPLICATE', direction)
