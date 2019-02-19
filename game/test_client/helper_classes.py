@@ -108,20 +108,14 @@ class Unit:
         x = self.x
         y = self.y
         enemies = []
-
-        print("--- testing ---")
-        print("enemy_units.units: ", enemy_units.units)
         
         for id in enemy_units.units:
             unit = enemy_units.get_unit(id)
-            print("unit: ", unit)
             dist = abs(x - unit.x) + abs(y - unit.y)
-            enemies.append((unit.id, dist))
-            print("enemies: ", enemies)
-        print("--- testing ---")
+            enemies.append((str(unit.id), dist))
+            
         enemies.sort(key=lambda tup: tup[1])
         return enemies
-
     
     def attack(self, *directions):
         return Move(self.id, 'ATTACK', *directions)

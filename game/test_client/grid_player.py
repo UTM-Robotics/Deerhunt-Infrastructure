@@ -30,18 +30,15 @@ class GridPlayer:
                     moves.append(unit.move_towards(s_path[1]))
         
         for unit in melee:
-
-            print("enemy units: ", enemy_units)
             
             enemy_list = unit.nearby_enemies_by_distance(enemy_units)
-            print("enemy list: ", enemy_list)
             if enemy_list:
                 attack_list = unit.can_attack(enemy_units)
-                print("attack list: ", attack_list)
+                #print("attack list: ", attack_list)
                 if attack_list:
                     moves.append(unit.attack(attack_list[0][1]))
                 else:
-                    closest = enemy_units.get_unit(enemy_list[0][0])
+                    closest = enemy_units.units[enemy_list[0][0]]
                     moves.append(unit.move_towards( (closest.x, closest.y) ))
             elif unit.can_duplicate(resources):
                     moves.append(unit.duplicate('LEFT'))
