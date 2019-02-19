@@ -9,6 +9,7 @@ class AppWrapper extends React.Component {
         <Link to={'/about'}>About</Link>
         <Link to={'/login'}>Login</Link>
         <Link to={'/replay'}>Game Replay</Link>
+        <Link to={'/submit'}>Submit</Link>
         {this.props.children}
       </div>
     )

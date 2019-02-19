@@ -3,6 +3,12 @@ from flask import Flask, jsonify, send_from_directory, request, abort, session
 from flask_cors import CORS
 from pymongo import MongoClient
 from passlib.hash import sha512_crypt
+from zipfile import ZipFile
+import uuid
+import docker
+import time
+import shutil
+import os
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
@@ -10,10 +16,46 @@ app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/
 CORS(app)
 
 database = MongoClient('localhost', 27017).neodeerhunt
+dock= docker.from_env()
+
+prefix = '/deerhunt'
+submissions_folder = f'{prefix}/submissions'
+build_folder = f'{prefix}/build'
+template_folder = f'{prefix}/template'
+server_folder = f'{prefix}/server'
 
 ##
 # API routes
 ##
+
+@app.route('/api/submit', methods=['POST'])
+def submit():
+    session['username'] = 'foo'
+
+    if 'upload' not in request.files:
+        abort(400)
+
+    path = f'{submissions_folder}/{session["username"]}-{time.time()}'
+    request.files['upload'].save(f'{path}.zip')
+
+    with ZipFile(f'{path}.zip', 'r') as z:
+        z.extractall(path)
+
+    uid = uuid.uuid4().hex
+    build_path = f'{build_folder}/{uid}'
+
+    shutil.copytree(template_folder, f'{build_path}/')
+    copy_dir_contents(path, f'{build_path}/p1')
+    copy_dir_contents(path, f'{build_path}/p2')
+    shutil.copytree(server_folder, f'{build_path}/server')
+
+    img = dock.images.build(path=build_path, tag=uid, rm=True, network_mode=None)
+
+    container = dock.containers.run(uid, detach=False)
+    print(container)
+
+    return 'Upload successful'
+    
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -68,3 +110,11 @@ def safe_get_user_and_pass():
     body = request.get_json()
 
     return body['username'], body['password']
+
+def login_guard():
+    if 'logged_in' not in session or not session['logged_in']:
+        abort(403)
+
+def copy_dir_contents(src, dest):
+    for file in os.listdir(src):
+        shutil.copy(f'{src}/{file}', dest)
