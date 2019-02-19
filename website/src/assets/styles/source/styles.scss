@@ -78,3 +78,22 @@ $login-message-font-size: 16px;
         cursor: pointer;
     }
 }
+
+.boardImage {
+    width: 100px;
+    height: 100px;
+
+    .m {
+        background-image: url(./../images/m.gif);
+    }
+    .x {
+        background-image: url(./../images/x.gif);
+    }
+    .w {
+        background-image: url(./../images/w.gif);
+    }
+    .r {
+        background-image: url(./../images/r.gif);
+    }
+}
+

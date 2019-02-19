@@ -71,4 +71,21 @@ body {
   cursor: pointer;
 }
 
+.boardImage {
+  width: 100px;
+  height: 100px;
+}
+.boardImage .m {
+  background-image: url(./../images/m.gif);
+}
+.boardImage .x {
+  background-image: url(./../images/x.gif);
+}
+.boardImage .w {
+  background-image: url(./../images/w.gif);
+}
+.boardImage .r {
+  background-image: url(./../images/r.gif);
+}
+
 /*# sourceMappingURL=main.css.map */

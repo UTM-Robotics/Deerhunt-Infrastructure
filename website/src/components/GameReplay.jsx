@@ -1,39 +1,16 @@
 import React from 'react';
 import GameBoard from './GameBoard';
 
+
 class Replay extends React.Component {
 
     constructor() {
         super();
         this.state = {
             gameId: "",
-            moves: [
-            [
-                ["x", "x", "x", "x"],
-                ["x", "", "m", "x"],
-                ["x", "m", "", "x"],
-                ["x", "x", "x", "x"]
-            ],
-            [
-                ["x", "x", "x", "x"],
-                ["x", "m", "", "x"],
-                ["x", "m", "", "x"],
-                ["x", "x", "x", "x"]
-            ],
-            [
-                ["x", "x", "x", "x"],
-                ["x", "m", "", "x"],
-                ["x", "", "m", "x"],
-                ["x", "x", "x", "x"]
-            ],
-            [
-                ["x", "x", "x", "x"],
-                ["x", "m", "m", "x"],
-                ["x", "", "", "x"],
-                ["x", "x", "x", "x"]
-            ]
-            
-            ]
+            moves: "",
+            currentMove: [],
+            display: false
         }
     }
 
@@ -44,7 +21,48 @@ class Replay extends React.Component {
     }
 
     findGame() {
-        console.log(this.state.gameId);
+        this.setState({
+            display: true,
+            moves: [
+                [
+                    ["x", "x", "x", "x"],
+                    ["x", " ", "m", "x"],
+                    ["x", "m", " ", "x"],
+                    ["x", "x", "x", "x"]
+                ],
+                [
+                    ["x", "x", "x", "x"],
+                    ["x", "m", " ", "x"],
+                    ["x", "m", " ", "x"],
+                    ["x", "x", "x", "x"]
+                ],
+                [
+                    ["x", "x", "x", "x"],
+                    ["x", "m", " ", "x"],
+                    ["x", " ", "m", "x"],
+                    ["x", "x", "x", "x"]
+                ],
+                [
+                    ["x", "x", "x", "x"],
+                    ["x", "m", "m", "x"],
+                    ["x", " ", " ", "x"],
+                    ["x", "x", "x", "x"]
+                ]
+            ]
+        });
+
+    }
+
+    getBoard() {
+        return (
+            <GameBoard moves = {this.state.moves} display={this.state.display} />
+        );
+    }
+
+    changeMove(move) {
+        this.setState({
+            currentMove: move
+        });
     }
 
     handleGameIdChange(e) {
@@ -54,15 +72,13 @@ class Replay extends React.Component {
     }
 
     render() {
-        console.log(this.state.moves);
+        var move = this.state.currentMove;
         return (
             <div>
                 <h1>Game Replay</h1>
                 <input type="text" placeholder="Game Id" onChange={this.handleGameIdChange.bind(this)} />
-                <div className="auth-button" onClick={this.findGame.bind(this)}>enter</div>
-                <GameBoard
-                    moves = {this.state.moves}
-                />
+                <button className="auth-button" onClick={this.findGame.bind(this)}>enter</button>
+                {this.getBoard()}
             </div>
         );
     }
