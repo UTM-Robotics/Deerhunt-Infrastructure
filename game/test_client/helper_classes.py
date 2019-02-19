@@ -24,10 +24,11 @@ class Map:
 
         result = None
         so_far = 999999
+        print(locations)
         for (r, c) in locations:
             dy = r-y
             dx = c-x
-            dist = sqrt(dx**2 + dy**2)
+            dist = dx + dy
             if dist < so_far:
                 result = (r, c)
                 so_far = dist
@@ -58,13 +59,21 @@ class Unit:
     def move(self, *directions):
         return Move(self.id, *directions)
 
+    def ghetto_move(self, cur, dest):
+        if self.x < dest[0]:
+            return Move(self.id, 'RIGHT')
+        elif self.x > dest[0]:
+            return Move(self.id, 'LEFT')
+        elif self.y < dest[1]:
+            return Move(self.id, 'DOWN')
+        elif self.y > dest[1]:
+            return Move(self.id, 'UP')
+
     def attack(self, *directions):
         return Move(self.id, 'ATTACK', *directions)
 
     def mine(self):
         return Move(self.id, 'MINE')
 
-    def duplicate(self, duplicate):
+    def duplicate(self):
         return Move(self.id, 'DUPLICATE', direction)
-
-
