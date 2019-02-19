@@ -147,7 +147,7 @@ class GridFighters(Game):
                 self.currently_duplicating[k] = (player_state, player_state[k].start_duplication(v.direction))
                 self.resources[player_name] -= 100
             elif isinstance(v, MineMove):
-                self.currently_mining[k] = (player_name, player_state[k].start_mining(v.direction))
+                self.currently_mining[k] = (player_name, player_state[k].start_mining())
             
 
     def tick_player(self, conn, current, opponent, name, turns):

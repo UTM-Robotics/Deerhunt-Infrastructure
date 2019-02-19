@@ -62,9 +62,8 @@ class WorkerUnit(Unit):
     def is_mining(self):
         return self.mining_status > 0
 
-    def start_mining(self, direction):
+    def start_mining(self):
         self.mining_status = self.mining_time
-        self.mining_direction = direction
         return self
 
     def can_duplicate(self, resources):

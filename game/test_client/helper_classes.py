@@ -20,15 +20,14 @@ class Map:
         for row in range(len(self.grid)):
             for col in range(len(self.grid[row])):
                 if self.is_resource(col, row):
-                    locations.append((row, col))
+                    locations.append((col, row))
 
         result = None
         so_far = 999999
-        print(locations)
         for (r, c) in locations:
-            dy = r-y
-            dx = c-x
-            dist = dx + dy
+            dx = r-x
+            dy = c-y
+            dist = abs(dx) + abs(dy)
             if dist < so_far:
                 result = (r, c)
                 so_far = dist
