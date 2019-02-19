@@ -64,7 +64,7 @@ class GridFighters(Game):
         return self.all_units['{},{}'.format(x, y)]
 
     def del_unit(self, x, y):
-        del self.add_unit['{},{}'.format(x,y)]
+        del self.all_units['{},{}'.format(x,y)]
 
     def verify_response(self, moves, player_state, player_resources, enemy_units):
         potential_moves = {}
@@ -91,8 +91,7 @@ class GridFighters(Game):
             if isinstance(v, GroundMove) and not v.valid_path(self.grid, self.all_units, x, y):
                 print('ERROR: Invalid path for unit {}'.format(k))
                 return False
-            elif isinstance(v, AttackMove) and (v.blocked(self.grid, self.all_units, x, y) or \
-                 self.get_matching_unit(x, y, enemy_units, v) is None):
+            elif isinstance(v, AttackMove) and self.get_matching_unit(x, y, enemy_units, v) is None:
                 print('ERROR: Unit {} cannot attack there'.format(k))
                 return False
             elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources) and player_resources >= 100:

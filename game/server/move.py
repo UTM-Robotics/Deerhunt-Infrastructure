@@ -42,9 +42,6 @@ class AttackMove(Move):
     def len(self):
         return len(self.target)
 
-    def blocked(self, grid, all_units, x, y):
-        return not self._can_follow_path(self.target, grid, all_units, x, y)
-
     def get_relative_moves(self):
         return self._get_relative_moves(self.target)
 
