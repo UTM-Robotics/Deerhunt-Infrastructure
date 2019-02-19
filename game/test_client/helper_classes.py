@@ -47,11 +47,17 @@ class Units:
     def get_unit(self, id):
         return self.units[id]
 
-    def get_all_unit_ids(self):
+    def get_all_unit_ids(self, type = 'all'):
         # Returns the id of all current units.
         all_units = []
-        for unit in self.units:
-            all_units.append(unit)
+        if type == 'all':
+            for unit in self.units:
+                all_units.append(unit)
+        else:
+            for unit in self.units:
+                if unit.type == type:
+                    all_units.append(unit)
+                    
         return all_units
 
 class Unit:
@@ -79,12 +85,23 @@ class Unit:
             return Move(self.id, 'LEFT')
         elif c < dest[0]:
             return Move(self.id, 'RIGHT')
-    
+
+    def nearby_enemies_by_distance(self, their_units):
+        # returns a sorted list of ids and their distances.
+        x = self.x
+        y = self.y
+        enemies = []
+        
+        for unit in their_units:
+            dist = abs(x - unit.x) + abs(y - unit.y)
+            enemies.append((unit.id, dist))
+        return enemies.sort(key=lambda tup: tup[1])
+        
     def attack(self, *directions):
         return Move(self.id, 'ATTACK', *directions)
 
-    def can_mine(self):
-        if self.type == 'worker' and self.attr['mining_status'] == 0:
+    def can_mine(self, game_map):
+        if self.type == 'worker' and game_map.is_resource(self.x, self.y) and self.attr['mining_status'] == 0:
             return True
         else:
             return False
