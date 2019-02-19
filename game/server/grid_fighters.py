@@ -128,7 +128,6 @@ class GridFighters(Game):
             if isinstance(v, GroundMove):
                 m = v.get_relative_moves()
                 x, y = player_state[k].pos_tuple()
-                print(m)
                 player_state[k].set_relative_location(*m)
                 self.move_unit(x, y, player_state[k])
             elif isinstance(v, AttackMove):
