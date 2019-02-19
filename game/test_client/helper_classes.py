@@ -83,17 +83,20 @@ class Unit:
     def attack(self, *directions):
         return Move(self.id, 'ATTACK', *directions)
 
-    def mine(self):
-        if self.attr['mining_status'] == 0:
-            return Move(self.id, 'MINE')
+    def can_mine(self):
+        if self.type == 'miner' and self.attr['mining_status'] == 0:
+            return True
         else:
-            return None
+            return False
+
+    def mine(self):
+        return Move(self.id, 'MINE')
 
     def duplicate(self):
         return Move(self.id, 'DUPLICATE', direction)
 
     def bfs(self, game_map, dest):
-        # finds the shortest path from current location to dest. Returns a list where the first entry is current position.
+        # Finds the shortest path from current location to dest. Returns a list where the first entry is current position.
         graph = game_map.grid
         start = (self.x, self.y)
         queue = [[start]]
