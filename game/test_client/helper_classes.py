@@ -1,5 +1,4 @@
 from move import Move
-from math import sqrt
 
 class Map:
     def __init__(self, map_grid):
@@ -14,14 +13,19 @@ class Map:
     def is_resource(self, x, y):
         return self.grid[y][x].lower() == 'r'
 
-    def closest_resources(self, unit):
+    def find_all_resources(self):
+        # Returns the (x, y) coordinates for all resource nodes.
         locations = []
-        x, y = unit.position()
         for row in range(len(self.grid)):
             for col in range(len(self.grid[row])):
                 if self.is_resource(col, row):
                     locations.append((col, row))
+        return locations
 
+    def closest_resources(self, unit):
+        # Returns the coordinates for the closest node to unit.
+        locations = self.find_all_resources()
+        x, y = unit.position()
         result = None
         so_far = 999999
         for (r, c) in locations:
@@ -31,8 +35,8 @@ class Map:
             if dist < so_far:
                 result = (r, c)
                 so_far = dist
-
         return result
+
 
 class Units:
     def __init__(self, units):
@@ -43,14 +47,20 @@ class Units:
     def get_unit(self, id):
         return self.units[id]
 
+    def get_all_unit_ids(self):
+        # Returns the id of all current units.
+        all_units = []
+        for unit in self.units:
+            all_units.append(unit)
+        return all_units
 
 class Unit:
     def __init__(self, attr):
-        self.id = attr['id']
         self.attr = attr
-
+        self.type = attr['type']
         self.x = attr['x']
         self.y = attr['y']
+        self.id = attr['id']
 
     def position(self):
         return self.x, self.y
@@ -72,7 +82,10 @@ class Unit:
         return Move(self.id, 'ATTACK', *directions)
 
     def mine(self):
-        return Move(self.id, 'MINE')
+        if self.attr['mining_status'] == 0:
+            return Move(self.id, 'MINE')
+        else:
+            return NULL
 
     def duplicate(self):
         return Move(self.id, 'DUPLICATE', direction)

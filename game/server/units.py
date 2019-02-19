@@ -21,6 +21,7 @@ class Unit:
 
 class MeleeUnit(Unit):
     def __init__(self, x, y):
+        self.type = "melee"
         self.duplication_time = 4
         self.resource_cost = 100
 
@@ -46,10 +47,9 @@ class MeleeUnit(Unit):
 
 class WorkerUnit(Unit):
     def __init__(self, x, y):
+        self.type = "worker"
         self.mining_time = 5
-
         self.mining_status = 0
-        self.mining_direction = None
 
         super().__init__(x, y)
 
