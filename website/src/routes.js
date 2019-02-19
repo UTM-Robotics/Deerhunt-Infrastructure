@@ -4,6 +4,7 @@ import AppWrapper from './components/App';
 import Home from './components/Home';
 import About from './components/About';
 import Login from './components/Login';
+import Replay from './components/GameReplay';
 
 class Routes extends React.Component {
     render() {
@@ -12,7 +13,8 @@ class Routes extends React.Component {
                 <Switch>
                     <Route exact path='/' component={Home} />
                     <Route path='/about' component={About} />
-                    <Route exact path='/login' component={Login} />
+                    <Route path='/login' component={Login} />
+                    <Route path='/replay' component={Replay} />
                 </Switch>
             </AppWrapper>
         );
