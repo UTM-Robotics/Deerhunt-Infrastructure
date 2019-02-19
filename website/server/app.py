@@ -4,6 +4,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from passlib.hash import sha512_crypt
 from zipfile import ZipFile
+from leaderboard import Leaderboard
 import uuid
 import docker
 import time
@@ -15,6 +16,7 @@ app = Flask(__name__, static_folder='../build')
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
 
+leaderboard = Leaderboard()
 database = MongoClient('localhost', 27017).neodeerhunt
 dock= docker.from_env()
 
@@ -30,31 +32,47 @@ server_folder = f'{prefix}/server'
 
 @app.route('/api/submit', methods=['POST'])
 def submit():
-    session['username'] = 'foo'
+    login_guard()
 
-    if 'upload' not in request.files:
+    if 'upload' not in request.files or 'position' not in request.form:
         abort(400)
 
-    path = f'{submissions_folder}/{session["username"]}-{time.time()}'
-    request.files['upload'].save(f'{path}.zip')
+    position = request.form['position']
 
-    with ZipFile(f'{path}.zip', 'r') as z:
-        z.extractall(path)
+    submit_folder = f'{session["username"]}-{time.time()}'
+    leader = leaderboard.acquire(position)
+    path1 = f'{submissions_folder}/{leader}'
+    path2 = f'{submissions_folder}/{submit_folder}'
+    request.files['upload'].save(f'{path2}.zip')
+
+    with ZipFile(f'{path2}.zip', 'r') as z:
+        z.extractall(path2)
+
+    if leader is None:
+        leaderboard.replace(position, submit_folder)
+        return 'Victory by default'
 
     uid = uuid.uuid4().hex
     build_path = f'{build_folder}/{uid}'
 
     shutil.copytree(template_folder, f'{build_path}/')
-    copy_dir_contents(path, f'{build_path}/p1')
-    copy_dir_contents(path, f'{build_path}/p2')
+    copy_dir_contents(path1, f'{build_path}/p1')
+    copy_dir_contents(path2, f'{build_path}/p2')
     shutil.copytree(server_folder, f'{build_path}/server')
 
     img = dock.images.build(path=build_path, tag=uid, rm=True, network_mode=None)
+    output = dock.containers.run(uid, detach=False, auto_remove=True)
 
-    container = dock.containers.run(uid, detach=False)
-    print(container)
+    lines = output.split(b'\n')[3:-1]
 
-    return 'Upload successful'
+    if b'p2' in lines[-1]:
+        leaderboard.replace(position, submit_folder)
+
+    leaderboard.release(position)
+
+    game_id = database.logs.insert_one({'content': lines, 'build_id': uid, 'username': session['username']}).inserted_id
+
+    return jsonify(game_id=str(game_id))
     
 
 @app.route('/api/login', methods=['POST'])
