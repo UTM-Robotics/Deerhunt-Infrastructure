@@ -1,17 +1,17 @@
 from move import Move
 
-class Map:
+class Map: # all outputs will be of the form (x, y). i.e., (c, r).
     def __init__(self, map_grid):
         self.grid = map_grid
 
-    def get_tile(self, x, y):
-        return self.grid[y][x]
+    def get_tile(self, c, r):
+        return self.grid[r][c]
 
-    def is_wall(self, x, y):
-        return self.grid[y][x].lower() == 'x'
+    def is_wall(self, c, r):
+        return self.grid[r][c].lower() == 'x'
 
-    def is_resource(self, x, y):
-        return self.grid[y][x].lower() == 'r'
+    def is_resource(self, c, r):
+        return self.grid[r][c].lower() == 'r'
 
     def find_all_resources(self):
         # Returns the (x, y) coordinates for all resource nodes.
@@ -25,13 +25,13 @@ class Map:
     def closest_resources(self, unit):
         # Returns the coordinates for the closest node to unit.
         locations = self.find_all_resources()
-        x, y = unit.position()
+        c, r = unit.position()
         result = None
         so_far = 999999
-        for (c, r) in locations:
-            dx = c-x
-            dy = r-y
-            dist = abs(dx) + abs(dy)
+        for (c_2, r_2) in locations:
+            dc = c_2-c
+            dr = r_2-r
+            dist = abs(dc) + abs(dr)
             if dist < so_far:
                 result = (c, r)
                 so_far = dist
@@ -67,17 +67,19 @@ class Unit:
 
     def move(self, *directions):
         return Move(self.id, *directions)
-
-    def ghetto_move(self, cur, dest):
-        if self.x < dest[0]:
-            return Move(self.id, 'RIGHT')
-        elif self.x > dest[0]:
-            return Move(self.id, 'LEFT')
-        elif self.y < dest[1]:
+ 
+    def move_towards(self, dest):
+        r = self.y
+        c = self.x
+        if r < dest[1]:
             return Move(self.id, 'DOWN')
-        elif self.y > dest[1]:
+        elif r > dest[1]:
             return Move(self.id, 'UP')
-
+        elif c > dest[0]:
+            return Move(self.id, 'LEFT')
+        elif c < dest[0]:
+            return Move(self.id, 'RIGHT')
+    
     def attack(self, *directions):
         return Move(self.id, 'ATTACK', *directions)
 
@@ -89,3 +91,25 @@ class Unit:
 
     def duplicate(self):
         return Move(self.id, 'DUPLICATE', direction)
+
+    def bfs(self, game_map, dest):
+        # finds the shortest path from current location to dest. Returns a list where the first entry is current position.
+        graph = game_map.grid
+        start = (self.x, self.y)
+        queue = [[start]]
+        vis = set(start)
+        if start == dest:
+            return None
+
+        while queue:
+            path = queue.pop(0)
+            node = path[-1]
+            r = node[1]
+            c = node[0]
+            
+            if node == dest:
+                return path
+            for adj in ((c+1, r), (c-1, r), (c, r+1), (c, r-1)):
+                if (graph[adj[1]][adj[0]] == ' ' or graph[adj[1]][adj[0]] == 'R') and adj not in vis:
+                    queue.append(path + [adj])
+                    vis.add(adj)
