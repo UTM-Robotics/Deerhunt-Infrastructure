@@ -57,7 +57,7 @@ class Units:
 class Unit:
     def __init__(self, attr):
         self.attr = attr
-        self.type = attr['type']
+        self.type = attr['type'] # 'worker' or 'melee'.
         self.x = attr['x']
         self.y = attr['y']
         self.id = attr['id']
@@ -84,7 +84,7 @@ class Unit:
         return Move(self.id, 'ATTACK', *directions)
 
     def can_mine(self):
-        if self.type == 'miner' and self.attr['mining_status'] == 0:
+        if self.type == 'worker' and self.attr['mining_status'] == 0:
             return True
         else:
             return False
