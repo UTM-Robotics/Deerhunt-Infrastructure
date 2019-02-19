@@ -28,12 +28,12 @@ class Map:
         x, y = unit.position()
         result = None
         so_far = 999999
-        for (r, c) in locations:
-            dx = r-x
-            dy = c-y
+        for (c, r) in locations:
+            dx = c-x
+            dy = r-y
             dist = abs(dx) + abs(dy)
             if dist < so_far:
-                result = (r, c)
+                result = (c, r)
                 so_far = dist
         return result
 
