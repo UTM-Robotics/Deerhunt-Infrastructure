@@ -16,8 +16,6 @@ class GridPlayer:
         #all_units = your_units.get_all_unit_ids()
         #for ids in all_units:
         #    print(ids, " : ", your_units.get_unit(ids).type)
-
-
         
         workers = your_units.get_all_unit_of_type('worker')
         melee = your_units.get_all_unit_of_type('melee')
@@ -30,9 +28,24 @@ class GridPlayer:
                 s_path = unit.bfs(game_map, closest_node)
                 if s_path:
                     moves.append(unit.move_towards(s_path[1]))
-
+        
         for unit in melee:
-            if unit.can_duplicate(resources):
-                moves.append(unit.duplicate('LEFT'))
+
+            print("enemy units: ", enemy_units)
+            
+            enemy_list = unit.nearby_enemies_by_distance(enemy_units)
+            print("enemy list: ", enemy_list)
+            if enemy_list:
+                attack_list = unit.can_attack(enemy_units)
+                print("attack list: ", attack_list)
+                if attack_list:
+                    moves.append(unit.attack(attack_list[0][1]))
+                else:
+                    closest = enemy_units.get_unit(enemy_list[0][0])
+                    moves.append(unit.move_towards( (closest.x, closest.y) ))
+            elif unit.can_duplicate(resources):
+                    moves.append(unit.duplicate('LEFT'))
+            else:
+                moves.append(unit.move('DOWN'))
         
         return moves

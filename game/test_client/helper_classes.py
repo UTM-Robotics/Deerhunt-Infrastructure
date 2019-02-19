@@ -1,5 +1,16 @@
 from move import Move
 
+def coordinate_from_direction(x, y, direction):
+    # Returns the (x, y) coordinates given a postiion and a direction.
+    if direction == 'LEFT':
+        return (x-1, y)
+    if direction == 'RIGHT':
+        return (x+1, y)
+    if direction == 'UP':
+        return (x, y-1)
+    if direction == 'DOWN':
+        return (x, y+1)
+
 class Map: # all outputs will be of the form (x, y). i.e., (c, r). 
     def __init__(self, map_grid):
         self.grid = map_grid
@@ -12,17 +23,6 @@ class Map: # all outputs will be of the form (x, y). i.e., (c, r).
 
     def is_resource(self, x, y):
         return self.grid[y][x].lower() == 'r'
-
-    def coordinate_from_direction(x, y, direction):
-        # Returns the (x, y) coordinates given a position and a direction.
-        if direction == 'LEFT':
-            return (x-1, y)
-        if direction == 'RIGHT':
-            return (x+1, y)
-        if direction == 'UP':
-            return (x, y-1)
-        if direction == 'DOWN':
-            return (x, y+1)
 
     def find_all_resources(self):
         # Returns the (x, y) coordinates for all resource nodes.
@@ -108,11 +108,19 @@ class Unit:
         x = self.x
         y = self.y
         enemies = []
+
+        print("--- testing ---")
+        print("enemy_units.units: ", enemy_units.units)
         
-        for unit in enemy_units:
+        for id in enemy_units.units:
+            unit = enemy_units.get_unit(id)
+            print("unit: ", unit)
             dist = abs(x - unit.x) + abs(y - unit.y)
             enemies.append((unit.id, dist))
-        return enemies.sort(key=lambda tup: tup[1])
+            print("enemies: ", enemies)
+        print("--- testing ---")
+        enemies.sort(key=lambda tup: tup[1])
+        return enemies
 
     
     def attack(self, *directions):
@@ -120,7 +128,8 @@ class Unit:
 
     def can_attack(self, enemy_units): # make this a new function called attack_list and make can_attack a directed function at an enemy unit.
         enemies = []
-        for unit in enemy_units:
+        for id in enemy_units.units:
+            unit = enemy_units.get_unit(id)
             direction = self.direction_to((unit.x, unit.y))
             if coordinate_from_direction(self.x, self.y, direction) == (unit.x, unit.y):
                 enemies.append((unit, direction))
