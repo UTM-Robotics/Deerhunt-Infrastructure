@@ -1,7 +1,9 @@
 from move import Move
 
 def coordinate_from_direction(x, y, direction):
-    # Returns the (x, y) coordinates given a postiion and a direction.
+    """(int, int, str) -> (int, int)
+    Returns the resulting (x, y) coordinates after moving in a <direction> from <x> and <y>.
+    """
     if direction == 'LEFT':
         return (x-1, y)
     if direction == 'RIGHT':
@@ -11,20 +13,42 @@ def coordinate_from_direction(x, y, direction):
     if direction == 'DOWN':
         return (x, y+1)
 
-class Map: # all outputs will be of the form (x, y). i.e., (c, r). 
+class Map: # all outputs will be of the form (x, y). i.e., (c, r).
     def __init__(self, map_grid):
+        """(___) -> None
+        Initialize a new Map.
+        """
         self.grid = map_grid
 
     def get_tile(self, x, y):
+        """(int, int) -> str
+        Returns the tile found at <x> and <y>.
+        
+        Preconditions: x >= 0
+                       y >= 0
+        """
         return self.grid[y][x]
 
     def is_wall(self, x, y):
+        """(int, int) -> bool
+        Returns whether the tile at <x> and <y> is a wall.
+        
+        Preconditions: x >= 0
+                       y >= 0
+        """
         return self.grid[y][x].lower() == 'x'
 
     def is_resource(self, x, y):
+        """(int, int) -> bool
+        Returns whether the tile at <x> and <y> is a resource.
+        
+        Preconditions: x >= 0
+                       y >= 0
+        """
         return self.grid[y][x].lower() == 'r'
 
     def find_all_resources(self):
+        """(None) -> str
         # Returns the (x, y) coordinates for all resource nodes.
         locations = []
         for row in range(len(self.grid)):
