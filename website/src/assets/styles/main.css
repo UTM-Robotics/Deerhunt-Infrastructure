@@ -163,4 +163,10 @@ body {
   color: #fff;
 }
 
+.replay-container {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%);
+}
+
 /*# sourceMappingURL=main.css.map */

@@ -12,7 +12,7 @@ class Replay extends React.Component {
             moves: "",
             currentMove: [],
             display: false,
-            loggedIn: false
+            loggedIn: true
         }
     }
 
@@ -22,7 +22,27 @@ class Replay extends React.Component {
         }
     }
 
+    addError(type: string) {
+        $('.error-message').remove();
+        var message = "";
+        if (type === 'id') {
+            message = "Please enter a game id";
+        }
+        else {
+            message = "The game id is incorrect/invalid"
+        }
+        var errorMessage = '<p class="error-message">' + message + '</p>';
+        $('.auth-button').after(errorMessage);
+    }
+
+
     findGame() {
+
+        if (this.state.gameId == "") {
+            this.addError("id");
+            return;
+        }
+        
         const requestData = JSON.stringify({
             "game_id": this.state.gameId
         });
@@ -35,8 +55,12 @@ class Replay extends React.Component {
             success: (responseData) => {
                 this.setState({
                     display: true,
-                    moves: JSON.parse(responseData)
+                    moves: responseData
                 });
+            },
+            error: () => {
+                this.addError("");
+                return;
             }
         });
 
@@ -44,7 +68,7 @@ class Replay extends React.Component {
 
 
     componentDidMount() {
-        this.isLoggedIn();
+        //this.isLoggedIn();
     }
 
     isLoggedIn() {
@@ -71,12 +95,6 @@ class Replay extends React.Component {
         );
     }
 
-    changeMove(move) {
-        this.setState({
-            currentMove: move
-        });
-    }
-
     handleGameIdChange(e) {
         this.setState({
             gameId: e.target.value
@@ -86,7 +104,7 @@ class Replay extends React.Component {
     render() {
         var move = this.state.currentMove;
         return (
-            this.state.loggedIn && <div>
+            this.state.loggedIn && <div className="auth-form-container">
                 <h1>Game Replay</h1>
                 <input type="text" placeholder="Game Id" onChange={this.handleGameIdChange.bind(this)} />
                 <button className="auth-button" onClick={this.findGame.bind(this)}>enter</button>
