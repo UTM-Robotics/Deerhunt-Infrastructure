@@ -1,5 +1,6 @@
 import React from 'react';
 import GameBoard from './GameBoard';
+import $ from 'jquery';
 
 
 class Replay extends React.Component {
@@ -10,7 +11,8 @@ class Replay extends React.Component {
             gameId: "",
             moves: "",
             currentMove: [],
-            display: false
+            display: false,
+            loggedIn: false
         }
     }
 
@@ -53,6 +55,29 @@ class Replay extends React.Component {
 
     }
 
+
+    componentDidMount() {
+        this.isLoggedIn();
+    }
+
+    isLoggedIn() {
+        $.ajax({
+            url: '/api/isloggedin',
+            type: 'GET',
+            success: (responseData) => {
+                var parsed = responseData == "True" ? true: false;
+                if (parsed) {
+                    this.setState({
+                        loggedIn: parsed
+                    });
+                }
+                else {
+                    window.location.replace("/");
+                }
+            }
+        });
+    }
+
     getBoard() {
         return (
             <GameBoard moves = {this.state.moves} display={this.state.display} />
@@ -74,7 +99,7 @@ class Replay extends React.Component {
     render() {
         var move = this.state.currentMove;
         return (
-            <div>
+            this.state.loggedIn && <div>
                 <h1>Game Replay</h1>
                 <input type="text" placeholder="Game Id" onChange={this.handleGameIdChange.bind(this)} />
                 <button className="auth-button" onClick={this.findGame.bind(this)}>enter</button>
