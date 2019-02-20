@@ -16,7 +16,7 @@ app = Flask(__name__, static_folder='../build')
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
 
-leaderboard = Leaderboard()
+board = Leaderboard()
 database = MongoClient('localhost', 27017).neodeerhunt
 dock= docker.from_env()
 
@@ -37,10 +37,10 @@ def submit():
     if 'upload' not in request.files or 'position' not in request.form:
         abort(400)
 
-    position = request.form['position']
+    position = int(request.form['position'])
 
     submit_folder = f'{session["username"]}-{time.time()}'
-    leader = leaderboard.acquire(position)
+    leader = board.acquire(position)
     path1 = f'{submissions_folder}/{leader}'
     path2 = f'{submissions_folder}/{submit_folder}'
     request.files['upload'].save(f'{path2}.zip')
@@ -49,7 +49,7 @@ def submit():
         z.extractall(path2)
 
     if leader is None:
-        leaderboard.replace(position, submit_folder)
+        board.replace(position, submit_folder)
         return 'Victory by default'
 
     uid = uuid.uuid4().hex
@@ -66,9 +66,9 @@ def submit():
     lines = output.split(b'\n')[3:-1]
 
     if b'p2' in lines[-1]:
-        leaderboard.replace(position, submit_folder)
+        board.replace(position, submit_folder)
 
-    leaderboard.release(position)
+    board.release(position)
 
     game_id = database.logs.insert_one({'content': lines, 'build_id': uid, 'username': session['username']}).inserted_id
 
@@ -105,6 +105,10 @@ def register():
 
     return 'Register successful'
 
+
+@app.route('/api/leaderboard', methods=['GET', 'POST'])
+def leaderboard():
+    return jsonify(list(map(lambda x: x.split('-')[0], board.board)))
 
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
