@@ -26,7 +26,7 @@ print('Waiting for client 2...')
 conn2, addr2 = sock.accept()
 p2 = ClientConnection(conn2, 'p2', args.verbose)
 
-game = GridFighters(p1, p2, open('maps/second.map', 'r'))
+game = GridFighters(p1, p2, open('maps/first.map', 'r'))
 
 turn = 0
 winner = None
