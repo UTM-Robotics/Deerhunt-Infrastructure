@@ -6,23 +6,24 @@ class Home extends React.Component {
     constructor() {
         super();
         this.state = {
-            loggedIn: true,
+            loggedIn: false,
             leaderboard: []
         };
     }
 
     componentDidMount() {
-        //this.isLoggedIn();
         this.getLeaderboard();
+        this.isLoggedIn();
     }
 
     getLeaderboard() {
-        console.log("inside");
         $.ajax({
             url: '/api/leaderboard',
             type: 'GET',
             success: (responseData) => {
-                console.log(responseData);
+                this.setState({
+                    leaderboard: responseData
+                });
             }
         });
     }
@@ -48,8 +49,15 @@ class Home extends React.Component {
     render() {
         return (
             this.state.loggedIn && <div className="home-container">
-                
-                </div>
+                <h1>Leaderboard</h1>
+                <table align="center">
+                    <tbody>
+                        {this.state.leaderboard.length > 0 && this.state.leaderboard.map((item, key) => (
+                            <tr key={key}><td className="num">{key + 1}</td><td className="item">{item}</td></tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
         );
     }
 }

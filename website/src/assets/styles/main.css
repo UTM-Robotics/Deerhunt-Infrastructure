@@ -92,4 +92,25 @@ body {
   height: 100px;
 }
 
+.home-container {
+  position: fixed;
+  left: 50%;
+  transform: translate(-50%);
+}
+.home-container table {
+  margin: 0 auto;
+}
+.home-container td {
+  border: 1px solid black;
+  padding: 10px;
+  margin: 10px;
+  text-align: center;
+}
+.home-container .num {
+  max-width: 50px;
+}
+.home-container .item {
+  min-width: 100px;
+}
+
 /*# sourceMappingURL=main.css.map */

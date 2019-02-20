@@ -100,3 +100,28 @@ $login-message-font-size: 16px;
     height: 100px;
 }
 
+.home-container {
+    position: fixed;
+    left: 50%;
+    transform: translate(-50%);
+
+    table {
+        margin: 0 auto;
+    }
+
+    td {
+        border: 1px solid black;
+        padding: 10px;
+        margin: 10px;
+        text-align: center;
+    }
+
+    .num {
+        max-width: 50px;
+    }
+
+    .item {
+        min-width: 100px;
+    }
+}
+
