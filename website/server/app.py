@@ -64,16 +64,35 @@ def submit():
     shutil.copytree(server_folder, f'{build_path}/server')
 
     img = dock.images.build(path=build_path, tag=uid, rm=True, network_mode=None)
-    output = dock.containers.run(uid, detach=False, auto_remove=True)
+    container = dock.containers.run(uid, detach=True, auto_remove=True)
 
-    lines = output.split(b'\n')[3:-1]
+    lines = []
+    maps = []
+    errors = []
 
-    if b'p2' in lines[-1]:
+    for line in container.logs(stream=True):
+        l = line.decode().strip()
+        if 'ERROR:' == l[0:6]:
+            errors.append(l[6:])
+        elif 'MAP:' == l[0:4]:
+            maps.append(l[4:])
+        else:
+            lines.append(l)
+
+    lines = lines[3:]
+
+    if 'Winner: p2' == lines[-1]:
         board.replace(position, submit_folder)
 
     board.release(position)
 
-    game_id = database.logs.insert_one({'content': lines, 'build_id': uid, 'username': session['username']}).inserted_id
+    game_id = database.logs.insert_one({'lines': lines,
+                                        'maps': maps,
+                                        'errors': errors,
+                                        'build_id': uid,
+                                        'defender': leader,
+                                        'challenger': submit_folder,
+                                        'submitter': session['username']}).inserted_id
 
     return jsonify(game_id=str(game_id))
     
