@@ -113,4 +113,54 @@ body {
   min-width: 100px;
 }
 
+.error-page {
+  opacity: 0.3;
+  float: left;
+  left: 230px;
+  position: absolute;
+}
+
+.message-box {
+  height: 200px;
+  width: 380px;
+  position: fixed;
+  top: 50%;
+  left: 60%;
+  margin-top: -100px;
+  margin-left: 50px;
+  color: #FFF;
+  font-family: Roboto;
+  font-weight: 300;
+}
+.message-box h1 {
+  font-size: 60px;
+  line-height: 46px;
+  margin-bottom: 40px;
+  color: mediumpurple;
+}
+.message-box p {
+  margin: 0 0 10px;
+  color: mediumpurple;
+}
+
+.buttons-con .action-link-wrap {
+  margin-top: 40px;
+}
+.buttons-con .action-link-wrap a {
+  background: #05AACF;
+  padding: 8px 25px;
+  border-radius: 4px;
+  color: #FFF;
+  font-weight: bold;
+  font-size: 14px;
+  transition: all 0.3s linear;
+  cursor: pointer;
+  text-decoration: none;
+  margin-right: 10px;
+}
+.buttons-con .action-link-wrap a:hover {
+  background: #5A5C6C;
+  color: #fff;
+}
+
 /*# sourceMappingURL=main.css.map */
