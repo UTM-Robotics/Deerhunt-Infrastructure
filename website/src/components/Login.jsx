@@ -12,7 +12,22 @@ class Login extends React.Component {
 
     componentDidMount() {
         document.addEventListener("keypress", this.handleEnterKeyPress.bind(this));
+        this.isLoggedIn();
     }
+
+    isLoggedIn() {
+        $.ajax({
+            url: '/api/isloggedin',
+            type: 'GET',
+            success: (responseData) => {
+                var parsed = responseData == "True" ? true: false;
+                if (parsed) {
+                    window.location.replace("/home");
+                }
+            }
+        });
+    }
+
 
     addLoginError(type: string) {
         $('.error-message').remove();
@@ -44,7 +59,6 @@ class Login extends React.Component {
             "password": this.state.password
         });
 
-        console.log(requestData);
         $.ajax({
             url: '/api/login',
             type: 'POST',
