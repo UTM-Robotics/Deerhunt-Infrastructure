@@ -106,6 +106,10 @@ def register():
     return 'Register successful'
 
 
+@app.route('/api/isloggedin', methods=['POST'])
+def isloggedin():
+    return session['logged_in']
+
 ##
 # View route
 ##

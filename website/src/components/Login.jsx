@@ -5,7 +5,7 @@ class Login extends React.Component {
     constructor() {
         super();
         this.state = {
-            email: "",
+            user: "",
             password: ""
         }
     }
@@ -17,36 +17,22 @@ class Login extends React.Component {
     addLoginError(type: string) {
         $('.error-message').remove();
         var message = "";
-        if (type === 'email1') {
-            message = "Please enter an email"
-        }
-        else if (type === 'email2') {
-            message = "Please enter a valid email";
+        if (type === 'user') {
+            message = "Please enter an user"
         }
         else if (type === 'password') {
             message = "Please enter a password";
         }
         else if (type === 'login') {
-            message = "The email or password is incorrect/invalid"
+            message = "The user or password is incorrect/invalid"
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
         $('.auth-button').after(errorMessage);
     }
 
-    validateEmail(email) {
-        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return re.test(String(email).toLowerCase());
-    }
-
     login() {
-        console.log("test");
-        console.log(this.state);
-        if (this.state.email == "") {
-            this.addLoginError('email1');
-            return;
-        }
-        if (!this.validateEmail(this.state.email)) {
-            this.addLoginError('email2');
+        if (this.state.user == "") {
+            this.addLoginError('user');
             return;
         }
         if (this.state.password == "") {
@@ -54,12 +40,13 @@ class Login extends React.Component {
             return;
         }
         const requestData = JSON.stringify({
-            "email": this.state.username,
+            "username": this.state.user,
             "password": this.state.password
         });
 
+        console.log(requestData);
         $.ajax({
-            url: 'api/login',
+            url: '/api/login',
             type: 'POST',
             data: requestData,
             contentType: 'application/json',
@@ -79,9 +66,9 @@ class Login extends React.Component {
         }
     }
 
-    handleEmailChange(e: any) {
+    handleUserChange(e: any) {
         this.setState({
-            email: e.target.value
+            user: e.target.value
         });
     }
 
@@ -95,7 +82,7 @@ class Login extends React.Component {
         return (
             <div className="auth-form-container">
                 <form className="login-form" id="login-form">
-                    <input type="email" placeholder="email" onChange={this.handleEmailChange.bind(this)} />
+                    <input type="text" placeholder="username" onChange={this.handleUserChange.bind(this)} />
                     <input type="password" placeholder="password" onChange={this.handlePasswordChange.bind(this)} />
                     <div className="auth-button" onClick={this.login.bind(this)}>login</div>
                 </form>
