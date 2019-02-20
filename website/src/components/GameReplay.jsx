@@ -23,34 +23,21 @@ class Replay extends React.Component {
     }
 
     findGame() {
-        this.setState({
-            display: true,
-            moves: [
-                [
-                    ["x", "x", "x", "x"],
-                    ["x", " ", "m", "x"],
-                    ["x", "m", " ", "x"],
-                    ["x", "x", "x", "x"]
-                ],
-                [
-                    ["x", "x", "x", "x"],
-                    ["x", "m", " ", "x"],
-                    ["x", "m", " ", "x"],
-                    ["x", "x", "x", "x"]
-                ],
-                [
-                    ["x", "x", "x", "x"],
-                    ["x", "m", " ", "x"],
-                    ["x", " ", "m", "x"],
-                    ["x", "x", "x", "x"]
-                ],
-                [
-                    ["x", "x", "x", "x"],
-                    ["x", "m", "m", "x"],
-                    ["x", " ", " ", "x"],
-                    ["x", "x", "x", "x"]
-                ]
-            ]
+        const requestData = JSON.stringify({
+            "game_id": this.state.gameId
+        });
+        
+        $.ajax({
+            url: '/api/getmatch',
+            type: 'GET',
+            data: requestData,
+            contentType: 'application/json',
+            success: (responseData) => {
+                this.setState({
+                    display: true,
+                    moves: JSON.parse(responseData)
+                });
+            }
         });
 
     }
