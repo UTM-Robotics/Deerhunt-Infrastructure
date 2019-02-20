@@ -57,7 +57,6 @@ class Login extends React.Component {
                     <input type="text" placeholder="email" onChange={this.handleEmailChange.bind(this)} />
                     <input type="password" placeholder="password" onChange={this.handlePasswordChange.bind(this)} />
                     <div className="auth-button">login</div>
-                    <a href="">New User? Click Here To Register</a>
                 </form>
             </div>
 

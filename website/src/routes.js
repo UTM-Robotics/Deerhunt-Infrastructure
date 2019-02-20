@@ -12,9 +12,9 @@ class Routes extends React.Component {
         return (
             <AppWrapper>
                 <Switch>
-                    <Route exact path='/' component={Home} />
+                    <Route exact path='/' component={Login} />
                     <Route path='/about' component={About} />
-                    <Route path='/login' component={Login} />
+                    <Route path='/home' component={Home} />
                     <Route path='/replay' component={Replay} />
                     <Route path='/submit' component={Submit} />
                 </Switch>
