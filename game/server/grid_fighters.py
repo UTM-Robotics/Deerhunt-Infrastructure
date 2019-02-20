@@ -184,9 +184,11 @@ class GridFighters(Game):
                 self.resources[p_name] += 75
 
         self.tick_player(self.p1_conn, self.p1_units, self.p2_units, self.p1_conn.name, turns)
+        print(f'MAP:{self.grid}')
         if self.has_lost(self.p2_units):
             return self.p1_conn.name
         self.tick_player(self.p2_conn, self.p2_units, self.p1_units, self.p2_conn.name, turns)
+        print(f'MAP:{self.grid}')
         if self.has_lost(self.p1_units):
             return self.p2_conn.name
 
