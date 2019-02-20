@@ -2,6 +2,7 @@
 from flask import Flask, jsonify, send_from_directory, request, abort, session
 from flask_cors import CORS
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 from passlib.hash import sha512_crypt
 from zipfile import ZipFile
 from leaderboard import Leaderboard
@@ -95,7 +96,7 @@ def submit():
                                         'submitter': session['username']}).inserted_id
 
     return jsonify(game_id=str(game_id))
-    
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -107,12 +108,12 @@ def login():
 
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
-    
+
     session['logged_in'] = True
     session['username'] = u
 
     return 'Login successful'
-    
+
 
 @app.route('/api/register', methods=['POST'])
 def register():
@@ -127,14 +128,30 @@ def register():
 
     return 'Register successful'
 
+@app.route('/api/getmatch', methods=['GET', 'POST'])
+def getmatch():
+    if not request.is_json:
+        abort(400)
+
+    body = request.get_json()
+
+    if 'game_id' not in body:
+        abort(400)
+
+    result = database.logs.find_one({'_id': ObjectId(body['game_id'])})
+
+    return jsonify(result['maps'])
+
 
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
     return jsonify(list(map(lambda x: x.split('-')[0], board.board)))
 
+
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
     return str(logged_in())
+
 
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
