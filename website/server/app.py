@@ -106,9 +106,23 @@ def register():
     return 'Register successful'
 
 
-@app.route('/api/isloggedin', methods=['POST'])
+@app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
-    return session['logged_in']
+    return str(logged_in())
+
+@app.route('/api/isadmin', methods=['GET', 'POST'])
+def isadmin():
+    if not logged_in():
+        return 'False'
+
+    result = database.users.find_one({'username': session['username']})
+    if result is None:
+        return 'False'
+
+    if 'admin' not in result or not result['admin']:
+        return 'False'
+
+    return 'True'
 
 ##
 # View route
@@ -140,3 +154,6 @@ def login_guard():
 def copy_dir_contents(src, dest):
     for file in os.listdir(src):
         shutil.copy(f'{src}/{file}', dest)
+
+def logged_in():
+    return session['logged_in'] if 'logged_in' in session else False
