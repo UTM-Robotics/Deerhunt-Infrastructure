@@ -26,13 +26,13 @@ print('Waiting for client 2...')
 conn2, addr2 = sock.accept()
 p2 = ClientConnection(conn2, 'p2', args.verbose)
 
-game = GridFighters(p1, p2, open('maps/first.map', 'r'))
+game = GridFighters(p1, p2, open('maps/second.map', 'r'))
 
 turn = 0
 winner = None
 print('Game starting...')
-while turn < 50 and winner == None:
-    winner = game.tick(50 - turn)
+while turn < 100 and winner == None:
+    winner = game.tick(100 - turn)
     turn += 1
 
 if winner == None:

@@ -75,6 +75,29 @@ class Map: # all outputs will be of the form (x, y). i.e., (c, r).
                 so_far = dist
         return result
 
+    def bfs(self, start, dest):
+        """(Map, (int, int), (int, int)) -> [(int, int)]
+        Finds the shortest path from current location to dest. Returns a list where the first entry is current position.
+        """
+        graph = self.grid
+        queue = [[start]]
+        vis = set(start)
+        if start == dest:
+            return None
+        
+        while queue:
+            path = queue.pop(0)
+            node = path[-1]
+            r = node[1]
+            c = node[0]
+            
+            if node == dest:
+                return path
+            for adj in ((c+1, r), (c-1, r), (c, r+1), (c, r-1)):
+                if (graph[adj[1]][adj[0]] == ' ' or graph[adj[1]][adj[0]] == 'R') and adj not in vis:
+                    queue.append(path + [adj])
+                    vis.add(adj)
+
 
 class Units:
     def __init__(self, units):
@@ -217,26 +240,4 @@ class Unit:
         """
         return Move(self.id, 'DUPLICATE', direction)
 
-    def bfs(self, game_map, dest):
-        """(Map, (int, int)) -> [(int, int)]
-        Finds the shortest path from current location to dest. Returns a list where the first entry is current position.
-        """
-        graph = game_map.grid
-        start = (self.x, self.y)
-        queue = [[start]]
-        vis = set(start)
-        if start == dest:
-            return None
-        
-        while queue:
-            path = queue.pop(0)
-            node = path[-1]
-            r = node[1]
-            c = node[0]
-            
-            if node == dest:
-                return path
-            for adj in ((c+1, r), (c-1, r), (c, r+1), (c, r-1)):
-                if (graph[adj[1]][adj[0]] == ' ' or graph[adj[1]][adj[0]] == 'R') and adj not in vis:
-                    queue.append(path + [adj])
-                    vis.add(adj)
+    
