@@ -3,42 +3,42 @@ from math import sqrt
 
 class Map:
     def __init__(self, map_grid):
-	"""
-	Initialize a new Map.
-	"""
+        """
+        Initialize a new Map.
+        """
         self.grid = map_grid
 
     def get_tile(self, x, y):
-	"""(int, int) -> str
-	Returns the tile found at <x> and <y>.
-	
-	Precondition: x >= 0
-		      y >= 0
+        """(int, int) -> str
+        Returns the tile found at <x> and <y>.
+        
+        Preconditions: x >= 0
+                       y >= 0
 	"""
         return self.grid[y][x]
 
     def is_wall(self, x, y):
-	"""(int, int) -> bool
-	Return whether the tile at <x> and <y> is a wall.
-	
-	Precondition: x >= 0
-		      y >= 0	
-	"""
+        """(int, int) -> bool
+        Return whether the tile at <x> and <y> is a wall.
+        
+        Preconditions: x >= 0
+                       y >= 0	
+        """
         return self.grid[y][x].lower() == 'x'
 
     def is_resource(self, x, y):
-	"""(int, int) -> bool
-	Return whether the tile at <x> and <y> is a resource.
-
-	Precondition: x >= 0
-		      y >= 0
-	"""
+        """(int, int) -> bool
+        Return whether the tile at <x> and <y> is a resource.
+        
+        Preconditions: x >= 0
+                       y >= 0
+        """
         return self.grid[y][x].lower() == 'r'
 
     def closest_resources(self, unit):
-	"""(Unit) -> (int, int)
-	Returns the location of the closest resource to <unit>.
-	"""
+        """(Unit) -> (int, int)
+        Returns the location of the closest resource to <unit>.
+        """
         locations = []
         x, y = unit.position()
         for row in range(len(self.grid)):
@@ -60,59 +60,58 @@ class Map:
 
 class Units:
     def __init__(self, units):
-	"""
-	Initialize a new Units.
-	"""
+        """(___) -> None
+        Initialize a new Units.
+        """
         self.units = {}
         for unit in units:
             self.units[str(unit['id'])] = Unit(unit)
 
     def get_unit(self, id):
-	"""(str) -> Unit
-	Returns the Unit with <id>.
-	"""
+        """(str) -> Unit
+        Returns the Unit with <id>.
+        """
         return self.units[id]
-
 
 class Unit:
     def __init__(self, attr):
-	"""
-	Initialize a new Unit.
-	"""
+        """(___) -> None
+        Initialize a new Unit.
+        """
         self.id = attr['id']
         self.attr = attr
-
+        
         self.x = attr['x']
         self.y = attr['y']
 
     def position(self):
-	"""(None) -> int, int
-	Returns the current position of this Unit.
-	"""
+        """(None) -> int, int
+        Returns the current position of this Unit.
+        """
         return self.x, self.y
 
     def move(self, *directions):
-	"""(___) -> Move
-	Returns a Move for this Unit using the given <*directions>.
-	"""
+        """(___) -> Move
+        Returns a Move for this Unit using the given <*directions>.
+        """
         return Move(self.id, *directions)
 
     def attack(self, *directions):
-	"""(___) -> Move
-	Returns an 'attack' Move for this Unit in the given <*directions>.
-	"""
+        """(___) -> Move
+        Returns an 'attack' Move for this Unit in the given <*directions>.
+        """
         return Move(self.id, 'ATTACK', *directions)
 
     def mine(self):
-	"""(None) -> Move
-	Returns a 'mine' Move for this Unit.
-	"""
+        """(None) -> Move
+        Returns a 'mine' Move for this Unit.
+        """
         return Move(self.id, 'MINE')
 
     def duplicate(self, direction):
-	"""(___) -> Move
-	Returns a 'duplicate' Move for this Unit in the given <direction>.
+        """(___) -> Move
+        Returns a 'duplicate' Move for this Unit in the given <direction>.
         """
-	return Move(self.id, 'DUPLICATE', direction)
+        return Move(self.id, 'DUPLICATE', direction)
 
 
