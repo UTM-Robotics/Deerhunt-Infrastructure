@@ -37,7 +37,10 @@ def submit():
     if 'upload' not in request.files or 'position' not in request.form:
         abort(400)
 
-    position = int(request.form['position'])
+    try:
+        position = int(request.form['position'])
+    except Exception:
+        abort(400)
 
     submit_folder = f'{session["username"]}-{time.time()}'
     leader = board.acquire(position)

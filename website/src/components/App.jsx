@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import $ from 'jquery';
 
 class AppWrapper extends React.Component {
     constructor() {
@@ -7,6 +8,22 @@ class AppWrapper extends React.Component {
         this.state = {
             loggedIn: false
         };
+    }
+
+    componentDidMount() {
+        this.isLoggedIn();
+    }
+
+    isLoggedIn() {
+        $.ajax({
+            url: '/api/isloggedin',
+            type: 'GET',
+            success: (responseData) => {
+                this.setState({
+                    loggedIn: responseData == "True" ? true: false
+                });
+            }
+        });
     }
     
     render() {
