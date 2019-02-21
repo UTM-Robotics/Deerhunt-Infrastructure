@@ -30,6 +30,9 @@ class MeleeUnit(Unit):
 
         super().__init__(x, y)
 
+    def string(self):
+        return '"m"'
+
     def __repr__(self):
         return 'm'
 
@@ -52,6 +55,9 @@ class WorkerUnit(Unit):
         self.mining_status = 0
 
         super().__init__(x, y)
+
+    def string(self):
+        return '"w"'
 
     def __repr__(self):
         return 'w'

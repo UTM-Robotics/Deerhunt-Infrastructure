@@ -169,6 +169,14 @@ class GridFighters(Game):
     def has_lost(self, enemy_units):
         return len(enemy_units) == 0
 
+    def json_str(self):
+        display = deepcopy(self.grid)
+        for u in self.p1_units.values():
+            display[u.y][u.x] = u
+        for u in self.p2_units.values():
+            display[u.y][u.x] = u
+        return '[{}]'.format(','.join(map(lambda r: '[{}]'.format(','.join(map(lambda x: x.string(), r))), display)))
+
     def tick(self, turns):
         for k, (player, unit) in list(self.currently_duplicating.items()):
             unit.duplication_status -= 1
@@ -184,11 +192,12 @@ class GridFighters(Game):
                 self.resources[p_name] += 75
 
         self.tick_player(self.p1_conn, self.p1_units, self.p2_units, self.p1_conn.name, turns)
-        print(f'MAP:{self.grid}')
+
+        print(f'MAP:{self.json_str()}')
         if self.has_lost(self.p2_units):
             return self.p1_conn.name
         self.tick_player(self.p2_conn, self.p2_units, self.p1_units, self.p2_conn.name, turns)
-        print(f'MAP:{self.grid}')
+        print(f'MAP:{self.json_str()}')
         if self.has_lost(self.p1_units):
             return self.p2_conn.name
 

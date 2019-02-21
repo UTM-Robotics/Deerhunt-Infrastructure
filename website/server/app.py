@@ -97,7 +97,6 @@ def submit():
 
     return jsonify(game_id=str(game_id))
 
-
 @app.route('/api/login', methods=['POST'])
 def login():
     u, p = safe_get_user_and_pass()

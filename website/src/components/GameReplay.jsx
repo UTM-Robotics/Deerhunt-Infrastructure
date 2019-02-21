@@ -49,13 +49,13 @@ class Replay extends React.Component {
         
         $.ajax({
             url: '/api/getmatch',
-            type: 'GET',
+            type: 'POST',
             data: requestData,
             contentType: 'application/json',
             success: (responseData) => {
                 this.setState({
                     display: true,
-                    moves: responseData
+                    moves: responseData.map(x => JSON.parse(x))
                 });
             },
             error: () => {
