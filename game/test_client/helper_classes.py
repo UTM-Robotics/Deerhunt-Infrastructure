@@ -82,7 +82,7 @@ class Map: # all outputs will be of the form (x, y). i.e., (c, r).
         graph = self.grid
         queue = [[start]]
         vis = set(start)
-        if start == dest:
+        if start == dest or graph[start[1]][start[0]] == 'X' or not (0 < start[0] < len(graph[0])-1 and 0 < start[1] < len(graph)-1):
             return None
         
         while queue:
