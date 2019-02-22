@@ -167,6 +167,81 @@ body {
   position: fixed;
   left: 50%;
   transform: translate(-50%);
+  text-align: center;
+}
+.replay-container input {
+  outline: 0;
+  background: #f2f2f2;
+  opacity: 0.9;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+.replay-container .replay-button {
+  text-transform: uppercase;
+  outline: 0;
+  background: grey;
+  border: 0;
+  padding: 15px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  display: block;
+  width: 100%;
+}
+.replay-container .replay-button:hover, .replay-container .replay-button:active, .replay-container .replay-button:focus {
+  background: darkgrey;
+}
+
+.submit-container {
+  position: fixed;
+  z-index: 1;
+  background-size: 100% 75%;
+  background-position: top center;
+  max-width: 400px;
+  padding: 45px;
+  text-align: center;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.submit-container input {
+  outline: 0;
+  background: #f2f2f2;
+  opacity: 0.9;
+  width: 100%;
+  border: 0;
+  margin: 0 0 15px;
+  padding: 15px;
+  box-sizing: border-box;
+  font-size: 14px;
+  text-align: center;
+}
+.submit-container .submit-button {
+  text-transform: uppercase;
+  outline: 0;
+  background: grey;
+  border: 0;
+  padding: 15px;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+}
+.submit-container .submit-button:hover, .submit-container .submit-button:active, .submit-container .submit-button:focus {
+  background: darkgrey;
+}
+.submit-container .submit-select {
+  display: inline-block;
+  border: 0;
+  padding: 5px;
+  margin: 5px;
+}
+.submit-container p {
+  display: inline-block;
 }
 
 /*# sourceMappingURL=main.css.map */
