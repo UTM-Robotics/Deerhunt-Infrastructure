@@ -20,9 +20,9 @@
     "lint": "npm run lint-js && npm run lint-py",
     "jest": "./node_modules/jest/bin/jest.js",
     "test": "npm run build && npm run lint && npm run jest && pytest",
-    "sass-watch": "sass --watch  src/assets/styles/source/styles.scss src/assets/styles/main.css",
-    "sass-prod": "sass --no-source-map src/assets/styles/source/styles.scss src/assets/styles/main.css",
-    "sass": "sass src/assets/styles/source/styles.scss src/assets/styles/main.css"
+    "sass-watch": "./node_modules/sass/sass.js --watch  src/assets/styles/source/styles.scss src/assets/styles/main.css",
+    "sass-prod": "./node_modules/sass/sass.js --no-source-map src/assets/styles/source/styles.scss src/assets/styles/main.css",
+    "sass": "./node_modules/sass/sass.js src/assets/styles/source/styles.scss src/assets/styles/main.css"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
@@ -34,7 +34,8 @@
     "react": "^15.3.2",
     "react-dom": "^15.3.2",
     "react-router": "^4.2.0",
-    "react-router-dom": "^4.2.2"
+    "react-router-dom": "^4.2.2",
+    "sass": "^1.17.2"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",
