@@ -95,9 +95,7 @@ def submit():
                                         'challenger': submit_folder,
                                         'submitter': session['username']}).inserted_id
 
-    j = jsonify(game_id=str(game_id))
-    print(j)
-    return j
+    return jsonify(game_id=str(game_id))
 
 @app.route('/api/login', methods=['POST'])
 def login():
