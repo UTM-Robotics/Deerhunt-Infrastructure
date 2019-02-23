@@ -71,13 +71,13 @@ class Submit extends React.Component {
                     loading: false,
                     resultDisplay: true
                 });
-                if (responseData.game_id == undefined || responseData.message == undefined) {
+                if (responseData.game_id == undefined && responseData.message == undefined) {
                     this.setState({
                         result: responseData
                     });
                 } else {
                     this.setState({
-                        result: "Game Id: " + responseData.game_id
+                        result: responseData.message + " - Game Id: " + responseData.game_id
                     });
                 }
             },
