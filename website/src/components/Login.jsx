@@ -74,19 +74,19 @@ class Login extends React.Component {
         });
     }
 
-    handleEnterKeyPress(e: any) {
+    handleEnterKeyPress(e) {
         if (e.charCode == 13 || e.keyCode == 13) {
             this.login();
         }
     }
 
-    handleUserChange(e: any) {
+    handleUserChange(e) {
         this.setState({
             user: e.target.value
         });
     }
 
-    handlePasswordChange(e: any) {
+    handlePasswordChange(e) {
         this.setState({
             password: e.target.value
         });
