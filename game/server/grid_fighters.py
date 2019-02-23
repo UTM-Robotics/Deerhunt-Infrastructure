@@ -1,3 +1,4 @@
+import json
 from game import Game
 from units import Unit, MeleeUnit, WorkerUnit
 from move import GroundMove, StasisMove, AttackMove, Move, MineMove
@@ -170,7 +171,16 @@ class GridFighters(Game):
             display[u.y][u.x] = u
         for u in self.p2_units.values():
             display[u.y][u.x] = u
+
         return '[{}]'.format(','.join(map(lambda r: '[{}]'.format(','.join(map(lambda x: x.string(), r))), display)))
+
+    def print_map(self, p1_name, p2_name):
+        j = json.dumps({
+            'map': self.json_str(),
+            'p1_resources': self.resources[p1_name],
+            'p2_resources': self.resources[p2_name]
+            })
+        print('MAP:{}'.format(j))
 
     def tick(self, turns):
         for k, (player, unit) in list(self.currently_duplicating.items()):
@@ -187,12 +197,14 @@ class GridFighters(Game):
                 self.resources[p_name] += 75
 
         self.tick_player(self.p1_conn, self.p1_units, self.p2_units, self.p1_conn.name, turns)
+        self.print_map(self.p1_conn.name, self.p2_conn.name)
 
-        print('MAP:{}'.format(self.json_str()))
         if self.has_lost(self.p2_units):
             return self.p1_conn.name
+
         self.tick_player(self.p2_conn, self.p2_units, self.p1_units, self.p2_conn.name, turns)
-        print('MAP:{}'.format(self.json_str()))
+        self.print_map(self.p1_conn.name, self.p2_conn.name)
+
         if self.has_lost(self.p1_units):
             return self.p2_conn.name
 

@@ -9,6 +9,8 @@ class Replay extends React.Component {
         this.state = {
             gameId: "",
             moves: "",
+            p1_resources: "",
+            p2_resources: "",
             currentMove: [],
             display: false,
             loggedIn: false
@@ -51,9 +53,12 @@ class Replay extends React.Component {
             data: requestData,
             contentType: 'application/json',
             success: (responseData) => {
+                var json_list = responseData.map(x => JSON.parse(x));
                 this.setState({
                     display: true,
-                    moves: responseData.map(x => JSON.parse(x))
+                    moves: json_list.map(x => JSON.parse(x.map)),
+                    p1_resources: json_list.map(x => x.p1_resources),
+                    p2_resources: json_list.map(x => x.p2_resources)
                 });
             },
             error: () => {
@@ -89,7 +94,10 @@ class Replay extends React.Component {
 
     getBoard() {
         return (
-            <GameBoard moves = {this.state.moves} display={this.state.display} />
+            <GameBoard moves = {this.state.moves} 
+                       p1_resources = {this.state.p1_resources}
+                       p2_resources = {this.state.p2_resources}
+                       display={this.state.display} />
         );
     }
 

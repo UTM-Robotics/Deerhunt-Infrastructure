@@ -11,7 +11,6 @@ class GameBoard extends React.Component {
         super(props);
         this.state = {
             move: null,
-            moves: null,
             iter: -1
         };
 
@@ -27,8 +26,7 @@ class GameBoard extends React.Component {
     componentDidUpdate(prevProps) {
         if (this.props.moves != prevProps.moves) {
                 this.setState({
-                    moves: this.props.moves,
-                    iter: 0
+                    iter: 0,
                 });
         }
     }
@@ -49,14 +47,22 @@ class GameBoard extends React.Component {
 
     render() {
         var display = false;
-        if (this.state.iter >= 0 && this.state.moves != null && this.state.iter < this.state.moves.length) {
-            var move = this.state.moves[this.state.iter];
+        var valid_iter = this.state.iter >= 0 && this.props.moves != "" && this.state.iter < this.props.moves.length;
+        var resources_exist = this.props.p1_resources != "" && this.props.p2_resources != "";
+        var lengths_math = this.props.moves.length == this.props.p1_resources.length && 
+                           this.props.p1_resources.length == this.props.p2_resources.length;
+
+        if (valid_iter && resources_exist && lengths_math) {
+            var move = this.props.moves[this.state.iter];
+            var p1 = this.props.p1_resources[this.state.iter];
+            var p2 = this.props.p2_resources[this.state.iter];
             display = true;
         }
         return (
             this.props.display && <div className="board">
                 <h1>Game Board</h1>
                 <h1>{this.state.time}</h1>
+                <h1>P1: {p1} - P2: {p2}</h1>
                 <table>
                 <tbody>
                 {display && move.map((row,ukey) => (

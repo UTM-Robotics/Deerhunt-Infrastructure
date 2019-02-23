@@ -42,8 +42,11 @@ def submit():
         abort(400)
 
     try:
-        position = int(request.form['position'])
+        position = int(request.form['position']) - 1
     except Exception:
+        abort(400)
+
+    if position < 0 or position > 9:
         abort(400)
 
     submit_folder = f'{session["username"]}-{time.time()}'
