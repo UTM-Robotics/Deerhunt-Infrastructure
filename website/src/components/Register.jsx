@@ -6,30 +6,14 @@ class Register extends React.Component {
         super();
         this.state = {
             "user": "",
-            "password": "",
-            "isadmin": false
+            "password": ""
         }
     }
 
     componentDidMount() {
         document.addEventListener("keypress", this.handleEnterKeyPress.bind(this));
-        this.isAdmin()
     }
 
-    isAdmin() {
-        $.ajax({
-            url: '/api/isadmin',
-            type: 'GET',
-            success: (responseData) => {
-                var parsed = responseData == "True" ? true : false;
-                if (parsed) {
-                    this.setState({
-                        "isadmin": true
-                    });
-                }
-            }
-        });
-    }
 
     addError(type: string) {
         $('.error-message').remove();

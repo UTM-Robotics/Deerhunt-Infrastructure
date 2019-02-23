@@ -353,3 +353,74 @@ $login-message-font-size: 16px;
         cursor: pointer;
     }
 }
+
+
+.register-container {
+    position: fixed;
+    z-index: 1;
+    background-size: 100% 75%;
+    background-position: top center;
+    max-width: 400px;
+    padding: 45px;
+    text-align: center;
+    left: 50%;
+    transform: translate(-50%);
+
+    input {
+        outline: 0;
+        background: #f2f2f2;
+        opacity: 0.9;
+        width: 100%;
+        border: 0;
+        margin: 0 0 15px;
+        padding: 15px;
+        box-sizing: border-box;
+        font-size: 14px;
+    }
+
+    .register-button {
+        text-transform: uppercase;
+        outline: 0;
+        background: grey;
+        border: 0;
+        padding: 15px;
+        color: white;
+        font-size: 14px;
+        cursor: pointer;
+
+        &:hover, &:active, &:focus {
+            background: darkgrey;
+        }
+    }
+}
+
+.status-container {
+    position: fixed;
+    bottom: 20%;
+    left: 50%;
+    transform: translate(-50%);
+
+    .status {
+        display: inline-block;
+        max-width: 350px;
+        min-width: 350px;
+        text-align: center;
+        margin: 10px;
+
+        .toggle-button {
+            text-transform: uppercase;
+            outline: 0;
+            background: grey;
+            border: 0;
+            padding: 15px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+
+            &:hover, &:active, &:focus {
+                background: darkgrey;
+            }
+        }
+    }
+    
+}

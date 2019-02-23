@@ -8,11 +8,33 @@ import SubmitStatus from './SubmitStatus';
 class AdminPanel extends React.Component {
     constructor() {
         super();
+        this.state = {
+            "isadmin": false
+        }
+    }
+
+    componentDidMount() {
+        this.isAdmin()
+    }
+
+    isAdmin() {
+        $.ajax({
+            url: '/api/isadmin',
+            type: 'GET',
+            success: (responseData) => {
+                var parsed = responseData == "True" ? true : false;
+                if (parsed) {
+                    this.setState({
+                        "isadmin": true
+                    });
+                }
+            }
+        });
     }
 
     render() {
         return (
-            <div>
+            this.state.isadmin && <div>
                 <Register />
                 <div className="status-container">
                     <LeaderboardStatus />
