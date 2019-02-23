@@ -1,36 +1,39 @@
 import React from 'react';
 import $ from 'jquery';
 
-class Login extends React.Component {
+class Register extends React.Component {
     constructor() {
         super();
         this.state = {
-            user: "",
-            password: ""
+            "user": "",
+            "password": "",
+            "isadmin": false
         }
     }
 
     componentDidMount() {
         document.addEventListener("keypress", this.handleEnterKeyPress.bind(this));
-        this.isLoggedIn();
+        this.isAdmin()
     }
 
-    isLoggedIn() {
+    isAdmin() {
         $.ajax({
-            url: '/api/isloggedin',
+            url: '/api/isadmin',
             type: 'GET',
             success: (responseData) => {
-                var parsed = responseData == "True" ? true: false;
+                var parsed = responseData == "True" ? true : false;
                 if (parsed) {
-                    window.location.replace("/home");
+                    this.setState({
+                        "isadmin": true
+                    });
                 }
             }
         });
     }
 
-
-    addLoginError(type: string) {
+    addError(type: string) {
         $('.error-message').remove();
+        $('.success-message').remove();
         var message = "";
         if (type === 'user') {
             message = "Please enter an user"
@@ -38,14 +41,14 @@ class Login extends React.Component {
         else if (type === 'password') {
             message = "Please enter a password";
         }
-        else if (type === 'login') {
-            message = "The user or password is incorrect/invalid"
+        else {
+            message = "user already exists"
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
-        $('.auth-button').after(errorMessage);
+        $('.register-button').after(errorMessage);
     }
 
-    login() {
+    register() {
         if (this.state.user == "") {
             this.addLoginError('user');
             return;
@@ -60,23 +63,26 @@ class Login extends React.Component {
         });
 
         $.ajax({
-            url: '/api/login',
+            url: '/api/register',
             type: 'POST',
             data: requestData,
             contentType: 'application/json',
-            success: () => {
-                window.location.replace("/home");
+            success: (responseData) => {
+                $('.error-message').remove();
+                $('.success-message').remove();
+                var successMessage = '<p class="success-message">Successfully Added</p>';
+                $('.register-button').after(successMessage);
             },
             error: () => {
-                this.addLoginError('login');
+                this.addLoginError('user');
                 return;
             }
         });
     }
-
+    
     handleEnterKeyPress(e) {
         if (e.charCode == 13 || e.keyCode == 13) {
-            this.login();
+            this.register();
         }
     }
 
@@ -91,18 +97,19 @@ class Login extends React.Component {
             password: e.target.value
         });
     }
-    
+
     render() {
         return (
-            <div className="auth-form-container">
-                <form className="login-form" id="login-form">
+            <div className="register-container">
+                <h1>Register</h1>
+                <form className="register-form" id="register-form">
                     <input type="text" placeholder="username" onChange={this.handleUserChange.bind(this)} />
                     <input type="password" placeholder="password" onChange={this.handlePasswordChange.bind(this)} />
-                    <div className="auth-button" onClick={this.login.bind(this)}>login</div>
+                    <div className="register-button" onClick={this.register.bind(this)}>register</div>
                 </form>
             </div>
         );
     }
 }
 
-export default Login;
+export default Register;
