@@ -69,9 +69,17 @@ class Submit extends React.Component {
             success: (responseData) => {
                 this.setState({
                     loading: false,
-                    resultDisplay: true,
-                    result: responseData
+                    resultDisplay: true
                 });
+                if (responseData.game_id == undefined) {
+                    this.setState({
+                        result: responseData
+                    });
+                } else {
+                    this.setState({
+                        result: "Game Id: " + responseData.game_id
+                    });
+                }
             },
             error: (errorData) => {
                 console.log(errorData);
