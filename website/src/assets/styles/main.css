@@ -310,4 +310,15 @@ body {
   text-align: center;
 }
 
-/*# sourceMappingURL=main.css.map */
+/* The Close Button */
+.close {
+  color: black;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+.close:hover, .close:focus {
+  color: grey;
+  text-decoration: none;
+  cursor: pointer;
+}

@@ -13,7 +13,7 @@
     "start": "npm run sass && ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --port 7081 --history-api-fallback",
     "build": "./node_modules/webpack/bin/webpack.js --config webpack.config.js",
     "compress": "./node_modules/webpack/bin/webpack.js --config webpack.config.js",
-    "production": "npm run build && npm run serve",
+    "production": "npm run sass-prod && npm run build && npm run serve",
     "serve": "FLASK_APP=server/app.py flask run --port=7082",
     "lint-js": "./node_modules/eslint/bin/eslint.js -c './src/config/.eslintrc.js' src/",
     "lint-py": "pylint server/app.py",
@@ -21,7 +21,7 @@
     "jest": "./node_modules/jest/bin/jest.js",
     "test": "npm run build && npm run lint && npm run jest && pytest",
     "sass-watch": "sass --watch  src/assets/styles/source/styles.scss src/assets/styles/main.css",
-    "sass-prod": "sass --sourcemap=none  src/assets/styles/source/styles.scss src/assets/styles/main.css",
+    "sass-prod": "sass --no-source-map src/assets/styles/source/styles.scss src/assets/styles/main.css",
     "sass": "sass src/assets/styles/source/styles.scss src/assets/styles/main.css"
   },
   "dependencies": {

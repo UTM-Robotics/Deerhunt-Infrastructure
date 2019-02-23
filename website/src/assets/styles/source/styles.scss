@@ -337,3 +337,18 @@ $login-message-font-size: 16px;
     text-align: center;
 }
 
+/* The Close Button */
+.close {
+    color: black;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+
+    &:hover,
+    &:focus {
+        color: grey;
+        text-decoration: none;
+        cursor: pointer;
+    }
+}
+

@@ -88,6 +88,10 @@ class Submit extends React.Component {
         });
     }
 
+    closeModal() {
+        window.location.replace("/submit");
+    }
+
     render() {
         return (
             <div>
@@ -108,6 +112,7 @@ class Submit extends React.Component {
                 </div>}
                 {this.state.display && <div className="delay-display">
                     <div className="delay-display-content">
+                        <span className="close" onClick={this.closeModal.bind(this)}>x</span>
                         {this.state.loading && <div className="lds-circle">
                             <h1>Loading</h1>
                             <div></div>
