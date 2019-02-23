@@ -27,6 +27,9 @@ build_folder = f'{prefix}/build'
 template_folder = f'{prefix}/template'
 server_folder = f'{prefix}/server'
 
+should_display_leaderboards = True
+can_submit = True
+
 ##
 # API routes
 ##
@@ -116,6 +119,8 @@ def login():
 
 @app.route('/api/register', methods=['POST'])
 def register():
+    admin_gaurd()
+
     u, p = safe_get_user_and_pass()
 
     result = database.users.find_one({'username': u})
@@ -154,17 +159,29 @@ def isloggedin():
 
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
-    if not logged_in():
-        return 'False'
+    return str(is_admin_check())
 
-    result = database.users.find_one({'username': session['username']})
-    if result is None:
-        return 'False'
+@app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
+def leaderboardtoggle():
+    admin_gaurd()
 
-    if 'admin' not in result or not result['admin']:
-        return 'False'
+    global should_display_leaderboards
 
-    return 'True'
+    if request.method == 'POST':
+        should_display_leaderboards = not should_display_leaderboards
+
+    return str(should_display_leaderboards)
+
+@app.route('/api/submittoggle', methods=['GET', 'POST'])
+def submittoggle():
+    admin_gaurd()
+    
+    global can_submit
+
+    if request.method == 'POST':
+        can_submit = not can_submit
+
+    return str(can_submit)
 
 ##
 # View route
@@ -193,9 +210,27 @@ def login_guard():
     if 'logged_in' not in session or not session['logged_in']:
         abort(403)
 
+def logged_in():
+    return session['logged_in'] if 'logged_in' in session else False
+
+def admin_gaurd():
+    if not is_admin_check():
+        abort(403)
+
+def is_admin_check():
+    if not logged_in():
+        return False
+
+    result = database.users.find_one({'username': session['username']})
+    if result is None:
+        return False
+
+    if 'admin' not in result or not result['admin']:
+        return False
+
+    return True
+
 def copy_dir_contents(src, dest):
     for file in os.listdir(src):
         shutil.copy(f'{src}/{file}', dest)
 
-def logged_in():
-    return session['logged_in'] if 'logged_in' in session else False
