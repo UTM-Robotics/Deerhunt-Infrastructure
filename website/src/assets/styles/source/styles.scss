@@ -1,6 +1,5 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
-    overflow: auto;
 }
 
 //Login and Register Form
@@ -184,6 +183,8 @@ $login-message-font-size: 16px;
     left: 50%;
     transform: translate(-50%);
     text-align: center;
+    height: 80%;
+    overflow: auto;
 
     input {
         outline: 0;
@@ -352,4 +353,3 @@ $login-message-font-size: 16px;
         cursor: pointer;
     }
 }
-
