@@ -66,48 +66,36 @@ class GridFighters(Game):
     def del_unit(self, x, y):
         del self.all_units['{},{}'.format(x,y)]
 
-    def verify_response(self, moves, player_state, player_resources, enemy_units):
-        potential_moves = {}
-        move_type = {}
-        for k, v in moves:
-            if k not in player_state:
-                print('ERROR: Cannot move enemy unit: {}'.format(k))
+    def verify_move(self, k, v, player_state, player_resources, enemy_units, moved_units):
+        if k not in player_state:
+            print('ERROR: Cannot move enemy unit: {}'.format(k))
+            return False
+
+        if isinstance(player_state[k], Unit):
+            if player_state[k].is_duplicating():
+                print('ERROR: {} cannot act while duplicating'.format(k))
                 return False
 
-            if isinstance(player_state[k], Unit):
-                if player_state[k].is_duplicating():
-                    print('ERROR: {} cannot act while duplicating'.format(k))
-                    return False
-
-                if k in move_type and move_type[k] != type(v):
-                    print('ERROR: Cannot make multiple actions for unit {}'.format(k))
-                    return False
-
-                potential_moves[k] = potential_moves.get(k, 0) + v.len()
-                move_type[k] = type(v)
-
-            x, y = player_state[k].pos_tuple()
-
-            if isinstance(v, GroundMove) and not v.valid_path(self.grid, self.all_units, x, y):
-                print('ERROR: Invalid path for unit {}'.format(k))
-                return False
-            elif isinstance(v, AttackMove) and self.get_matching_unit(x, y, enemy_units, v) is None:
-                print('ERROR: Unit {} cannot attack there'.format(k))
-                return False
-            elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources) and player_resources >= 100:
-                print('ERROR: Unit {} cannot duplicate now'.format(k))
-                return False
-            elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y)):
-                print('ERROR: Unit {} cannot mine now'.format(k))
+            if k in moved_units:
+                print('ERROR: Cannot make multiple actions for unit {}'.format(k))
                 return False
 
-        for k, v in potential_moves.items():
-            if isinstance(player_state[k], MeleeUnit) and v < 0 and v > 2:
-                print('ERROR: Unit {} took too many moves'.format(k))
-                return False
-            elif isinstance(player_state[k], WorkerUnit) and v < 0 and v > 1:
-                print('ERROR: Unit {} took too many moves'.format(k))
-                return False
+            moved_units.add(k)
+
+        x, y = player_state[k].pos_tuple()
+
+        if isinstance(v, GroundMove) and (not v.valid_path(self.grid, self.all_units, x, y) or v.len() < 0 or v.len() > 1):
+            print('ERROR: Invalid path for unit {}'.format(k))
+            return False
+        elif isinstance(v, AttackMove) and (self.get_matching_unit(x, y, enemy_units, v) is None or v.len() < 0 or v.len() > 1):
+            print('ERROR: Unit {} cannot attack there'.format(k))
+            return False
+        elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources) and player_resources >= 100:
+            print('ERROR: Unit {} cannot duplicate now'.format(k))
+            return False
+        elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y)):
+            print('ERROR: Unit {} cannot mine now'.format(k))
+            return False
 
         return True
 
@@ -150,8 +138,15 @@ class GridFighters(Game):
 
     def tick_player(self, conn, current, opponent, name, turns):
         moves = conn.tick(self, current, opponent, self.resources, turns)
-        if self.verify_response(moves, current, self.resources[name], opponent):
-            self.make_moves(moves, current, name, opponent)
+
+        moved_units = set()
+        safe_moves = []
+        for m in moves:
+            k, v = m
+            if self.verify_move(k, v, current, self.resources[name], opponent, moved_units):
+                safe_moves.append(m)
+
+        self.make_moves(safe_moves, current, name, opponent)
 
     def can_duplicate_to(self, unit):
         dir = unit.stasis_direction
