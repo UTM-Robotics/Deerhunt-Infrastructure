@@ -65,6 +65,7 @@ class Submit extends React.Component {
             data: data,
             processData: false,
             contentType: false,
+            cache: false,
             success: (responseData) => {
                 this.setState({
                     loading: false,
@@ -73,6 +74,7 @@ class Submit extends React.Component {
                 });
             },
             error: (errorData) => {
+                console.log(errorData);
                 this.setState({
                     loading: false,
                     resultDisplay: true,
