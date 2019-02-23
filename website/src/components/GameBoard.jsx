@@ -1,8 +1,9 @@
 import React from 'react';
-import m from './../assets/images/m.gif';
-import x from './../assets/images/x.gif';
-import r from './../assets/images/r.gif';
-import w from './../assets/images/w.gif';
+import melee from './../assets/images/m.gif';
+import wall from './../assets/images/x.gif';
+import resource from './../assets/images/r.gif';
+import worker from './../assets/images/w.gif';
+import blank from './../assets/images/empty.gif';
 
 class GameBoard extends React.Component {
 
@@ -15,10 +16,11 @@ class GameBoard extends React.Component {
         };
 
         this.image = {
-            "m": m,
-            "r": r,
-            "w": w,
-            "x": x
+            "m": melee,
+            "r": resource,
+            "w": worker,
+            "x": wall,
+            " ": blank
         }
             
     }
