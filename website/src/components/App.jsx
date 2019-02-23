@@ -31,7 +31,6 @@ class AppWrapper extends React.Component {
             <div className='app-container'>
                 {this.state.loggedIn && <div className="nav-container">
                     <Link className="nav-link" to={'/home'}>Home</Link>
-                    <Link className="nav-link" to={'/profile'}>Profile</Link>
                     <Link className="nav-link" to={'/replay'}>Game Replay</Link>
                     <Link className="nav-link" to={'/submit'}>Submit</Link>
                 </div>}
