@@ -82,7 +82,6 @@ class Submit extends React.Component {
                 }
             },
             error: (errorData) => {
-                console.log(errorData);
                 this.setState({
                     loading: false,
                     resultDisplay: true,
