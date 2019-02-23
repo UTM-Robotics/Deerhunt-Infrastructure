@@ -147,6 +147,9 @@ def getmatch():
 
     result = database.logs.find_one({'_id': ObjectId(body['game_id'])})
 
+    if result is None:
+        abort(400)
+
     return jsonify(result['maps'])
 
 
