@@ -33,7 +33,7 @@ class Replay extends React.Component {
             message = "The game id is incorrect/invalid"
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
-        $('.auth-button').after(errorMessage);
+        $('.replay-button').after(errorMessage);
     }
 
 
