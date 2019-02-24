@@ -71,7 +71,8 @@ def submit():
     shutil.copytree(server_folder, f'{build_path}/server')
 
     img = dock.images.build(path=build_path, tag=uid, rm=True, network_mode=None)
-    container = dock.containers.run(uid, detach=True, auto_remove=True)
+    container = dock.containers.run(uid, detach=True, auto_remove=True, network_mode=None,
+                                    cpu_count=1, mem_limit='512m')
 
     lines = []
     maps = []
