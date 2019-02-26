@@ -76,8 +76,20 @@ class Submit extends React.Component {
                         result: responseData
                     });
                 } else {
+                    var result = " - Game Id: " + responseData.game_id;
+                    switch (responseData.message) {
+                        case 'Winner: p1':
+                            result = "Loss :(" + result;
+                            break;
+                        case 'Winner: p2':
+                            result = "Winner!!!" + result;
+                            break;
+                        case 'Winner: tie':
+                            result = "Tie game" + result;
+                            break;
+                    }
                     this.setState({
-                        result: responseData.message + " - Game Id: " + responseData.game_id
+                        result: result
                     });
                 }
             },

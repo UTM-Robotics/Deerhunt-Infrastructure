@@ -132,7 +132,8 @@ class GridFighters(Game):
                 self.del_unit(x+rx, y+ry)
             elif isinstance(v, StasisMove):
                 self.currently_duplicating[k] = (player_state, player_state[k].start_duplication(v.direction))
-                self.resources[player_name] -= 100
+                if self.resources[player_name] - 100 >= 0:
+                    self.resources[player_name] -= 100
             elif isinstance(v, MineMove):
                 self.currently_mining[k] = (player_name, player_state[k].start_mining())
             

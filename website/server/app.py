@@ -4,7 +4,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from passlib.hash import sha512_crypt
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 from leaderboard import Leaderboard
 import uuid
 import docker
@@ -17,8 +17,8 @@ app = Flask(__name__, static_folder='../build')
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
 
-board = Leaderboard()
 database = MongoClient('localhost', 27017).neodeerhunt
+board = Leaderboard(database.leaderboard)
 dock= docker.from_env()
 
 prefix = '/deerhunt'
@@ -55,8 +55,11 @@ def submit():
     path2 = f'{submissions_folder}/{submit_folder}'
     request.files['upload'].save(f'{path2}.zip')
 
-    with ZipFile(f'{path2}.zip', 'r') as z:
-        z.extractall(path2)
+    try:
+        with ZipFile(f'{path2}.zip', 'r') as z:
+            z.extractall(path2)
+    except BadZipFile:
+        abort(400)
 
     if leader is None:
         board.replace(position, submit_folder)
@@ -91,6 +94,7 @@ def submit():
 
     if 'Winner: p2' == lines[-1]:
         board.replace(position, submit_folder)
+        board.save()
 
     board.release(position)
 
