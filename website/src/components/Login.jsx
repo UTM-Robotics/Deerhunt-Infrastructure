@@ -96,8 +96,8 @@ class Login extends React.Component {
         return (
             <div className="auth-form-container">
                 <form className="login-form" id="login-form">
-                    <input type="text" placeholder="username" onChange={this.handleUserChange.bind(this)} />
-                    <input type="password" placeholder="password" onChange={this.handlePasswordChange.bind(this)} />
+                    <input id="username" type="text" placeholder="username" onChange={this.handleUserChange.bind(this)} />
+                    <input id="password" type="password" placeholder="password" onChange={this.handlePasswordChange.bind(this)} />
                     <div className="auth-button" onClick={this.login.bind(this)}>login</div>
                 </form>
             </div>
