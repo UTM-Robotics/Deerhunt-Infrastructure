@@ -28,6 +28,9 @@ class AdminPanel extends React.Component {
                         "isadmin": true
                     });
                 }
+                else {
+                    window.location.replace("/");
+                }
             }
         });
     }

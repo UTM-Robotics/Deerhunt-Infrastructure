@@ -33,6 +33,7 @@ class AppWrapper extends React.Component {
                     <Link className="nav-link" to={'/home'}>Home</Link>
                     <Link className="nav-link" to={'/replay'}>Game Replay</Link>
                     <Link className="nav-link" to={'/submit'}>Submit</Link>
+                    <Link className="nav-link" to={'/profile'}>Profile</Link>
                 </div>}
                 <div className="content-container">
                     {this.props.children}
