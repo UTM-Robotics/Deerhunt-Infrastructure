@@ -183,19 +183,20 @@ $login-message-font-size: 16px;
     left: 50%;
     transform: translate(-50%);
     text-align: center;
-    height: 80%;
     overflow: auto;
+    width: 100%;
+    height: 90%;
 
     input {
         outline: 0;
         background: #f2f2f2;
         opacity: 0.9;
-        width: 100%;
         border: 0;
         margin: 0 0 15px;
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
+        min-width: 300px;
     }
 
 
@@ -209,11 +210,16 @@ $login-message-font-size: 16px;
         font-size: 14px;
         cursor: pointer;
         display: block;
-        width: 100%;
+        margin: 0 auto;
+        min-width: 300px;
 
         &:hover, &:active, &:focus {
             background: darkgrey;
         }
+    }
+
+    table {
+        margin: 0 auto;
     }
 }
 
