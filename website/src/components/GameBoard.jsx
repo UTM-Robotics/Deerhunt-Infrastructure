@@ -64,7 +64,7 @@ class GameBoard extends React.Component {
                 <h1>{this.state.time}</h1>
                 <h1>P1: {p1} - P2: {p2}</h1>
                 <table>
-                <tbody>
+                <tbody id="table-body">
                 {display && move.map((row,ukey) => (
                     <tr key={ukey}>
                       {row.map((item, key) => (
