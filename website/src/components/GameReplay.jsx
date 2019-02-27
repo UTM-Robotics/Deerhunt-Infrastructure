@@ -112,7 +112,7 @@ class Replay extends React.Component {
         return (
             this.state.loggedIn && <div className="replay-container">
                 <h1>Game Replay</h1>
-                <input type="text" placeholder="Game Id" onChange={this.handleGameIdChange.bind(this)} />
+                <input id="submit" type="text" placeholder="Game Id" onChange={this.handleGameIdChange.bind(this)} />
                 <button className="replay-button" onClick={this.findGame.bind(this)}>enter</button>
                 {this.getBoard()}
             </div>

@@ -94,7 +94,7 @@ def submit():
 
     if 'Winner: p2' == lines[-1]:
         board.replace(position, submit_folder)
-        board.save()
+        board.save(uid)
 
     board.release(position)
 

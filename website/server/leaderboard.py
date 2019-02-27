@@ -27,8 +27,11 @@ class Leaderboard:
     def release(self, position):
         self.lock[position].release()
 
-    def save(self):
-        self.collection.insert_one({"leaderboard": self.board, "time": datetime.utcnow()})
+    def save(self, match_id):
+        self.collection.insert_one({'leaderboard': self.board, 
+                                    'time': datetime.utcnow(),
+                                    'takeover_match': match_id
+                                    })
 
     def replace(self, position, id):
         if position >= len(self.board):

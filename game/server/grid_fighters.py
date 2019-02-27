@@ -91,7 +91,8 @@ class GridFighters(Game):
         elif isinstance(v, AttackMove) and (self.get_matching_unit(x, y, enemy_units, v) is None or v.len() < 0 or v.len() > 1):
             print('ERROR: Unit {} cannot attack there'.format(k))
             return False
-        elif isinstance(v, StasisMove) and not player_state[k].can_duplicate(player_resources) and player_resources >= 100:
+        elif isinstance(v, StasisMove) and (not player_state[k].can_duplicate(player_resources) \
+                or player_resources < 100 or not v.free_spot(x, y, self.all_units, self.grid)):
             print('ERROR: Unit {} cannot duplicate now'.format(k))
             return False
         elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y)):
@@ -112,43 +113,39 @@ class GridFighters(Game):
 
         return self.all_units.get('{},{}'.format(x, y), None)
 
-    def make_moves(self, moves, player_state, player_name, opponent_state):
-        for k, v in moves:
-            if isinstance(v, GroundMove):
-                m = v.get_relative_moves()
-                x, y = player_state[k].pos_tuple()
-                player_state[k].set_relative_location(self.all_units, *m)
-                self.move_unit(x, y, player_state[k])
-            elif isinstance(v, AttackMove):
-                x, y = player_state[k].pos_tuple()
-                rx, ry = v.get_relative_moves()
-                uid = str(self.get_unit(x+rx, y+ry).id)
-                try:
-                    del opponent_state[uid]
-                except KeyError:
-                    # User tried to delete their own unit
-                    pass
+    def make_move(self, k, v, player_state, player_name, opponent_state):
+        if isinstance(v, GroundMove):
+            m = v.get_relative_moves()
+            x, y = player_state[k].pos_tuple()
+            player_state[k].set_relative_location(self.all_units, *m)
+            self.move_unit(x, y, player_state[k])
+        elif isinstance(v, AttackMove):
+            x, y = player_state[k].pos_tuple()
+            rx, ry = v.get_relative_moves()
+            uid = str(self.get_unit(x+rx, y+ry).id)
+            try:
+                del opponent_state[uid]
+            except KeyError:
+                # User tried to delete their own unit
+                pass
 
-                self.del_unit(x+rx, y+ry)
-            elif isinstance(v, StasisMove):
-                self.currently_duplicating[k] = (player_state, player_state[k].start_duplication(v.direction))
-                if self.resources[player_name] - 100 >= 0:
-                    self.resources[player_name] -= 100
-            elif isinstance(v, MineMove):
-                self.currently_mining[k] = (player_name, player_state[k].start_mining())
+            self.del_unit(x+rx, y+ry)
+        elif isinstance(v, StasisMove):
+            self.currently_duplicating[k] = (player_state, player_state[k].start_duplication(v.direction))
+            self.resources[player_name] -= 100
+        elif isinstance(v, MineMove):
+            self.currently_mining[k] = (player_name, player_state[k].start_mining())
             
 
     def tick_player(self, conn, current, opponent, name, turns):
         moves = conn.tick(self, current, opponent, self.resources, turns)
 
         moved_units = set()
-        safe_moves = []
         for m in moves:
             k, v = m
             if self.verify_move(k, v, current, self.resources[name], opponent, moved_units):
-                safe_moves.append(m)
+                self.make_move(k, v, current, name, opponent)
 
-        self.make_moves(safe_moves, current, name, opponent)
 
     def can_duplicate_to(self, unit):
         dir = unit.stasis_direction

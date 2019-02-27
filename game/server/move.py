@@ -11,7 +11,7 @@ class Move:
         if direction == 'LEFT'  : x -= 1
         return x, y
 
-    def _get_relative_moves(self, lst):
+    def _get_relative_moves(lst):
         x = 0
         y = 0
         for m in lst:
@@ -41,7 +41,7 @@ class AttackMove(Move):
         return len(self.target)
 
     def get_relative_moves(self):
-        return self._get_relative_moves(self.target)
+        return Move._get_relative_moves(self.target)
 
 class StasisMove(Move):
 
@@ -51,6 +51,13 @@ class StasisMove(Move):
 
     def len(self):
         return 0
+
+    def free_spot(self, x, y, all_units, board):
+        nx, ny = Move.transform(x, y, self.direction)
+        if isinstance(board[ny][nx], WallTile):
+            return False
+
+        return '{},{}'.format(nx, ny) not in all_units
 
 class GroundMove(Move):
 
@@ -68,7 +75,7 @@ class GroundMove(Move):
         return self._can_follow_path(self.moves, board, all_units, x, y)
         
     def get_relative_moves(self):
-        return self._get_relative_moves(self.moves)
+        return Move._get_relative_moves(self.moves)
 
 
 class MineMove(Move):
