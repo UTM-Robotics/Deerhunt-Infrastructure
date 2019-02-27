@@ -15,6 +15,7 @@ class Profile extends React.Component {
     }
 
     componentDidMount() {
+        document.addEventListener("keypress", this.handleEnterKeyPress.bind(this));
         this.isLoggedIn();
     }
 
@@ -36,6 +37,12 @@ class Profile extends React.Component {
         });
     }
 
+    handleEnterKeyPress(e) {
+        if (e.charCode == 13 || e.keyCode == 13) {
+            this.change();
+        }
+    }
+
     handleCurrentPasswordChange(e) {
         this.setState({
             currentPassword: e.target.value
@@ -54,8 +61,69 @@ class Profile extends React.Component {
         });
     }
 
+    addError(type: string) {
+        $('.error-message').remove();
+        $('.success-message').remove();
+        var message = "";
+        if (type === 'cup') {
+            message = "Please enter your current password"
+        }
+        else if (type === 'nep') {
+            message = "Please enter a new password";
+        }
+        else if (type === 'cop') {
+            message = "Please confirm your new password";
+        }
+        else if (type === 'dif') {
+            message = "Passwords do not match"
+        }
+        else {
+            message = "Invalid Password"
+        }
+        var errorMessage = '<p class="error-message">' + message + '</p>';
+        $('.register-button').after(errorMessage);
+    }
+
     change() {
-        console.log("change password");
+        if (this.state.currentPassword == "") {
+            this.addError('cup');
+            return;
+        }
+        if (this.state.newPassword == "") {
+            this.addError('nep');
+            return;
+        }
+        if (this.state.confirmPassword == "") {
+            this.addError('cop');
+            return;
+        }
+        if (this.state.newPassword != this.state.confirmPassword) {
+            this.addError('dif');
+            return;
+        }
+
+        const requestData = JSON.stringify({
+            "currentPassword": this.state.currentPassword,
+            "newPassword": this.state.newPassword,
+            "confirmPassword": this.state.confirmPassword
+        });
+
+        $.ajax({
+            url:'/api/changepassword',
+            type: 'POST',
+            data: requestData,
+            contentType: 'application/json',
+            success: () => {
+                $('.error-message').remove();
+                $('.success-message').remove();
+                var successMessage = '<p class="success-message">Successfully Changed</p>';
+                $('.register-button').after(successMessage);
+            },
+            error: () => { 
+                this.addError('');
+                return;
+            }
+        });
     }
 
     render() {
