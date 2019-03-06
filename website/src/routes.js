@@ -6,7 +6,8 @@ import Login from './components/Login';
 import Replay from './components/GameReplay';
 import Submit from './components/Submit';
 import AdminPanel from './components/AdminPanel';
-import ErrorPage from './components/ErrorPage.jsx';
+import ErrorPage from './components/ErrorPage';
+import Profile from './components/Profile';
 
 class Routes extends React.Component {
     render() {
@@ -18,6 +19,7 @@ class Routes extends React.Component {
                     <Route path='/replay' component={Replay} />
                     <Route path='/submit' component={Submit} />
                     <Route path='/88388' component={AdminPanel} />
+                    <Route path='/profile' component={Profile} />
                     <Route path='*' component={ErrorPage} />
                 </Switch>
             </AppWrapper>

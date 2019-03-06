@@ -124,10 +124,30 @@ def login():
 
     return 'Login successful'
 
+@app.route('/api/changepassword', methods=['GET', 'POST'])
+def changePassword():
+    login_guard()
+
+    cup, nep, cop = safe_get_passwords()
+
+    result = database.users.find_one({'username': session['username']})
+    if result is None or 'password' not in result:
+        abort(403)
+    if not sha512_crypt.verify(cup, result['password']):
+        abort(403)
+    if nep != cop:
+        abort(400)
+        
+    query = {'username': session['username']}
+    newvalues = {'$set': {'password': sha512_crypt.encrypt(nep)}}
+
+    database.users.update_one(query, newvalues)
+
+    return 'Change successful'
 
 @app.route('/api/register', methods=['POST'])
 def register():
-    admin_gaurd()
+    admin_guard()
 
     u, p = safe_get_user_and_pass()
 
@@ -142,6 +162,8 @@ def register():
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
+    login_guard()
+    
     if not request.is_json:
         abort(400)
 
@@ -160,8 +182,8 @@ def getmatch():
 
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
+    login_guard()
     return jsonify(list(map(lambda x: x.split('-')[0], board.board)))
-
 
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
@@ -174,7 +196,7 @@ def isadmin():
 
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
-    admin_gaurd()
+    admin_guard()
 
     global should_display_leaderboards
 
@@ -185,7 +207,7 @@ def leaderboardtoggle():
 
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
-    admin_gaurd()
+    admin_guard()
     
     global can_submit
 
@@ -217,6 +239,14 @@ def safe_get_user_and_pass():
 
     return body['username'], body['password']
 
+def safe_get_passwords():
+    if not request.is_json:
+        abort(400)
+
+    body = request.get_json()
+
+    return body['currentPassword'], body['newPassword'], body['confirmPassword']
+
 def login_guard():
     if 'logged_in' not in session or not session['logged_in']:
         abort(403)
@@ -224,7 +254,7 @@ def login_guard():
 def logged_in():
     return session['logged_in'] if 'logged_in' in session else False
 
-def admin_gaurd():
+def admin_guard():
     if not is_admin_check():
         abort(403)
 
