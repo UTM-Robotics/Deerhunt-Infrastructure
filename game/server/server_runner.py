@@ -2,6 +2,8 @@
 
 import argparse
 import socket
+import os
+import random
 
 from grid_fighters import GridFighters
 from client_connection import ClientConnection
@@ -26,7 +28,9 @@ print('Waiting for client 2...')
 conn2, addr2 = sock.accept()
 p2 = ClientConnection(conn2, 'p2', args.verbose)
 
-game = GridFighters(p1, p2, open('maps/first.map', 'r'))
+file_name = 'maps/{}'.format(random.choice(os.listdir('maps')))
+
+game = GridFighters(p1, p2, open(file_name, 'r'))
 
 turn = 0
 winner = None
