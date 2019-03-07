@@ -3,6 +3,11 @@ from move import Move
 def coordinate_from_direction(x, y, direction):
     """(int, int, str) -> (int, int)
     Returns the resulting (x, y) coordinates after moving in a <direction> from <x> and <y>.
+    Acceptable directions:
+        'LEFT'
+        'RIGHT'
+        'UP'
+        'DOWN'
     """
     if direction == 'LEFT':
         return (x-1, y)
@@ -77,7 +82,8 @@ class Map: # all outputs will be of the form (x, y). i.e., (c, r).
 
     def bfs(self, start, dest):
         """(Map, (int, int), (int, int)) -> [(int, int)]
-        Finds the shortest path from current location to dest. Returns a list where the first entry is current position.
+        Finds the shortest path from <start> to <dest>. 
+        Returns a path with a list of coordinates starting with <start> to <dest>.
         """
         graph = self.grid
         queue = [[start]]
@@ -152,7 +158,7 @@ class Unit:
 
     def direction_to(self, pos):
         """((int, int)) -> Direction
-        Returns the direction from a unit to <pos>.
+        Returns a required direction from a unit to <pos>.
         """
         if self.y < pos[1]:
             return 'DOWN'
