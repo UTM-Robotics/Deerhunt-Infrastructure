@@ -53,7 +53,11 @@ class Home extends React.Component {
                 <table align="center">
                     <tbody>
                         {this.state.leaderboard.length > 0 && this.state.leaderboard.map((item, key) => (
-                            <tr key={key}><td className="num">{key + 1}</td><td className="item">{item}</td></tr>
+                            <tr key={key}>
+                                <td className="num">{key + 1}</td>
+                                <td className="item">{item.name}</td>
+                                <td className="item">{item.queue}</td>
+                            </tr>
                         ))}
                     </tbody>
                 </table>

@@ -17,15 +17,26 @@ class Leaderboard:
         self.board = []
         self.collection = collection
 
+        self.queue_lock = Lock()
+        self.queue_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
     def acquire(self, position):
         if position >= len(self.board):
             return None
+
+        self.queue_lock.acquire()
+        self.queue_count[position] += 1
+        self.queue_lock.release()
 
         self.lock[position].acquire()
         return self.board[position]
 
     def release(self, position):
+        self.queue_count[position] -= 1
         self.lock[position].release()
+
+    def is_locked(self, position):
+        return self.lock[position].locked()
 
     def save(self, match_id):
         self.collection.insert_one({'leaderboard': self.board, 

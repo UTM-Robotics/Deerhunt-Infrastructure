@@ -6,6 +6,7 @@ from bson.objectid import ObjectId
 from passlib.hash import sha512_crypt
 from zipfile import ZipFile, BadZipFile
 from leaderboard import Leaderboard
+from datetime import datetime
 import uuid
 import docker
 import time
@@ -49,17 +50,31 @@ def submit():
     if position < 0 or position > 9:
         abort(400)
 
+    try:
+        result = run_match(position)
+    except Exception as e:
+        database.errors.insert_one({'message': str(e), 'time': datetime.utcnow()}) 
+
+        if board.is_locked(position):
+            board.release(position)
+
+        abort(500)
+
+    return result
+
+def run_match(position):
     submit_folder = f'{session["username"]}-{time.time()}'
-    leader = board.acquire(position)
-    path1 = f'{submissions_folder}/{leader}'
-    path2 = f'{submissions_folder}/{submit_folder}'
-    request.files['upload'].save(f'{path2}.zip')
+    submit_path = f'{submissions_folder}/{submit_folder}'
+    request.files['upload'].save(f'{submit_path}.zip')
 
     try:
-        with ZipFile(f'{path2}.zip', 'r') as z:
-            z.extractall(path2)
+        with ZipFile(f'{submit_path}.zip', 'r') as z:
+            z.extractall(submit_path)
     except BadZipFile:
         abort(400)
+
+    leader = board.acquire(position)
+    leader_path = f'{submissions_folder}/{leader}'
 
     if leader is None:
         board.replace(position, submit_folder)
@@ -69,8 +84,8 @@ def submit():
     build_path = f'{build_folder}/{uid}'
 
     shutil.copytree(template_folder, f'{build_path}/')
-    copy_dir_contents(path1, f'{build_path}/p1')
-    copy_dir_contents(path2, f'{build_path}/p2')
+    copy_dir_contents(leader_path, f'{build_path}/p1')
+    copy_dir_contents(submit_path, f'{build_path}/p2')
     shutil.copytree(server_folder, f'{build_path}/server')
 
     img = dock.images.build(path=build_path, tag=uid, rm=True, network_mode=None)
@@ -183,7 +198,15 @@ def getmatch():
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
     login_guard()
-    return jsonify(list(map(lambda x: x.split('-')[0], board.board)))
+
+    lst = []
+    for i in range(len(board.board)):
+        lst.append({
+            'name': board.board[i].split('-')[0],
+            'queue': board.queue_count[i]
+        })
+
+    return jsonify(lst)
 
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
@@ -275,3 +298,5 @@ def copy_dir_contents(src, dest):
     for file in os.listdir(src):
         shutil.copy(f'{src}/{file}', dest)
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=7082, threaded=True)
