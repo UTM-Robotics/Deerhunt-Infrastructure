@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Page Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+        crossorigin="anonymous">
+</head>
+
+<body class="d-flex flex-column h-100">
+    <!-- Begin page content -->
+    <main role="main" class="flex-shrink-1">
+        <div class="container">
+            <h1 class="mt-5"><b>Tutorial</b></h1>
+            <h2 class="mt-5">Overview</h2>
+            <p class="lead">The game is asynchronous turn-based with two players competing against each other.
+                <br>The map is a <code>40x40</code> grid, with a few maps in rotation. Each map is symmetrical.
+                <br>There is an odd number of resource nodes on the map.
+                <br>There is fog of war which will restrict vision for both players.
+                <br>Each game lasts for 100 rounds or if one player's units are eliminated.
+            </p>
+            <h2 class="mt-5">Objectives</h2>
+            <p class="lead">There are two ways to win the game.
+                <br>1. Eliminate all of the enemy's units.
+                <br>2. Have more resources than the enemy by 100 turns. If resources are tied, Player 2 wins.
+            </p>
+            <h2 class="mt-5">Units</h2>
+            <p class="lead">There are two types of units available: Melees and Workers.
+                <br>Melee units are able to attack other units and can duplicate itself to create more Melee units.
+                <br>Worker units are able to mine resources from resource nodes, they cannot duplicate itself.
+                <br>Players will start off with a few of each units.
+            </p>
+            <h2 class="mt-5">Information</h2>
+            <p class="lead">Every turn, players will be given basic information about the state of the game.
+                <br><code>game_map</code> is the grid which represents the current map.
+                <br><code>your_units</code> is the list of every unit that belongs to you.
+                <br><code>enemy_units</code> is the list of every unit that your units can see (fog of war) that belong to the enemy.
+                <br><code>resources</code> is the number of resources that you currently possess.
+                <br><code>turns_left</code> is the number of turns that remain until the game ends.
+            </p>
+            <h2 class="mt-5">Commands</h2>
+            <p class="lead">Append commands for units to the <code>moves</code> list to perform actions.
+                <br>Commands can be found in <code>helper_classes.py</code>, there is documentation for every command.
+                <br>Use <code>your_units.get_all_unit_of_type('worker')</code> to get a list of all of your worker
+                units.
+                <br>Use <code>your_units.get_all_unit_of_type('melee')</code> to get a list of all of your melee units.
+            </p>
+            <h2 class="mt-5">Moving</h2>
+            <p class="lead">There are four directions that each unit can move in: <code>UP, DOWN, LEFT, RIGHT</code>
+                <br>Each unit can only move 1 space at time.
+                <br>Use <code>unit.move(direction)</code> to move the indicated unit.
+                <br>Use <code>map.bfs(start, end)</code> to get the shortest path from start to end.
+            </p>
+            <h2 class="mt-5">Attacking</h2>
+            <p class="lead">Melee units can attack a unit from 1 cardinal range away.
+                <br>All units need only one attack to be killed.
+                <br>Use <code>unit.attack(direction)</code> to perform an attack.
+            </p>
+            <h2 class="mt-5">Mining</h2>
+            <p class="lead">Worker units can mine a resource node if it is on top of one.
+                <br>Resource nodes have a limited amount of resources.
+                <br>It takes 5 turns to mine from a node. During this time, the worker is locked in place.
+                <br>Use <code>unit.mine()</code> to begin mining for the indicated unit.
+                <br>Use <code>map.closest_resources(unit)</code> to find the closest resource node from the unit.
+            </p>
+
+            <h2 class="mt-5">Duplicating</h2>
+            <p class="lead">Melee units can duplicate itself to create another melee unit.
+                <br>Duplication costs 75 resources and take 5 turns to complete. During this time, the melee is locked
+                in place.
+                <br>Use <code>unit.duplicate(direction)</code> to create a unit in the direction indicated.
+            </p>
+
+            <h2 class="mt-5 mb-5">Good luck and have fun!</h2>
+        </div>
+
+    </main>
+</body>
+
+</html>

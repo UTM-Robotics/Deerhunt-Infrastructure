@@ -281,6 +281,12 @@ def resetlockout():
 # View route
 ##
 
+@app.route('/tutorial')
+def tutorial():
+  #pylint: disable=unused-argument
+  return send_from_directory(app.static_folder, 'tutorial.html')
+
+
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
