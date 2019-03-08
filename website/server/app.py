@@ -65,7 +65,7 @@ def submit():
     try:
         result = run_match(position)
     except Exception as e:
-        database.errors.insert_one({'message': str(e), 'trace': traceback.format_exc(),'time': datetime.utcnow()}) 
+        database.errors.insert_one({'message': str(e), 'trace': traceback.format_exc(),'time': datetime.utcnow()})
 
         if board.is_locked(position):
             board.release(position)
@@ -92,6 +92,7 @@ def run_match(position):
 
     if leader is None:
         board.replace(position, submit_folder)
+        board.save('default')
         return 'Victory by default'
 
     uid = uuid.uuid4().hex
@@ -167,7 +168,7 @@ def changePassword():
         abort(403)
     if nep != cop:
         abort(400)
-        
+
     query = {'username': session['username']}
     newvalues = {'$set': {'password': sha512_crypt.encrypt(nep)}}
 
@@ -193,7 +194,7 @@ def register():
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
     login_guard()
-    
+
     if not request.is_json:
         abort(400)
 
@@ -246,7 +247,7 @@ def leaderboardtoggle():
 
     should_display_leaderboards = not should_display_leaderboards
     return str(should_display_leaderboards)
-    
+
 
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
@@ -258,6 +259,23 @@ def submittoggle():
 
     can_submit = not can_submit
     return str(can_submit)
+
+@app.route('/api/resetlockout', methods=['GET', 'POST'])
+def resetlockout():
+    admin_guard()
+
+    if not request.is_json:
+        abort(400)
+
+    body = request.get_json()
+
+    if 'username' not in body:
+        abort(400)
+
+    if body['username'] in submitting:
+        submitting[body['username']] = False
+
+    return 'Success'
 
 ##
 # View route

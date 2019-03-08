@@ -3,6 +3,7 @@ import $ from 'jquery';
 import Register from './Register';
 import LeaderboardStatus from './LeaderboardStatus';
 import SubmitStatus from './SubmitStatus';
+import ResetLockout from './ResetLockout';
 
 
 class AdminPanel extends React.Component {
@@ -42,6 +43,7 @@ class AdminPanel extends React.Component {
                 <div className="status-container">
                     <LeaderboardStatus />
                     <SubmitStatus />
+                    <ResetLockout />
                 </div>
             </div>
         );
