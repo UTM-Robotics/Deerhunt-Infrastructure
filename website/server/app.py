@@ -30,6 +30,7 @@ server_folder = f'{prefix}/server'
 
 should_display_leaderboards = True
 can_submit = True
+submitting = {}
 
 ##
 # API routes
@@ -38,6 +39,13 @@ can_submit = True
 @app.route('/api/submit', methods=['POST'])
 def submit():
     login_guard()
+
+    if session['username'] not in submitting:
+        submitting[session['username']] = False
+    elif submitting[session['username']]:
+        abort(409)
+
+    submitting[session['username']] = True
 
     if 'upload' not in request.files or 'position' not in request.form:
         abort(400)
@@ -59,6 +67,8 @@ def submit():
             board.release(position)
 
         abort(500)
+    finally:
+        submitting[session['username']] = False
 
     return result
 
@@ -136,6 +146,7 @@ def login():
 
     session['logged_in'] = True
     session['username'] = u
+    submitting[session['username']] = False
 
     return 'Login successful'
 
