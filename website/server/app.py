@@ -7,6 +7,7 @@ from passlib.hash import sha512_crypt
 from zipfile import ZipFile, BadZipFile
 from leaderboard import Leaderboard
 from datetime import datetime
+import traceback
 import uuid
 import docker
 import time
@@ -64,7 +65,7 @@ def submit():
     try:
         result = run_match(position)
     except Exception as e:
-        database.errors.insert_one({'message': str(e), 'time': datetime.utcnow()}) 
+        database.errors.insert_one({'message': str(e), 'trace': traceback.format_exc(),'time': datetime.utcnow()}) 
 
         if board.is_locked(position):
             board.release(position)
