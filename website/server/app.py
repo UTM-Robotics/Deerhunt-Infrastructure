@@ -40,6 +40,9 @@ submitting = {}
 def submit():
     login_guard()
 
+    if not can_submit:
+        abort(403)
+
     if session['username'] not in submitting:
         submitting[session['username']] = False
     elif submitting[session['username']]:
@@ -210,6 +213,9 @@ def getmatch():
 def leaderboard():
     login_guard()
 
+    if not should_display_leaderboards:
+        abort(403)
+
     lst = []
     for i in range(len(board.board)):
         lst.append({
@@ -230,24 +236,26 @@ def isadmin():
 
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
-    admin_guard()
-
     global should_display_leaderboards
 
-    if request.method == 'POST':
-        should_display_leaderboards = not should_display_leaderboards
+    if request.method == 'GET':
+        return str(should_display_leaderboards)
 
+    admin_guard()
+
+    should_display_leaderboards = not should_display_leaderboards
     return str(should_display_leaderboards)
+    
 
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
-    admin_guard()
-    
     global can_submit
+    if request.method == 'GET':
+        return str(can_submit)
 
-    if request.method == 'POST':
-        can_submit = not can_submit
+    admin_guard()
 
+    can_submit = not can_submit
     return str(can_submit)
 
 ##

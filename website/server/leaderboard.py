@@ -14,7 +14,13 @@ class Leaderboard:
                      Lock(),
                      Lock(),
                      Lock()]
-        self.board = []
+        try:
+            self.board = collection.find().sort([('time', -1)]).limit(1)[0]['leaderboard']
+            if self.board is None:
+                self.board = []
+        except:
+            self.board = []
+
         self.collection = collection
 
         self.queue_lock = Lock()
