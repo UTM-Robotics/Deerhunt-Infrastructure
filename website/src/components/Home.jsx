@@ -7,11 +7,13 @@ class Home extends React.Component {
         super();
         this.state = {
             loggedIn: false,
-            leaderboard: []
+            leaderboard: [],
+            displayLeaderboard: false
         };
     }
 
     componentDidMount() {
+        this.displayLeaderboard();
         this.getLeaderboard();
         this.isLoggedIn();
     }
@@ -27,6 +29,20 @@ class Home extends React.Component {
             }
         });
     }
+
+    displayLeaderboard() {
+        $.ajax({
+            url: '/api/leaderboardtoggle',
+            type: 'GET',
+            success: (responseData) => {
+                var parsed = responseData == "True" ? true: false;
+                this.setState({
+                    displayLeaderboard: parsed
+                });
+            }
+        });
+    }
+                    
 
     isLoggedIn() {
         $.ajax({
@@ -49,10 +65,18 @@ class Home extends React.Component {
     render() {
         return (
             this.state.loggedIn && <div className="home-container">
-                <h1>Leaderboard</h1>
-                <table align="center">
+                {this.state.displayLeaderboard && <h1>Leaderboard</h1>}
+                {!this.state.displayLeaderboard && <h1>Leaderboard Hidden</h1>}
+                {this.state.leaderboard.length > 0 && this.state.displayLeaderboard && <table align="center">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team</th>
+                            <th>Queue</th>
+                        </tr>
+                    </thead>
                     <tbody>
-                        {this.state.leaderboard.length > 0 && this.state.leaderboard.map((item, key) => (
+                        {this.state.leaderboard.map((item, key) => (
                             <tr key={key}>
                                 <td className="num">{key + 1}</td>
                                 <td className="item">{item.name}</td>
@@ -60,7 +84,7 @@ class Home extends React.Component {
                             </tr>
                         ))}
                     </tbody>
-                </table>
+                </table>}
             </div>
         );
     }

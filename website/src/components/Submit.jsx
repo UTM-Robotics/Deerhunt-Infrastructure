@@ -11,7 +11,8 @@ class Submit extends React.Component {
             display: false,
             loading: false,
             resultDisplay: false,
-            result: ""
+            result: "",
+            displaySubmit: false
         }
 
         this.opponents = [
@@ -29,7 +30,21 @@ class Submit extends React.Component {
     }
 
     componentDidMount() {
+        this.displaySubmit();
         this.isLoggedIn();
+    }
+
+    displaySubmit() {
+        $.ajax({
+            url: '/api/submittoggle',
+            type: 'GET',
+            success: (responseData) => {
+                var parsed = responseData == "True" ? true: false;
+                this.setState({
+                    displaySubmit: parsed
+                });
+            }
+        });
     }
 
     isLoggedIn() {
@@ -117,8 +132,9 @@ class Submit extends React.Component {
         return (
             <div>
             {this.state.loggedIn && <div className="submit-container">
-                <h1>Submit</h1>
-                <form id="submit-form"> 
+                {this.state.displaySubmit && <h1>Submit</h1>}
+                {!this.state.displaySubmit && <h1>Submissions are Closed</h1>}
+                {this.state.displaySubmit && <form id="submit-form"> 
                     <p>Please select the file you would like to submit. Your file should be zipped</p>
                     <p>Choose your opponent:</p>
                     <select className="submit-select" name="position" onChange={this.handleOpponentChange.bind(this)}>
@@ -128,8 +144,8 @@ class Submit extends React.Component {
                     </select>
                     <input type="file" name="upload" id="upload"/> 
                     <div className="submit-button" onClick={this.submitFile.bind(this)}>Upload File</div>
-                </form>
-                <p>Please note that a battle takes anywhere from 5-15 seconds to run so the page may look like it is loading during that time. In addition if other people are challenging the same position you will be queued and it will take longer for your challenge to go through.</p>
+                    <p>Please note that a battle takes anywhere from 5-15 seconds to run so the page may look like it is loading during that time. In addition if other people are challenging the same position you will be queued and it will take longer for your challenge to go through.</p>
+                </form>}
                 </div>}
                 {this.state.display && <div className="delay-display">
                     <div className="delay-display-content">
