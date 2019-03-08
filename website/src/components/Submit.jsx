@@ -109,10 +109,13 @@ class Submit extends React.Component {
                 }
             },
             error: (errorData) => {
+                console.log(errorData);
+                var res = errorData.status == 409 ? "This user is already submitting" : "There was an error, please try again";
+
                 this.setState({
                     loading: false,
                     resultDisplay: true,
-                    result: "There was an error, please try again"
+                    result: res                
                 });
             }
         });
