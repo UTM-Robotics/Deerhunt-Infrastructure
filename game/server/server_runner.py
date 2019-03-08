@@ -22,10 +22,14 @@ sock.listen(2)
 
 print('Waiting for client 1...')
 conn1, addr1 = sock.accept()
+if not args.verbose:
+    conn1.settimeout(3)
 p1 = ClientConnection(conn1, 'p1', args.verbose)
 
 print('Waiting for client 2...')
 conn2, addr2 = sock.accept()
+if not args.verbose:
+    conn2.settimeout(3)
 p2 = ClientConnection(conn2, 'p2', args.verbose)
 
 file_name = 'maps/{}'.format(random.choice(os.listdir('maps')))

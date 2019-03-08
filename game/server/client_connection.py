@@ -56,29 +56,32 @@ class ClientConnection:
 
 
     def tick(self, game_state, me, them, resources, turns):
-        d = {
-            'map'         : [self.objs_to_strs(r) for r in game_state.grid],
-            'my_units'    : self.units_to_dict(me),
-            'their_units' : self.units_to_dict(self.filter_fog_of_war(me, them)),
-            'my_resources': resources[self.name],
-            'turns_left'  : turns
-        }
+        try:
+            d = {
+                'map'         : [self.objs_to_strs(r) for r in game_state.grid],
+                'my_units'    : self.units_to_dict(me),
+                'their_units' : self.units_to_dict(self.filter_fog_of_war(me, them)),
+                'my_resources': resources[self.name],
+                'turns_left'  : turns
+            }
 
-        data = json.dumps(d).encode()
-        self.sock.sendall('{:10}'.format(len(data)).encode())
-        self.sock.sendall(data)
+            data = json.dumps(d).encode()
+            self.sock.sendall('{:10}'.format(len(data)).encode())
+            self.sock.sendall(data)
 
-        size = int(self.sock.recv(10).decode())
-        response = self.sock.recv(size).decode()
+            size = int(self.sock.recv(10).decode())
+            response = self.sock.recv(size).decode()
 
-        if self.verbose:
-            self.print_map(d, game_state)
+            if self.verbose:
+                self.print_map(d, game_state)
 
-        j = json.loads(response)
+            j = json.loads(response)
 
-        moves = [(str(k), self.create_move(k, v)) for k, v in j]
+            moves = [(str(k), self.create_move(k, v)) for k, v in j]
 
-        if self.verbose:
-            print(self.name, ':', moves)
+            if self.verbose:
+                print(self.name, ':', moves)
 
-        return moves
+            return moves
+        except:
+            return []
