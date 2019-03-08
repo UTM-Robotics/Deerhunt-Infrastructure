@@ -1,8 +1,10 @@
 import React from 'react';
 import melee from './../assets/images/m.gif';
+import melee2 from './../assets/images/M.gif';
+import worker from './../assets/images/w.gif';
+import worker2 from './../assets/images/W.gif';
 import wall from './../assets/images/x.gif';
 import resource from './../assets/images/r.gif';
-import worker from './../assets/images/w.gif';
 import blank from './../assets/images/empty.gif';
 
 class GameBoard extends React.Component {
@@ -16,9 +18,11 @@ class GameBoard extends React.Component {
 
         this.image = {
             "m": melee,
-            "r": resource,
+            "M": melee2,
             "w": worker,
-            "x": wall,
+            "W": worker2,
+            "R": resource,
+            "X": wall,
             " ": blank
         }
             
@@ -68,7 +72,7 @@ class GameBoard extends React.Component {
                 {display && move.map((row,ukey) => (
                     <tr key={ukey}>
                       {row.map((item, key) => (
-                          <td key={key}><img className="boardImage" src={this.image[item.toLowerCase()]}/></td>
+                          <td key={key}><img className="boardImage" src={this.image[item]}/></td>
                         ))}
                     </tr>
                 ))}

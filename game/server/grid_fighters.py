@@ -168,9 +168,10 @@ class GridFighters(Game):
         for u in self.p1_units.values():
             display[u.y][u.x] = u
         for u in self.p2_units.values():
-            display[u.y][u.x] = u
+            display[u.y][u.x] = u.string().upper()
 
-        return '[{}]'.format(','.join(map(lambda r: '[{}]'.format(','.join(map(lambda x: x.string(), r))), display)))
+        inner = lambda r: '[{}]'.format(','.join(map(lambda x: (x if isinstance(x, str) else x.string()), r)))
+        return '[{}]'.format(','.join(map(inner, display)))
 
     def print_map(self, p1_name, p2_name):
         j = json.dumps({
