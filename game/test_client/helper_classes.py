@@ -20,7 +20,7 @@ class Unit:
 
     def direction_to(self, pos: (int, int)) -> str:
         """
-        Returns the direction from a unit to <pos>.
+        Returns a required direction from a unit to <pos>.
         """
         if self.y < pos[1]:
             return 'DOWN'
@@ -106,11 +106,11 @@ class Unit:
         """
         return Move(self.id, 'MINE')
 
-    def duplicate(self, *direction: (str)) -> Move:
+    def duplicate(self, direction: (str)) -> Move:
         """
         Returns a 'duplicate' Move for this Unit in the given <direction>.
         """
-        return Move(self.id, 'DUPLICATE', *direction)
+        return Move(self.id, 'DUPLICATE', direction)
 
 
 class Map:
@@ -174,9 +174,10 @@ class Map:
         return result
 
     def bfs(self, start: (int, int), dest: (int, int)) -> [(int, int)]:
-        """
-        Finds the shortest path from current location to dest. \
-        Returns a list where the first entry is current position.
+        """(Map, (int, int), (int, int)) -> [(int, int)]
+        Finds the shortest path from <start> to <dest>.
+        Returns a path with a list of coordinates starting with
+        <start> to <dest>.
         """
         graph = self.grid
         queue = [[start]]
@@ -237,9 +238,14 @@ class Units:
 
 
 def coordinate_from_direction(x: int, y: int, direction: str) -> (int, int):
-    """(int, int, str) -> (int, int)
-    Returns the resulting (x, y) coordinates after moving in a \
-        <direction> from <x> and <y>.
+    """
+    Returns the resulting (x, y) coordinates after moving in a
+    direction> from <x> and <y>.
+    Acceptable directions:
+        'LEFT'
+        'RIGHT'
+        'UP'
+        'DOWN'
     """
     if direction == 'LEFT':
         return (x-1, y)
