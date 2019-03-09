@@ -76,6 +76,10 @@ class GridFighters(Game):
                 print('ERROR: {} cannot act while duplicating'.format(k))
                 return False
 
+            if player_state[k].is_mining():
+                print('ERROR: {} cannot act while mining'.format(k))
+                return False
+
             if k in moved_units:
                 print('ERROR: Cannot make multiple actions for unit {}'.format(k))
                 return False

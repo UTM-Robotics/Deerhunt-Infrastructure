@@ -46,6 +46,9 @@ class MeleeUnit(Unit):
     def is_duplicating(self):
         return self.duplication_status > 0
 
+    def is_mining(self):
+        return False
+
     def start_duplication(self, direction):
         self.duplication_status = self.duplication_time
         self.stasis_direction = direction
