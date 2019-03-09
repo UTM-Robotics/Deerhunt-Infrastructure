@@ -18,6 +18,7 @@ sock = socket.socket()
 host = socket.gethostname()
 sock.bind((host, args.port))
 
+sock.settimeout(7)
 sock.listen(2)
 
 print('Waiting for client 1...')
