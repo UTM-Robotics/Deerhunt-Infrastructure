@@ -38,8 +38,11 @@ class Leaderboard:
         return self.board[position]
 
     def release(self, position):
-        self.queue_count[position] -= 1
         self.lock[position].release()
+
+        self.queue_lock.acquire()
+        self.queue_count[position] -= 1
+        self.queue_lock.release()
 
     def is_locked(self, position):
         return self.lock[position].locked()
