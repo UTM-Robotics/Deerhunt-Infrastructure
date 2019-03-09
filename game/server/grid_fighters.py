@@ -25,7 +25,6 @@ class GridFighters(Game):
 
         top = [line.rstrip() for line in map_file]
         bottom = deepcopy(top[:-1])
-        bottom = [row[::-1] for row in bottom]
         bottom.reverse()
 
         self.grid = self.build_grid(top, self.p1_units, 0) + self.build_grid(bottom, self.p2_units, len(top))
