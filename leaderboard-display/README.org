@@ -1,0 +1,6 @@
+* Takeover match display
+  This is an incredibly hacky script that repeatedly pulls the latest
+  leaderboard takeover match and plays it. 
+  
+  This will break if anything major is changed about the website layout
+  or the database schema.

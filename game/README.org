@@ -1,0 +1,28 @@
+* Game
+** How to submit
+   You only need to submit your copy of =grid_player.py= and any new
+   files that you created. You do *not* need to submit any of the helper
+   classes that are provided to you. Your files should be at the root of
+   the zip. You can achieve this by running the following command wherever
+   your code is:
+
+   #+BEGIN_SRC bash
+     zip submission.zip grid_player.py
+   #+END_SRC
+
+   To verify that you've zipped correctly you can either =vim submission.zip=
+   and ensure that there is no folder only files or simply unzip your submission
+   and confirm that no folders are created.
+
+** Local Testing
+   Enclosed is a =run.sh= file. This script automatically will run the server
+   as well as both of the clients inside =tmux= (you need =tmux= installed for
+   the script to work). You can run the script by typing =./run.sh 8888=. You 
+   may need to change the port number if you're running the script frequently.
+
+   The script will open =tmux= launch the server, then make a new tab and launch
+   your client twice. You can navigate between the tabs by pressing =C-b n= (control b then n).
+
+   Alternatively you can launch the server and two clients manually in 3 seprate terminals
+   by running =./server_runner.py 8888= and =./client_runner.py 8888= respectively.
+   
