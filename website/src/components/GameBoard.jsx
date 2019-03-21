@@ -36,7 +36,7 @@ class GameBoard extends React.Component {
     }
 
     componentDidMount() {
-        this.interval = setInterval(() => this.setState({ iter: this.state.iter + 1 }), 1000);
+        this.interval = setInterval(() => this.setState({ iter: this.state.iter + 1 }), 500);
     }
 
     componentWillUnmount() {
@@ -67,6 +67,7 @@ class GameBoard extends React.Component {
                 <h1>Game Board</h1>
                 <h1>{this.state.time}</h1>
                 <h1>P1: {p1} - P2: {p2}</h1>
+                <h1>Turn Count: {this.state.iter + 1}</h1>
                 <table>
                 <tbody id="table-body">
                 {display && move.map((row,ukey) => (
