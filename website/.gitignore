@@ -3,6 +3,7 @@
 *.pyc
 *.DS_Store
 .cache
+snickers_env/*
 node_modules
 build
 __pycache__
