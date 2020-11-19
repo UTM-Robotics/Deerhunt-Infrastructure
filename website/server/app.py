@@ -139,10 +139,7 @@ def run_match(position):
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    # u, p = safe_get_user_and_pass()
-    u = 'alex'
-    p = 'tester'
-    print("HDIFJDF")
+    u, p = safe_get_user_and_pass()
     result = database.users.find_one({'username': u})
     if result is None or 'password' not in result:
         abort(403)
