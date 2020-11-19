@@ -18,10 +18,9 @@ import os
 app = Flask(__name__, static_folder='../build')
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
-
-database = MongoClient('localhost', 27017).neodeerhunt
+database = MongoClient("mongodb+srv://utmrobotics:<password>@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
 board = Leaderboard(database.leaderboard)
-dock= docker.from_env()
+# dock = docker.from_env()
 
 prefix = '/deerhunt'
 submissions_folder = f'{prefix}/submissions'
@@ -140,8 +139,10 @@ def run_match(position):
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    u, p = safe_get_user_and_pass()
-
+    # u, p = safe_get_user_and_pass()
+    u = 'alex'
+    p = 'tester'
+    print("HDIFJDF")
     result = database.users.find_one({'username': u})
     if result is None or 'password' not in result:
         abort(403)

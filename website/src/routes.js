@@ -8,6 +8,7 @@ import Submit from './components/Submit';
 import AdminPanel from './components/AdminPanel';
 import ErrorPage from './components/ErrorPage';
 import Profile from './components/Profile';
+import Register from './components/Register';
 
 class Routes extends React.Component {
     render() {
@@ -15,6 +16,7 @@ class Routes extends React.Component {
             <AppWrapper>
                 <Switch>
                     <Route exact path='/' component={Login} />
+                    <Route path='/register' component={Register} />
                     <Route path='/home' component={Home} />
                     <Route path='/replay' component={Replay} />
                     <Route path='/submit' component={Submit} />
