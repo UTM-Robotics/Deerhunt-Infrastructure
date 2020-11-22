@@ -7,6 +7,7 @@ from passlib.hash import sha512_crypt
 from zipfile import ZipFile, BadZipFile
 from leaderboard import Leaderboard
 from datetime import datetime
+from email_bot import EmailBot
 import traceback
 import uuid
 import docker
@@ -14,6 +15,7 @@ import time
 import shutil
 import os
 import re
+from email_bot import EmailBot
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
@@ -22,6 +24,7 @@ CORS(app)
 database = MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
 board = Leaderboard(database.leaderboard)
 # dock = docker.from_env()
+email_bot = EmailBot('aws.alertbot@gmail.com','5739842573') #Temperory email. TODO Change this.
 
 prefix = '/deerhunt'
 submissions_folder = f'{prefix}/submissions'
