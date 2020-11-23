@@ -244,7 +244,7 @@ def register():
 
     curr_time = datetime.now()
     code = codeGenerator.generate()
-    emailBot.sendmail(u, "Account Verification", domain+"/api/verify/"+code)
+    emailBot.sendmail(u, "Account Verification", domain+"/verify/"+code)
 
     database.users.insert_one({'username': u,
                                'password': sha512_crypt.encrypt(p),
@@ -411,4 +411,4 @@ def copy_dir_contents(src, dest):
         shutil.copy(f'{src}/{file}', dest)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7082, threaded=True)
+    app.run(host='0.0.0.0', port=80, threaded=True)
