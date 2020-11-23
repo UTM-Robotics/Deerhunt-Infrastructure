@@ -162,7 +162,7 @@ class Submit extends React.Component {
                             <p>{this.state.result}</p>
                             <div className="buttons-con">
                                 <div className="action-link-wrap">
-                                    <a href="/home" className="link-button">Go to Home Page</a>
+                                    <a href="/submit" className="link-button">Go to Home Page</a>
                                 </div>
                             </div>
                         </div>}

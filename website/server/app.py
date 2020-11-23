@@ -44,49 +44,58 @@ def submit():
     if not can_submit:
         abort(403)
 
-    if session['username'] not in submitting:
-        submitting[session['username']] = False
-    elif submitting[session['username']]:
-        abort(409)
+    # if session['username'] not in submitting:
+    #     submitting[session['username']] = False
+    # elif submitting[session['username']]:
+    #     abort(409)
 
-    submitting[session['username']] = True
+    # submitting[session['username']] = True
 
-    if 'upload' not in request.files or 'position' not in request.form:
+    if 'upload' not in request.files:
         abort(400)
 
-    try:
-        position = int(request.form['position']) - 1
-    except Exception:
-        abort(400)
+    saveSubmission()
+    
+    return "Zip submitted! Thanks"
 
-    if position < 0 or position > 9:
-        abort(400)
+    # try:
+    #     position = int(request.form['position']) - 1
+    # except Exception:
+    #     abort(400)
 
-    try:
-        result = run_match(position)
-    except Exception as e:
-        database.errors.insert_one({'message': str(e), 'trace': traceback.format_exc(),'time': datetime.utcnow()})
+    # if position < 0 or position > 9:
+    #     abort(400)
 
-        if board.is_locked(position):
-            board.release(position)
+    # try:
+    #     result = run_match(position)
+    # except Exception as e:
+    #     database.errors.insert_one({'message': str(e), 'trace': traceback.format_exc(),'time': datetime.utcnow()})
 
-        abort(500)
-    finally:
-        submitting[session['username']] = False
+    #     if board.is_locked(position):
+    #         board.release(position)
 
-    return result
+    #     abort(500)
+    # finally:
+    #     submitting[session['username']] = False
 
-def run_match(position):
+
+def saveSubmission():
+    if session['username'] in submitting:
+        shutil.rmtree(submitting[session['username']])
     submit_folder = f'{session["username"]}-{time.time()}'
     submit_path = f'{submissions_folder}/{submit_folder}'
     request.files['upload'].save(f'{submit_path}.zip')
-
+    submitting[session['username']] = submit_path
     try:
         with ZipFile(f'{submit_path}.zip', 'r') as z:
             z.extractall(submit_path)
     except BadZipFile:
         abort(400)
+    os.remove(f'{submit_path}.zip')
 
+    
+
+def run_match(position):
     leader = board.acquire(position)
     leader_path = f'{submissions_folder}/{leader}'
 
