@@ -1,19 +1,3 @@
-import smtplib as smt
-SENDER = 'aws.alertbot@gmail.com'
-PASS = '5739842573'
-SUBJECT = 'Oops! Bot went Down'
-BODY = "Don't worry its back ON ;)"
-def sendmail():
-
-    with smt.SMTP('smtp.gmail.com',587) as smtp:
-        smtp.ehlo()
-        smtp.starttls()
-        smtp.ehlo()
-        smtp.login(SENDER,PASS)
-        messsage = 'Subject: {}\n\n{}'.format(SUBJECT,BODY)
-        smtp.sendmail(SENDER,'parth.patel0573@gmail.com',messsage)
-
-
 class EmailBot():
     """
     A email_bot to send emails. Configured to use Gmail account.
