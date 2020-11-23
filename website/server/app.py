@@ -7,6 +7,7 @@ from passlib.hash import sha512_crypt
 from zipfile import ZipFile, BadZipFile
 from leaderboard import Leaderboard
 from datetime import datetime
+from code_generator import CodeGenerator
 from email_bot import EmailBot
 import traceback
 import uuid
@@ -24,7 +25,14 @@ CORS(app)
 database = MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
 board = Leaderboard(database.leaderboard)
 # dock = docker.from_env()
-email_bot = EmailBot('aws.alertbot@gmail.com','5739842573') #Temperory email. TODO Change this.
+
+
+emailBot = EmailBot('aws.alertbot@gmail.com','5739842573') #Temperory email. TODO Change this.
+allowed_emails = ["@mail.utoronto.ca"]
+codeGenerator = CodeGenerator(32)
+domain = 'home.parthjpatel.com'
+
+
 
 prefix = '/deerhunt'
 submissions_folder = f'{prefix}/submissions'
@@ -58,7 +66,7 @@ def submit():
         abort(400)
 
     saveSubmission()
-    
+
     return "Zip submitted! Thanks"
 
     # try:
@@ -96,7 +104,7 @@ def saveSubmission():
         abort(400)
     os.remove(f'{submit_path}.zip')
 
-    
+
 
 def run_match(position):
     leader = board.acquire(position)
@@ -159,6 +167,8 @@ def login():
 
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
+    if result['verified'] == 'False':
+        return "Please verify your account first."
 
     session['logged_in'] = True
     session['username'] = u
@@ -187,18 +197,59 @@ def changePassword():
 
     return 'Change successful'
 
+@app.route('/api/verify/<code>', methods=['POST'])
+def verify_email(code: str):
+    result = database.users.find_one({'code':code})
+    if result is None:
+        return "Invalid Verification Link."
+    reg_time = datetime.strptime(result['time'], '%Y-%m-%d %H:%M:%S.%f')
+    curr_time = datetime.now()
+    time_delta = curr_time-reg_time
+    if time_delta.seconds > 180:
+        return "Verification link has expired, Please recreate the account."
+        #TODO delete this account.
+    u, p = safe_get_user_and_pass()
+    result = database.users.find_one({'username': u})
+    if result is None or 'password' not in result:
+        abort(403)
+
+    if not sha512_crypt.verify(p, result['password']):
+        abort(403)
+
+    query = {'code' : code}
+    newvalues = {'$set': {'verified': 'True'}}
+    database.users.update_one(query, newvalues)
+
+    return "Your Account has been successfully verified."
+
+
+
+
+
+
+
 @app.route('/api/register', methods=['POST'])
 def register():
     #admin_guard()
 
     u, p = safe_get_user_and_pass()
+    u = u.strip(" ")
 
     result = database.users.find_one({'username': u})
     if result is not None:
         abort(409)
 
+    if not is_allowed(u):
+        return "Please use a UofT email."
+
+    curr_time = datetime.now()
+    code = codeGenerator.generate()
+    emailBot.sendmail(u, "Account Verification", domain+"/api/verify/"+code)
+
     database.users.insert_one({'username': u,
-                               'password': sha512_crypt.encrypt(p)})
+                               'password': sha512_crypt.encrypt(p),
+                               'code': code, 'time': str(curr_time),
+                               'verified' : 'False'})
 
     return 'Register successful'
 
@@ -294,16 +345,16 @@ def resetlockout():
 
 @app.route('/tutorial')
 def tutorial():
-  #pylint: disable=unused-argument
-  return send_from_directory(app.static_folder, 'tutorial.html')
+    #pylint: disable=unused-argument
+    return send_from_directory(app.static_folder, 'tutorial.html')
 
 
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def index(path):
-  '''Return index.html for all non-api routes'''
-  #pylint: disable=unused-argument
-  return send_from_directory(app.static_folder, 'index.html')
+    '''Return index.html for all non-api routes'''
+    #pylint: disable=unused-argument
+    return send_from_directory(app.static_folder, 'index.html')
 
 ##
 # Helpers
@@ -348,6 +399,12 @@ def is_admin_check():
         return False
 
     return True
+
+def is_allowed(email : str) -> bool:
+    for allowed_email in allowed_emails:
+        if email.endswith(allowed_email):
+            return True
+    return False
 
 def copy_dir_contents(src, dest):
     for file in os.listdir(src):
