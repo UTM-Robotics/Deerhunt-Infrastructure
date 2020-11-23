@@ -15,7 +15,7 @@ class Register extends React.Component {
     }
 
 
-    addError(type: string) {
+    addLoginError(type: string) {
         $('.error-message').remove();
         $('.success-message').remove();
         var message = "";
