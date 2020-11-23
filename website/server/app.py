@@ -8,14 +8,15 @@ from zipfile import ZipFile, BadZipFile
 from leaderboard import Leaderboard
 from datetime import datetime
 from email_bot import EmailBot
+from tournament import Tournament
 import traceback
 import uuid
 import docker
-import time
+import time, sched
 import shutil
 import os
 import re
-from email_bot import EmailBot
+import threading
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
@@ -35,6 +36,21 @@ server_folder = f'{prefix}/server'
 should_display_leaderboards = True
 can_submit = True
 submitting = {}
+
+
+# Starting second thread for tournament timer.
+def runTournament():
+    s = sched.scheduler(time.time, time.sleep)
+
+    def do_some(sc):       
+        print("Starting tournament simulation")
+        t = Tournament(submitting)
+        s.enter(2, 1, do_some, (sc,))
+
+    s.enter(2, 1, do_some, (s,))
+    s.run()
+timer = threading.Thread(target=runTournament)
+timer.start()
 
 ##
 # API routes
