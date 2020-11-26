@@ -44,10 +44,12 @@ def runTournament():
 
     def do_some(sc):       
         print("Starting tournament simulation")
-        t = Tournament(submitting)
-        s.enter(2, 1, do_some, (sc,))
+        t = TournamentLevel(submitting)
+        t.run()
+        print(t)
+        s.enter(1800, 1, do_some, (sc,))
 
-    s.enter(2, 1, do_some, (s,))
+    s.enter(60, 1, do_some, (s,))
     s.run()
 timer = threading.Thread(target=runTournament)
 timer.start()
@@ -101,7 +103,7 @@ def submit():
 def saveSubmission():
     if session['username'] in submitting:
         shutil.rmtree(submitting[session['username']])
-    submit_folder = f'{session["username"]}-{time.time()}'
+    submit_folder = f'{session["username"]}'
     submit_path = f'{submissions_folder}/{submit_folder}'
     request.files['upload'].save(f'{submit_path}.zip')
     submitting[session['username']] = submit_path
