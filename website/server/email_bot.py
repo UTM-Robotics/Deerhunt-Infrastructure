@@ -1,3 +1,5 @@
+import smtplib as smt
+
 class EmailBot():
     """
     A email_bot to send emails. Configured to use Gmail account.
@@ -15,6 +17,7 @@ class EmailBot():
     sender : str
     password : str
 
+
     def __init__(self, sender:str, password:str) -> None:
         """
         Initiates the bot with proper email account.
@@ -23,6 +26,11 @@ class EmailBot():
         """
         self.sender = sender
         self.password = password
+        self.smtp = smt.SMTP('smtp.gmail.com',587)
+        self.smtp.ehlo()
+        self.smtp.starttls()
+        self.smtp.ehlo()
+        self.smtp.login(self.sender,self.password)
 
     def sendmail(self,receiver:str, subject:str, body:str) -> bool:
         """
@@ -33,10 +41,5 @@ class EmailBot():
         :return: returns true if the email was sent successfully and 
                 false otherwise.
         """
-        with smt.SMTP('smtp.gmail.com',587) as smtp:
-            smtp.ehlo()
-            smtp.starttls()
-            smtp.ehlo()
-            smtp.login(self.sender,self.password)
-            message = 'Subject: {}\n\n{}'.format(subject, body)
-            smtp.sendmail(self.sender, receiver, message)
+        message = 'Subject: {}\n\n{}'.format(subject, body)
+        self.smtp.sendmail(self.sender, receiver, message)

@@ -16,6 +16,7 @@ import time
 import shutil
 import os
 import re
+import _thread
 from email_bot import EmailBot
 
 '''Main wrapper for app creation'''
@@ -27,10 +28,10 @@ board = Leaderboard(database.leaderboard)
 # dock = docker.from_env()
 
 
-emailBot = EmailBot('aws.alertbot@gmail.com','5739842573') #Temperory email. TODO Change this.
+emailBot = EmailBot('robotics@utmsu.ca','autonomousenthusiasts') 
 allowed_emails = ["@mail.utoronto.ca"]
-codeGenerator = CodeGenerator(32)
-domain = 'home.parthjpatel.com'
+codeGenerator = CodeGenerator(64)
+verification_domain = 'battlecode.utmrobotics.com'
 
 
 
@@ -168,7 +169,7 @@ def login():
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
     if result['verified'] == 'False':
-        return "Please verify your account first."
+        abort(403)
 
     session['logged_in'] = True
     session['username'] = u
@@ -197,7 +198,7 @@ def changePassword():
 
     return 'Change successful'
 
-@app.route('/api/verify/<code>', methods=['POST'])
+@app.route('/verify/<code>')
 def verify_email(code: str):
     result = database.users.find_one({'code':code})
     if result is None:
@@ -205,46 +206,37 @@ def verify_email(code: str):
     reg_time = datetime.strptime(result['time'], '%Y-%m-%d %H:%M:%S.%f')
     curr_time = datetime.now()
     time_delta = curr_time-reg_time
-    if time_delta.seconds > 180:
+    if time_delta.seconds > 300:
+        database.users.deleteOne({"code":code})
         return "Verification link has expired, Please recreate the account."
-        #TODO delete this account.
-    u, p = safe_get_user_and_pass()
-    result = database.users.find_one({'username': u})
-    if result is None or 'password' not in result:
-        abort(403)
-
-    if not sha512_crypt.verify(p, result['password']):
-        abort(403)
-
     query = {'code' : code}
     newvalues = {'$set': {'verified': 'True'}}
     database.users.update_one(query, newvalues)
-
-    return "Your Account has been successfully verified."
-
-
-
-
-
-
+    return "Account has been verified successfully"
 
 @app.route('/api/register', methods=['POST'])
 def register():
     #admin_guard()
 
     u, p = safe_get_user_and_pass()
+    u = u.lower()
     u = u.strip(" ")
-
+    print(u + ' ' + p)
     result = database.users.find_one({'username': u})
     if result is not None:
         abort(409)
 
     if not is_allowed(u):
-        return "Please use a UofT email."
+        print("invalid email")
+        abort(409)
 
     curr_time = datetime.now()
     code = codeGenerator.generate()
-    emailBot.sendmail(u, "Account Verification", domain+"/verify/"+code)
+    msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(verification_domain+"/verify/"+code)
+    try:
+        _thread.start_new_thread(emailBot.sendmail,(u, "Account Verification", msg))
+    except:
+        print("some error in multithreading")
 
     database.users.insert_one({'username': u,
                                'password': sha512_crypt.encrypt(p),

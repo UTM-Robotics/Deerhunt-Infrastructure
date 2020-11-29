@@ -20,7 +20,7 @@ class Register extends React.Component {
         $('.success-message').remove();
         var message = "";
         if (type === 'user') {
-            message = "Please enter an user"
+            message = " Please enter a valid UofT email."
         }
         else if (type === 'password') {
             message = "Please enter a password";
