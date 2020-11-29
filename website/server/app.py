@@ -207,7 +207,7 @@ def verify_email(code: str):
     curr_time = datetime.now()
     time_delta = curr_time-reg_time
     if time_delta.seconds > 300:
-        database.users.deleteOne({"code":code})
+        database.users.delete_one({"code":code})
         return "Verification link has expired, Please recreate the account."
     query = {'code' : code}
     newvalues = {'$set': {'verified': 'True'}}
