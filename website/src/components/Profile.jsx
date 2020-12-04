@@ -10,7 +10,8 @@ class Profile extends React.Component {
             username: "",
             currentPassword: "",
             newPassword: "",
-            confirmPassword: ""
+            confirmPassword: "",
+            team: ""
         };
     }
 
@@ -135,6 +136,7 @@ class Profile extends React.Component {
                     <input type="password" placeholder="new password" onChange={this.handleNewPasswordChange.bind(this)} />
                     <input type="password" placeholder="confirm new password" onChange={this.handleConfirmPasswordChange.bind(this)} />
                     <div className="register-button" onClick={this.change.bind(this)}>update</div>
+                    
                 </form>
             </div>
         );

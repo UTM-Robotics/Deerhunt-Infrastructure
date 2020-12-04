@@ -128,7 +128,7 @@ def run_match(position):
     container = dock.containers.run(uid, detach=True, auto_remove=True, network_mode=None,
                                     cpu_count=1, mem_limit='512m')
 
-    lines = []
+    lines = []database.teams.
     maps = []
     errors = []
 
@@ -158,6 +158,35 @@ def run_match(position):
                                         'submitter': session['username']}).inserted_id
 
     return jsonify(game_id=str(game_id), message=lines[-1])
+# Teams
+# Teams assigning api calls
+@app.route('api/sendinvite',methods=['POST'])
+def send_invite():
+    team_id = get_user_team()
+    team = database
+    request
+    database.teams.insert_one()
+
+@app.route('api/sendinvite',methods=['GET'])
+def sent_invites():
+    team_id = get_user_team()
+    team = 
+    return team[invited]
+
+@app.route('api/jointeam',methods=['GET'])
+def join_team():
+    login_guard()
+    if get_user_team():
+
+# Teams assigning api calls
+@app.route('api/',methods=['POST'])
+def user_invites():
+
+# Teams assigning api calls
+@app.route('api/respondinvite',methods=['POST'])
+def respond_invite():
+
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
