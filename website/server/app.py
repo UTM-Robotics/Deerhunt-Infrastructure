@@ -128,7 +128,7 @@ def run_match(position):
     container = dock.containers.run(uid, detach=True, auto_remove=True, network_mode=None,
                                     cpu_count=1, mem_limit='512m')
 
-    lines = []database.teams.
+    lines = []
     maps = []
     errors = []
 
