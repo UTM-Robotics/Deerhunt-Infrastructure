@@ -1,22 +1,23 @@
 '''server/app.py - main api app declaration'''
+import os
+import uuid
+import time
+# import sched
+import threading
+import shutil
+# import docker
+# import re
+# import traceback
+# from datetime import datetime
+from zipfile import ZipFile, BadZipFile
 from flask import Flask, jsonify, send_from_directory, request, abort, session
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from passlib.hash import sha512_crypt
-from zipfile import ZipFile, BadZipFile
 from leaderboard import Leaderboard
-from datetime import datetime
 from email_bot import EmailBot
-from tournament import Tournament
-import traceback
-import uuid
-import docker
-import time, sched
-import shutil
-import os
-import re
-import threading
+from tournament import TournamentLevel
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
@@ -35,24 +36,25 @@ server_folder = f'{prefix}/server'
 
 should_display_leaderboards = True
 can_submit = True
-submitting = {}
+submitting = {} # dict looks like: {'some team name': }
 
 
 # Starting second thread for tournament timer.
-def runTournament():
-    s = sched.scheduler(time.time, time.sleep)
 
-    def do_some(sc):       
-        print("Starting tournament simulation")
-        t = TournamentLevel(submitting)
-        t.run()
-        print(t)
-        s.enter(1800, 1, do_some, (sc,))
+# def runTournament():
+#     s = sched.scheduler(time.time, time.sleep)
+#     print("dflaf")
+#     def do_some(sc):       
+#         print("Starting tournament simulation")
+#         t = TournamentLevel(submitting)
+#         res = t.run()
+#         print(res)
+#         s.enter(20, 1, do_some, (sc,))
 
-    s.enter(60, 1, do_some, (s,))
-    s.run()
-timer = threading.Thread(target=runTournament)
-timer.start()
+#     s.enter(5, 1, do_some, (s,))
+#     s.run()
+# timer = threading.Thread(target=runTournament)
+# timer.start()
 
 ##
 # API routes
@@ -60,23 +62,27 @@ timer.start()
 
 @app.route('/api/submit', methods=['POST'])
 def submit():
+    '''
+    Instanstly saves a team's submission to /deerhunt/submissions/someTeamname/
+    Also removes zip after extracting.
+    '''
     login_guard()
-
     if not can_submit:
         abort(403)
-
-    # if session['username'] not in submitting:
-    #     submitting[session['username']] = False
-    # elif submitting[session['username']]:
-    #     abort(409)
-
-    # submitting[session['username']] = True
-
     if 'upload' not in request.files:
         abort(400)
-
-    saveSubmission()
-    
+    # if session['username'] in submitting:
+    #     shutil.rmtree(submitting[session['username']])
+    submit_folder = f'{session["username"]}'
+    submit_path = f'{submissions_folder}/{submit_folder}'
+    request.files['upload'].save(f'{submit_path}.zip')
+    submitting[session['username']] = submit_path
+    try:
+        with ZipFile(f'{submit_path}.zip', 'r') as z:
+            z.extractall(submit_path)
+    except BadZipFile:
+        abort(400)
+    os.remove(f'{submit_path}.zip')    
     return "Zip submitted! Thanks"
 
     # try:
@@ -98,21 +104,6 @@ def submit():
     #     abort(500)
     # finally:
     #     submitting[session['username']] = False
-
-
-def saveSubmission():
-    if session['username'] in submitting:
-        shutil.rmtree(submitting[session['username']])
-    submit_folder = f'{session["username"]}'
-    submit_path = f'{submissions_folder}/{submit_folder}'
-    request.files['upload'].save(f'{submit_path}.zip')
-    submitting[session['username']] = submit_path
-    try:
-        with ZipFile(f'{submit_path}.zip', 'r') as z:
-            z.extractall(submit_path)
-    except BadZipFile:
-        abort(400)
-    os.remove(f'{submit_path}.zip')
 
     
 
@@ -167,6 +158,8 @@ def run_match(position):
                                         'submitter': session['username']}).inserted_id
 
     return jsonify(game_id=str(game_id), message=lines[-1])
+
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -372,4 +365,4 @@ def copy_dir_contents(src, dest):
         shutil.copy(f'{src}/{file}', dest)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=7082, threaded=True)
+    app.run(host='0.0.0.0', port=7082, threaded=True, debug=True)
