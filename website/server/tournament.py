@@ -25,6 +25,7 @@ class TournamentLevel:
         '''
         retList = list()
         for i in submissions:
+            # This for loop makes a list of dictionaries. [{'team name': '/deerhunt/submission path'}, ... ,{}]
             temp = dict()
             temp[i] = submissions[i]
             retList.append(temp)
@@ -50,7 +51,7 @@ class TournamentLevel:
             for teams in range(num_of_teams // 2):
                 player1 = rootList[bracket][teams]
                 player2 = rootList[bracket][-1*(teams+1)]
-                result = battle(player1, player2) # STILL NEEDS TO BE WRITTEN
+                result = TournamentLevel.battle(player1, player2) # STILL NEEDS TO BE WRITTEN
                 if result == 0:
                     retList[bracket].append(player1)
                     retList[bracket+1].append(player2)

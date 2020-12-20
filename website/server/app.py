@@ -5,6 +5,7 @@ import time
 # import sched
 import threading
 import shutil
+import schedule
 # import docker
 # import re
 # import traceback
@@ -41,21 +42,21 @@ submitting = {} # dict looks like: {'some team name': }
 
 # Starting second thread for tournament timer.
 
-# def runTournament():
-#     s = sched.scheduler(time.time, time.sleep)
-#     print("dflaf")
-#     def do_some(sc):       
-#         print("Starting tournament simulation")
-#         t = TournamentLevel(submitting)
-#         res = t.run()
-#         print(res)
-#         s.enter(20, 1, do_some, (sc,))
-
-#     s.enter(5, 1, do_some, (s,))
-#     s.run()
-# timer = threading.Thread(target=runTournament)
-# timer.start()
-
+def job():
+    tourny = TournamentLevel(submitting)
+    x = tourny.run()
+    print(x)
+# def run_threaded(job_func):
+#     job_thread = threading.Thread(target=job_func)
+#     job_thread.start()
+# def runTournamentThread():
+#     schedule.every(1).second.do(run_threaded, job)
+#     while 1:
+#         schedule.run_pending()
+#         time.sleep(1)
+# tournament_timer = threading.Thread(target=runTournamentThread)
+# tournament_timer.start()
+job()
 ##
 # API routes
 ##
@@ -106,7 +107,7 @@ def submit():
     #     submitting[session['username']] = False
 
     
-
+@staticmethod
 def run_match(position):
     leader = board.acquire(position)
     leader_path = f'{submissions_folder}/{leader}'
