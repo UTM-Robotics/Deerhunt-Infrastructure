@@ -42,8 +42,8 @@ submitting = {} # dict looks like: {'some team name': }
 
 # Starting second thread for tournament timer.
 
-def job():
-    tourny = TournamentLevel(submitting)
+def job(arr):
+    tourny = TournamentLevel(arr)
     x = tourny.run()
     print(x)
 # def run_threaded(job_func):
@@ -56,7 +56,9 @@ def job():
 #         time.sleep(1)
 # tournament_timer = threading.Thread(target=runTournamentThread)
 # tournament_timer.start()
-job()
+# test = {'alex2': '/deerhunt/submissions/alex2', 'kyrel': '/deerhunt/submissions/kyrel'}
+test = ['alex2', 'kyrel']
+job(test)
 ##
 # API routes
 ##
@@ -67,13 +69,17 @@ def submit():
     Instanstly saves a team's submission to /deerhunt/submissions/someTeamname/
     Also removes zip after extracting.
     '''
+    print(submitting)
     login_guard()
     if not can_submit:
         abort(403)
     if 'upload' not in request.files:
         abort(400)
-    # if session['username'] in submitting:
-    #     shutil.rmtree(submitting[session['username']])
+    if session['username'] in submitting:
+        try:
+            shutil.rmtree(submitting[session['username']])
+        except FileNotFoundError:
+            print("Team did not have anything submitted.")
     submit_folder = f'{session["username"]}'
     submit_path = f'{submissions_folder}/{submit_folder}'
     request.files['upload'].save(f'{submit_path}.zip')
@@ -106,7 +112,6 @@ def submit():
     # finally:
     #     submitting[session['username']] = False
 
-    
 @staticmethod
 def run_match(position):
     leader = board.acquire(position)
@@ -174,7 +179,8 @@ def login():
 
     session['logged_in'] = True
     session['username'] = u
-    submitting[session['username']] = False
+    # submitting[session['username']] = False
+    submitting[session['username']] = ''
 
     return 'Login successful'
 

@@ -2,9 +2,8 @@ import random
 
 class TournamentLevel:
 
-    def __init__(self, submissions: dict):
+    def __init__(self, submissions: list):
         self.init_teams_dict = submissions
-
 
     def run(self):
         '''
@@ -16,20 +15,19 @@ class TournamentLevel:
             res = TournamentLevel.runTournament(self.init_teams_dict)
         return res
 
-
     @staticmethod
-    def shuffle(submissions):
+    def shuffle(submissions: list):
         '''
-        This wrapper shuffles and rearranges list of dictionaries to be in the form [ ({}, {}), ({}, {}) ]
+        This wrapper shuffles and rearranges list of dictionaries to be in the form [ 'teamname1', 'teamname2' ]
         Each dictionary represents a single team and their submission path.
         '''
-        retList = list()
-        for i in submissions:
-            # This for loop makes a list of dictionaries. [{'team name': '/deerhunt/submission path'}, ... ,{}]
-            temp = dict()
-            temp[i] = submissions[i]
-            retList.append(temp)
-        print("original: ", retList)
+        retList = submissions
+        # for i in submissions:
+        #     # This for loop makes a list of dictionaries. [{'team name': '/deerhunt/submission path'}, ... ,{}]
+        #     temp = dict()
+        #     temp[i] = submissions[i]
+        #     retList.append(temp)
+        print("original: ", submissions)
         random.shuffle(retList)
         print("list after shuffle ", retList)
         return list(retList)
@@ -39,28 +37,43 @@ class TournamentLevel:
         '''
         Runs entire tournament simulation.
         Returns a single list
+        [[], [], []]
         '''
-        num_of_brackets = len(rootList)
-        retList = list()
-        for k in range(num_of_brackets):
-            retList.append(list())
-        retList.append(list())
-
-        for bracket in range(num_of_brackets):
-            num_of_teams = len(rootList[bracket])
-            for teams in range(num_of_teams // 2):
-                player1 = rootList[bracket][teams]
-                player2 = rootList[bracket][-1*(teams+1)]
-                result = TournamentLevel.battle(player1, player2) # STILL NEEDS TO BE WRITTEN
-                if result == 0:
-                    retList[bracket].append(player1)
-                    retList[bracket+1].append(player2)
-                elif result == 1:
-                    retList[bracket].append(player2)
-                    retList[bracket].append(player1)
-            if num_of_teams % 2 != 0:
-                retList[bracket].append(rootList[bracket][num_of_teams // 2]) # Might have to update num of wins per team.
-        return retList
+        starting_teams = list()
+        starting_teams.append(rootList) # [ ['alex2', 'kyrel', ...,'']]
+        temp = starting_teams
+        while len(starting_teams[0]) != 1:
+            num_brackets = len(starting_teams)
+            for k in range(num_brackets):
+                num_teams = len(starting_teams[k])
+                if num_teams % 2 != 0:
+                    num_teams -= 1
+                for i in range(num_teams // 2):
+                    player1 = starting_teams[k][i]
+                    player2 = starting_teams[k][num_teams - i]
+                    result = TournamentLevel.battle(player1, player2) # STILL NEEDS TO BE WRITTEN
+                    if result == 0:
+                        starting_teams[k].remove(player2)
+                        starting_teams[k+1].append(player2)
+                    elif result == 1:
+                        starting_teams[k].remove(player1)
+                        starting_teams[k+1].append(player1)
+                    
+        # for bracket in range(num_of_brackets):
+        #     num_of_teams = len(rootList[bracket])
+        #     for teams in range(num_of_teams // 2):
+        #         player1 = rootList[bracket][teams]
+        #         player2 = rootList[bracket][-1*(teams+1)]
+        #         result = TournamentLevel.battle(player1, player2) # STILL NEEDS TO BE WRITTEN
+        #         if result == 0:
+        #             retList[bracket].append(player1)
+        #             retList[bracket+1].append(player2)
+        #         elif result == 1:
+        #             retList[bracket].append(player2)
+        #             retList[bracket].append(player1)
+        #     if num_of_teams % 2 != 0:
+        #         retList[bracket].append(rootList[bracket][num_of_teams // 2]) # Might have to update num of wins per team.
+        # return retList
 
     @staticmethod
     def battle(player1: dict, player2: dict):
