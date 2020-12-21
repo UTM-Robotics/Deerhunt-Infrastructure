@@ -1,4 +1,5 @@
 import random
+import math
 
 class TournamentLevel:
 
@@ -31,6 +32,13 @@ class TournamentLevel:
         random.shuffle(retList)
         print("list after shuffle ", retList)
         return list(retList)
+    
+    @staticmethod
+    def create_empty_list(n: int):
+        x = []
+        for _ in range(n):
+            x.append(list())
+        return x
 
     @staticmethod
     def runTournament(rootList: list):
@@ -39,26 +47,66 @@ class TournamentLevel:
         Returns a single list
         [[], [], []]
         '''
+        count = 0
         starting_teams = list()
         starting_teams.append(rootList) # [ ['alex2', 'kyrel', ...,'']]
-        temp = starting_teams
-        while len(starting_teams[0]) != 1:
+        total_teams = len(rootList)
+        rounds = math.floor(math.log(total_teams, 2))
+        for _ in range(rounds):
+            # temp.append(list())
+            temp = TournamentLevel.create_empty_list(len(starting_teams)+1)
+            print(starting_teams)
+
             num_brackets = len(starting_teams)
             for k in range(num_brackets):
+
                 num_teams = len(starting_teams[k])
                 if num_teams % 2 != 0:
                     num_teams -= 1
+                    name = starting_teams[k][num_teams]
+                    temp[k].append(name)
+                    starting_teams[k].remove(name)
+
                 for i in range(num_teams // 2):
-                    player1 = starting_teams[k][i]
-                    player2 = starting_teams[k][num_teams - i]
+                    player1 = starting_teams[k][i] #player1 is set to string "alex2" someteamname
+                    player2 = starting_teams[k][num_teams - 1 - i]
                     result = TournamentLevel.battle(player1, player2) # STILL NEEDS TO BE WRITTEN
+                    count +=1
                     if result == 0:
-                        starting_teams[k].remove(player2)
-                        starting_teams[k+1].append(player2)
+                        temp[k].append(player1)
+                        temp[k+1].append(player2)
                     elif result == 1:
-                        starting_teams[k].remove(player1)
-                        starting_teams[k+1].append(player1)
-                    
+                        temp[k].append(player2)
+                        temp[k+1].append(player1)
+            starting_teams = temp
+
+        temp = [[]]
+        for i in range(len(starting_teams)):
+            if i != 0:
+                temp.append(starting_teams[i])
+        print(starting_teams)
+        num_brackets = len(starting_teams)
+        num_teams = len(starting_teams[0])
+        if num_teams % 2 != 0:
+            num_teams -= 1
+            name = starting_teams[k][num_teams]
+            temp[k].append(name)
+            starting_teams[k].remove(name)
+        for i in range(num_teams // 2):
+            player1 = starting_teams[0][i] #player1 is set to string "alex2" someteamname
+            player2 = starting_teams[0][num_teams - 1 - i]
+            result = TournamentLevel.battle(player1, player2) # STILL NEEDS TO BE WRITTEN
+            count +=1
+            if result == 0:
+                temp[0].append(player1)
+                temp[1].append(player2)
+            elif result == 1:
+                temp[0].append(player2)
+                temp[1].append(player1)
+        starting_teams = temp
+        print("count: "+str(count))
+        return starting_teams
+
         # for bracket in range(num_of_brackets):
         #     num_of_teams = len(rootList[bracket])
         #     for teams in range(num_of_teams // 2):
@@ -76,7 +124,7 @@ class TournamentLevel:
         # return retList
 
     @staticmethod
-    def battle(player1: dict, player2: dict):
+    def battle(player1: str, player2: str):
         '''
         Returns 0 if player1 wins.
         Returns 1 if player2 wins. 

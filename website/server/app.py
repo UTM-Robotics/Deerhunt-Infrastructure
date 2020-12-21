@@ -57,7 +57,14 @@ def job(arr):
 # tournament_timer = threading.Thread(target=runTournamentThread)
 # tournament_timer.start()
 # test = {'alex2': '/deerhunt/submissions/alex2', 'kyrel': '/deerhunt/submissions/kyrel'}
-test = ['alex2', 'kyrel']
+test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell', 'edmund', 'sova',
+        'jasmine2', 'kyrel2', 'peter2', 'jarvis2', 'jack2', 'raze2', 'bufflin2', 'dell2', 'edmund2', 'sova2',
+        'jasmine3', 'kyrel3', 'peter3', 'jarvis3', 'jack3', 'raze3', 'bufflin3', 'dell3', 'edmund3', 'sova3',
+        'jasmine4', 'kyrel4', 'peter4', 'jarvis4', 'jack4', 'raze4', 'bufflin4', 'dell4', 'edmund4']
+        # 'jasmine5', 'kyrel5', 'peter5', 'jarvis5', 'jack5', 'raze5', 'bufflin5', 'dell5', 'edmund5', 'sova5',
+        # 'jasmine6', 'kyrel6', 'peter6', 'jarvis6', 'jack6', 'raze6', 'bufflin6', 'dell6', 'edmund6', 'sova6',
+        # 'jasmine7', 'kyrel7', 'peter7', 'jarvis7', 'jack7', 'raze7', 'bufflin7', 'dell7', 'edmund7', 'sova7',
+        # 'jasmine8', 'kyrel8', 'peter8', 'jarvis8', 'jack8', 'raze8', 'bufflin8', 'dell8', 'edmund8', 'sova8']
 job(test)
 ##
 # API routes
