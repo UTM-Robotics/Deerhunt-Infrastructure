@@ -389,7 +389,7 @@ def is_admin_check():
 
     if 'admin' not in result or not result['admin']:
         return False
-
+c
     return True
 
 def is_allowed(email : str) -> bool:
@@ -403,4 +403,4 @@ def copy_dir_contents(src, dest):
         shutil.copy(f'{src}/{file}', dest)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80, threaded=True)
+    app.run(host='0.0.0.0', port=8000, threaded=True)
