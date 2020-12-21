@@ -9,15 +9,16 @@ from leaderboard import Leaderboard
 from datetime import datetime
 from code_generator import CodeGenerator
 from email_bot import EmailBot
+import email_bot
+import code_generator
 import traceback
 import uuid
 import docker
 import time
 import shutil
 import os
-import re
+# import re
 import _thread
-from email_bot import EmailBot
 
 
 '''
@@ -34,7 +35,7 @@ board = Leaderboard(database.leaderboard)
 # dock = docker.from_env()
 
 
-emailBot = EmailBot('robotics@utmsu.ca','autonomousenthusiasts') 
+# emailBot = EmailBot('robotics@utmsu.ca','autonomousenthusiasts') 
 allowed_emails = ["@mail.utoronto.ca"]
 codeGenerator = CodeGenerator(64)
 verification_domain = 'battlecode.utmrobotics.com'
@@ -239,8 +240,9 @@ def register():
     code = codeGenerator.generate()
     msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(verification_domain+"/verify/"+code)
     try:
-        _thread.start_new_thread(emailBot.sendmail,(u, "Account Verification", msg))
-    except:
+        # _thread.start_new_thread(EmailBot.sendmail(u, "Account Verification", msg))
+        EmailBot.sendmail(u, "Account Verification", msg)
+    except Exception:
         print("some error in multithreading")
 
     database.users.insert_one({'username': u,
