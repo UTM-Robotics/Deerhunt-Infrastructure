@@ -23,7 +23,7 @@ from email_bot import EmailBot
 app = Flask(__name__, static_folder='../build')
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
-database = MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
+database = MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
 board = Leaderboard(database.leaderboard)
 # dock = docker.from_env()
 
@@ -221,7 +221,6 @@ def register():
     u, p = safe_get_user_and_pass()
     u = u.lower()
     u = u.strip(" ")
-    print(u + ' ' + p)
     result = database.users.find_one({'username': u})
     if result is not None:
         abort(409)
@@ -389,7 +388,6 @@ def is_admin_check():
 
     if 'admin' not in result or not result['admin']:
         return False
-c
     return True
 
 def is_allowed(email : str) -> bool:
