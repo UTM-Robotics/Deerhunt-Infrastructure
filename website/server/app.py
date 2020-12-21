@@ -38,7 +38,7 @@ board = Leaderboard(database.leaderboard)
 # emailBot = EmailBot('robotics@utmsu.ca','autonomousenthusiasts') 
 allowed_emails = ["@mail.utoronto.ca"]
 codeGenerator = CodeGenerator(64)
-verification_domain = 'battlecode.utmrobotics.com'
+verification_domain = 'https://mcss.utmrobotics.com'
 
 
 
