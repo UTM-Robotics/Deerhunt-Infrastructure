@@ -19,6 +19,12 @@ import re
 import _thread
 from email_bot import EmailBot
 
+
+'''
+Application Run Flags
+'''
+PROD_FLAG = False
+
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
@@ -41,8 +47,8 @@ build_folder = f'{prefix}/build'
 template_folder = f'{prefix}/template'
 server_folder = f'{prefix}/server'
 
-should_display_leaderboards = True
-can_submit = True
+should_display_leaderboards = False
+can_submit = False
 submitting = {}
 
 ##
@@ -206,7 +212,7 @@ def verify_email(code: str):
     reg_time = datetime.strptime(result['time'], '%Y-%m-%d %H:%M:%S.%f')
     curr_time = datetime.now()
     time_delta = curr_time-reg_time
-    if time_delta.seconds > 300:
+    if time_delta.seconds > 60*30:
         database.users.delete_one({"code":code})
         return "Verification link has expired, Please recreate the account."
     query = {'code' : code}
@@ -401,4 +407,7 @@ def copy_dir_contents(src, dest):
         shutil.copy(f'{src}/{file}', dest)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8000, threaded=True)
+    if PROD_FLAG:
+        app.run(host='0.0.0.0', port=80, threaded=True,ssl_context=('/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
+    else:
+        app.run(host='0.0.0.0',port=8080, threaded=True)
