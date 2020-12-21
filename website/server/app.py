@@ -33,6 +33,8 @@ allowed_emails = ["@mail.utoronto.ca"]
 codeGenerator = CodeGenerator(64)
 verification_domain = 'battlecode.utmrobotics.com'
 
+# Teams API:
+team_API = TeamsController(database) 
 
 
 prefix = '/deerhunt'
@@ -158,35 +160,44 @@ def run_match(position):
                                         'submitter': session['username']}).inserted_id
 
     return jsonify(game_id=str(game_id), message=lines[-1])
+
 # Teams
 # Teams assigning api calls
 @app.route('api/sendinvite',methods=['POST'])
 def send_invite():
-    team_id = get_user_team()
-    team = database
-    request
-    database.teams.insert_one()
+    login_guard()
+    if send_invite(): # TODO: Add/retrieve inputs from message, safely.
+        abort(403)
+    return True
 
 @app.route('api/sendinvite',methods=['GET'])
 def sent_invites():
+    login_guard()
     team_id = get_user_team()
-    team = 
-    return team[invited]
+    if team == None:
+    team = get_user_team()
 
-@app.route('api/jointeam',methods=['GET'])
-def join_team():
+    team = database.teams.get()
+    database.teams.insert_one()
     login_guard()
     if get_user_team():
 
 # Teams assigning api calls
-@app.route('api/',methods=['POST'])
+@app.route('api/',methods=['GET'])
 def user_invites():
+    login_guard()
+    pass
 
 # Teams assigning api calls
 @app.route('api/respondinvite',methods=['POST'])
 def respond_invite():
-
-
+    login_guard()
+    pass
+    
+@app.route('api/respondinvite',methods=['POST'])
+def create_team()
+    login_guard()
+    team_API.create_team()
 
 @app.route('/api/login', methods=['POST'])
 def login():
