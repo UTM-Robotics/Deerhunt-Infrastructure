@@ -103,7 +103,7 @@ class Register extends React.Component {
                 <form className="register-form" id="register-form">
                     <input type="text" placeholder="UofT Email" onChange={this.handleUserChange.bind(this)} />
                     <input type="password" placeholder="Password" onChange={this.handlePasswordChange.bind(this)} />
-                    <input type="confirmpassword" placeholder="Confirm your Password" onChange={this.handleConfirmPasswordChange.bind(this)} />
+                    <input type="password" placeholder="Confirm your Password" onChange={this.handleConfirmPasswordChange.bind(this)} />
                     <div className="register-button" onClick={this.register.bind(this)}>Register</div>
                 </form>
                 <p>Already have an account?</p>
