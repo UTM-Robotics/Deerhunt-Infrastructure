@@ -62,7 +62,7 @@ class Register extends React.Component {
             success: (responseData) => {
                 $('.error-message').remove();
                 $('.success-message').remove();
-                var successMessage = '<p class="success-message"> Success! Verification email sent.</p>';
+                var successMessage = '<p class="success-message"> Success! Verification email sent(Check Spam).</p>';
                 $('.register-button').after(successMessage);
             },
             error: () => {
