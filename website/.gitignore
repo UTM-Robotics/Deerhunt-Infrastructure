@@ -4,6 +4,7 @@
 *.DS_Store
 .cache
 snickers_env/*
+snickers-env/*
 node_modules
 build
 __pycache__
