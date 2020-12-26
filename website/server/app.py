@@ -53,6 +53,8 @@ submitting = {}
 ##
 
 # TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use.
+
+
 @app.route('/api/submit', methods=['POST'])
 def submit():
     login_guard()
@@ -238,10 +240,11 @@ def register():
         print("invalid email")
         abort(409)
 
+    code = codeGenerator.generate()
     query = {'username': u}
     data = {'username': u,
             'password': sha512_crypt.encrypt(p),
-            'code': code, 'time': str(curr_time),
+            'code': code, 'time': str(datetime.now()),
             'verified': 'False'}
     writeResult = database.users.update_one(
         query,
@@ -249,20 +252,22 @@ def register():
         upsert=True)
     if not writeResult.upserted_id:
         abort(409)
-    curr_time = datetime.now()
-    code = codeGenerator.generate()
     msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
         verification_domain+"/verify/"+code)
-    try:
-        EmailBot.sendmail(u, "Account Verification", msg)
-    except Exception:
+    email_status = EmailBot.sendmail(u, "Account Verification", msg)
+    if not email_status:
         print("Could not send email")
-        # TODO: LOAD ERROR ON DATABASE database.errors.insert_one()
+        database.errors.insert_one({"error": "Email could not send, error ",
+                                    'time': datetime.utcnow()
+                                    })
         return abort(400)
     return 'Register successful'
 
+
 ''' Safe For Upsert!!!
 '''
+
+
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
     login_guard()
@@ -282,8 +287,11 @@ def getmatch():
 
     return jsonify(result['maps'])
 
+
 ''' TODO: LEADERBOARD - DISREGARD UNTIL TEAMS COMPLETION
 '''
+
+
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
     login_guard()
@@ -310,9 +318,12 @@ def isloggedin():
 def isadmin():
     return str(is_admin_check())
 
+
 '''
  TODO: LEADERBOARD - Use db-based check, check if required at all?
 '''
+
+
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
     global should_display_leaderboards
@@ -325,8 +336,11 @@ def leaderboardtoggle():
     should_display_leaderboards = not should_display_leaderboards
     return str(should_display_leaderboards)
 
+
 ''' TODO: LEADERBOARD - Use db-based check, currently not ephemeral-safe.
 '''
+
+
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
     global can_submit
@@ -338,8 +352,11 @@ def submittoggle():
     can_submit = not can_submit
     return str(can_submit)
 
+
 ''' TODO: LEADERBOARD - Use db-based check, Submission system will be reconfigured.
 '''
+
+
 @app.route('/api/resetlockout', methods=['GET', 'POST'])
 def resetlockout():
     admin_guard()
@@ -360,6 +377,7 @@ def resetlockout():
 ##
 # View route
 ##
+
 
 @app.route('/tutorial')
 def tutorial():
