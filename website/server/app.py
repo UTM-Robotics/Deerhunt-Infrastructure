@@ -30,12 +30,9 @@ PROD_FLAG = False
 app = Flask(__name__, static_folder='../build')
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
-database = MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
-board = Leaderboard(database.leaderboard)
+database = None
 # dock = docker.from_env()
 
-
-# emailBot = EmailBot('robotics@utmsu.ca','autonomousenthusiasts') 
 allowed_emails = ["@mail.utoronto.ca"]
 codeGenerator = CodeGenerator(64)
 verification_domain = 'https://mcss.utmrobotics.com'
@@ -56,6 +53,7 @@ submitting = {}
 # API routes
 ##
 
+# TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use.
 @app.route('/api/submit', methods=['POST'])
 def submit():
     login_guard()
@@ -97,7 +95,7 @@ def submit():
     # finally:
     #     submitting[session['username']] = False
 
-
+'''
 def saveSubmission():
     if session['username'] in submitting:
         shutil.rmtree(submitting[session['username']])
@@ -165,6 +163,7 @@ def run_match(position):
                                         'submitter': session['username']}).inserted_id
 
     return jsonify(game_id=str(game_id), message=lines[-1])
+'''
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -184,20 +183,19 @@ def login():
 
     return 'Login successful'
 
+# TODO: SYNCUPDATE-Extra work: Proper Variable naming.
 @app.route('/api/changepassword', methods=['GET', 'POST'])
 def changePassword():
     login_guard()
 
     cup, nep, cop = safe_get_passwords()
-
     result = database.users.find_one({'username': session['username']})
-    if result is None or 'password' not in result:
+    if result is None:
         abort(403)
     if not sha512_crypt.verify(cup, result['password']):
         abort(403)
     if nep != cop:
         abort(400)
-
     query = {'username': session['username']}
     newvalues = {'$set': {'password': sha512_crypt.encrypt(nep)}}
 
@@ -221,10 +219,10 @@ def verify_email(code: str):
     database.users.update_one(query, newvalues)
     return "Account has been verified successfully"
 
+
+# TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use. Update using upsert 
 @app.route('/api/register', methods=['POST'])
 def register():
-    #admin_guard()
-
     u, p = safe_get_user_and_pass()
     u = u.lower()
     u = u.strip(" ")
@@ -252,6 +250,7 @@ def register():
 
     return 'Register successful'
 
+# Safe For Upsert!!!
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
     login_guard()
@@ -271,7 +270,7 @@ def getmatch():
 
     return jsonify(result['maps'])
 
-
+# TODO: LEADERBOARD - DISREGARD UNTIL TEAMS COMPLETION
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
     login_guard()
@@ -297,6 +296,7 @@ def isloggedin():
 def isadmin():
     return str(is_admin_check())
 
+# TODO: LEADERBOARD - Use db-based check, check if required at all?
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
     global should_display_leaderboards
@@ -309,7 +309,7 @@ def leaderboardtoggle():
     should_display_leaderboards = not should_display_leaderboards
     return str(should_display_leaderboards)
 
-
+# TODO: LEADERBOARD - Use db-based check, currently not ephemeral-safe.
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
     global can_submit
@@ -321,6 +321,7 @@ def submittoggle():
     can_submit = not can_submit
     return str(can_submit)
 
+# TODO: LEADERBOARD - Use db-based check, Submission system will be reconfigured.
 @app.route('/api/resetlockout', methods=['GET', 'POST'])
 def resetlockout():
     admin_guard()
@@ -411,5 +412,8 @@ def copy_dir_contents(src, dest):
 if __name__ == '__main__':
     if PROD_FLAG:
         app.run(host='0.0.0.0', port=80, threaded=True,ssl_context=('/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
+        database = MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
     else:
         app.run(host='0.0.0.0',port=8080, threaded=True)
+        database = MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
+    board = Leaderboard(database.leaderboard)
