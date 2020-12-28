@@ -10,9 +10,78 @@ Performs all Teams-related logic with Database.
 class TeamsController:
     MAX_TEAM_MEMBERS = 4
 
-    def __init_(self, database):
-        self.client = client
-        self.database = database
+    def __init__(self, username, teamname):
+        self.username = username
+        self.teamname = teamname
+
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+    def set_db_client(self, database_client):
+        self.database_client = database_client
+
+    def is_valid_team_name(self):
+        return len(self.teamname) > 8
+
+    '''
+    Returns None if the user has no team, returns the team object otherwise.
+    '''
+    def get_user_team(self, teamCollection, userCollection):
+        # login_guard()
+        user_file=userCollection.find_one({"username": self.username})
+        if 'team' not in user_file or user_file['team'] == '':
+            print("returning none")
+            return None
+        return teamCollection.find_one({'name': user_file['team']})
+
+    '''
+        Creates a team for a user. Returns false if the user is already on a team.
+    '''
+    def create_team(self):
+        name = self.teamname.lower()
+        session = self.database_client.start_session()
+        teamCollection = session.client.get_database("deerhunt_db").teams
+        userCollection = session.client.get_database("deerhunt_db").users
+        if self.get_user_team(teamCollection, userCollection) != None or not self.is_valid_team_name():
+            return False
+        # if userCollection.find_one({"name": name}) != None:
+        #     return False
+
+        def transaction(session, teamCollection, userCollection):
+            team_data = {"name": name,
+                "displayName": self.teamname, "users": [self.username]}
+            team_query = {'name': name}
+            team_id = teamCollection.update_one(
+                team_query,
+                {"$setOnInsert": team_data},
+                upsert=True,
+                session=session
+            )
+            print(team_id)
+            print("got here")
+            user_query = {'username': self.username}
+            user_data = {"team": name}
+            user_id = userCollection.update_one(
+                user_query, {"$set": user_data}, upsert=True
+            )
+            print(user_id)
+        try:
+            transaction(session, teamCollection, userCollection)
+        except Exception:
+            pass
+        finally:
+            session.end_session()
+        return True
+
+
+
+
+
+
 
     '''
     Returns true if the user can send an invite to the recipient
@@ -63,39 +132,7 @@ class TeamsController:
         self.database.users.update_one({'username'})
         return True
 
-    def is_valid_team_name(teamName):
-        return len(teamName) > 8
 
-    '''
-        Creates a team for a user. Returns false if the user is already on a team.
-    '''
-    def create_team(username, teamName):
-        if self.get_user_team(username) != None or not self.is_valid_team_name(teamName):
-            return False
-        name = teamName.lower()
-        if self.database.teams.find_one({"name": name}) != null:
-            return False
-
-        def transaction(session):
-            team_data = {"name": name,
-                "displayName": teamName, "users": [username]}
-            team_query = {'name': name}
-            team_id = self.database.teams.update_one(
-                team_query,
-                {"$setOnInsert": data},
-                upsert=true,
-                session=session
-                )
-            user_query = {'username': username, "$or": [
-                {"team": {"$exists": "true"}, {"team": {"$eq": ""}}, ], }
-            user_data = {"team": team_id}
-            user_id = self.database.users.update_one(
-                query, {"$setOnInsert": data}, upsert=true)
-        with self.client.start_session() as session:
-            session.with_transaction(
-                transaction,
-            )
-        return True
     '''
         Removes user with username from a team.
         Returns False on failure,
@@ -104,19 +141,9 @@ class TeamsController:
     def leave_team(username):
         team = self.get_user_team(username)
 
-        user = self.database.users.find_one({'username': username}})
+        user = self.database.users.find_one({'username': username})
         if team == None:
             return False
         self.database.teams.update_one(
             {"_id": team["_id"]}, {"$pull": {"users": username}})
         self.database.user.update_one({"_id": user["_id"]}, {"team": ""})
-
-    '''
-    Returns None if the user has no team, returns the team object otherwise.
-    '''
-    def get_user_team(username):
-        login_guard()
-        user_file=database.users.find_one({session['username']})
-        if 'team' not in user_file or user_file['team'] == '':
-            return None
-        return database.teams.find_one({'_id': user_file['team']})

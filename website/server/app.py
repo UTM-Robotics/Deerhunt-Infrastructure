@@ -217,6 +217,12 @@ def respond_invite():
     login_guard()
     pass
     
+@app.route('/api/createteam', methods=['POST'])
+def create_team_test():
+    with TeamsController('kyrel.jerome@mail.utoronto.ca', "Tylooooooo") as s:
+        s.set_db_client(MongoClient("mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"))
+        s.create_team()
+
 @app.route('api/respondinvite',methods=['POST'])
 def create_team()
     login_guard()
