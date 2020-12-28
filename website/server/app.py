@@ -11,6 +11,7 @@ from leaderboard import Leaderboard
 from datetime import datetime
 from code_generator import CodeGenerator
 from email_bot import EmailBot
+from teams import TeamController
 import email_bot
 import code_generator
 import traceback
@@ -50,9 +51,6 @@ CORS(app)
 allowed_emails = ["@mail.utoronto.ca"]
 codeGenerator = CodeGenerator(64)
 verification_domain = 'https://mcss.utmrobotics.com'
-
-# Teams API:
-team_API = TeamsController(database)
 
 
 prefix = '/deerhunt'
@@ -186,43 +184,39 @@ def run_match(position):
 
 # Teams
 # Teams assigning api calls
-@app.route('api/sendinvite',methods=['POST'])
+@app.route('/api/sendinvite',methods=['POST'])
 def send_invite():
     login_guard()
     if send_invite(): # TODO: Add/retrieve inputs from message, safely.
         abort(403)
     return True
 
-@app.route('api/sendinvite',methods=['GET'])
+@app.route('/api/sendinvite',methods=['GET'])
 def sent_invites():
     login_guard()
-    team_id = get_user_team()
-    if team == None:
-    team = get_user_team()
-
-    team = database.teams.get()
-    database.teams.insert_one()
-    login_guard()
-    if get_user_team():
 
 # Teams assigning api calls
-@app.route('api/',methods=['GET'])
+@app.route('/api/userinvites',methods=['GET'])
 def user_invites():
     login_guard()
     pass
 
 # Teams assigning api calls
-@app.route('api/respondinvite',methods=['POST'])
+@app.route('/api/respondinvite',methods=['POST'])
 def respond_invite():
     login_guard()
     pass
     
-@app.route('api/respondinvite',methods=['POST'])
-def create_team()
-    login_guard()
-    team_API.create_team()
-
-
+@app.route('/api/createteam',methods=['POST'])
+def create_team():
+    #login_guard()
+    print("Called Create Team!")
+    with TeamController(client, database) as team_api:
+        status = team_api.create_team("kyrel","TheGreatest1")
+    if status != 0:
+        print("Exited with error code:" + str(status))
+        abort(403)
+    print("")
 @app.route('/api/login', methods=['POST'])
 def login():
     u, p = safe_get_user_and_pass()
