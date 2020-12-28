@@ -75,7 +75,7 @@ class TeamsController:
         name = teamName.lower()
         if self.database.teams.find_one({"name": name}) != null:
             return False
-        
+
         def transaction(session):
             team_data = {"name": name,
                 "displayName": teamName, "users": [username]}
@@ -86,9 +86,11 @@ class TeamsController:
                 upsert=true,
                 session=session
                 )
-            user_query = {'username': username, "team": {"$e": ""}}
+            user_query = {'username': username, "$or": [
+                {"team": {"$exists": "true"}, {"team": {"$eq": ""}}, ], }
             user_data = {"team": team_id}
-            user_id = self.database.users.update_one(query, {"$setOnInsert": data},, upsert=true)
+            user_id = self.database.users.update_one(
+                query, {"$setOnInsert": data}, upsert=true)
         with self.client.start_session() as session:
             session.with_transaction(
                 transaction,
