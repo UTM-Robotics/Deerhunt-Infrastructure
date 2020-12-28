@@ -33,22 +33,16 @@ app = Flask(__name__, static_folder='../build')
 app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
 database = MongoClient(app.config["MONGO_URI"])
 if PROD_FLAG:
-    pass
     # app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
     #     '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
-    # database = MongoClient(
-    #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
-    # database = PyMongo(app)
+    database = database.deerhunt_prod
 else:
     # app.run(host='0.0.0.0', port=8080, threaded=True)
-    # database = MongoClient(
-    #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
-    # database = mongo.init_app(app)      
     database = database.deerhunt_db
-    # print(database)
 board = Leaderboard(database.leaderboard)
-# app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
+app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
+
 # database = None
 # dock = docker.from_env()
 
