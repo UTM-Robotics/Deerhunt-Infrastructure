@@ -64,7 +64,7 @@ class TeamsController:
         return True
 
     def is_valid_team_name(teamName):
-        return True
+        return len(teamName) > 8
 
     '''
         Creates a team for a user. Returns false if the user is already on a team.
