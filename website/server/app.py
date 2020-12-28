@@ -267,7 +267,6 @@ def verify_email(code: str):
     return "Account has been verified successfully"
 
 
-# TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use. Update using upsert
 @app.route('/api/register', methods=['POST'])
 def register():
     u, p = safe_get_user_and_pass()
@@ -307,8 +306,6 @@ def register():
 
 ''' Safe For Upsert!!!
 '''
-
-
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
     login_guard()

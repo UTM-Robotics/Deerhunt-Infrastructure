@@ -11,6 +11,7 @@ class TeamsController:
     MAX_TEAM_MEMBERS = 4
 
     def __init_(self, database):
+        self.client = client
         self.database = database
 
     '''
@@ -30,6 +31,7 @@ class TeamsController:
     def send_invite(team, user):
         if not self.can_invite():
             return False
+        # TODO: Complete sending of in
 
     '''
     Returns True iff the user is able to
@@ -46,7 +48,7 @@ class TeamsController:
 
     '''
         Joins team through an invite received.
-        Returns False if accept could not be performed. 
+        Returns False if accept could not be performed.
         Returns true otherwise.
     '''
     def accept(username, teamName):
@@ -73,12 +75,25 @@ class TeamsController:
         name = teamName.lower()
         if self.database.teams.find_one({"name": name}) != null:
             return False
-        team_id = self.database.teams.insert_one(
-            {"name": name, "displayName": teamName, "users": [username]})
-        query = {'username': username}
-        self.database.users.update_one(query, {"team": team_id})
+        
+        def transaction(session):
+            team_data = {"name": name,
+                "displayName": teamName, "users": [username]}
+            team_query = {'name': name}
+            team_id = self.database.teams.update_one(
+                team_query,
+                {"$setOnInsert": data},
+                upsert=true,
+                session=session
+                )
+            user_query = {'username': username, "team": {"$e": ""}}
+            user_data = {"team": team_id}
+            user_id = self.database.users.update_one(query, {"$setOnInsert": data},, upsert=true)
+        with self.client.start_session() as session:
+            session.with_transaction(
+                transaction,
+            )
         return True
-
     '''
         Removes user with username from a team.
         Returns False on failure,
