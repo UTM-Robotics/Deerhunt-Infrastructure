@@ -1,6 +1,8 @@
 import React from 'react';
 import $ from 'jquery';
 
+import discord from './../assets/images/discord_logo.png';
+
 class Login extends React.Component {
     constructor() {
         super();
@@ -20,7 +22,7 @@ class Login extends React.Component {
             url: '/api/isloggedin',
             type: 'GET',
             success: (responseData) => {
-                var parsed = responseData == "True" ? true: false;
+                var parsed = responseData == "True" ? true : false;
                 if (parsed) {
                     window.location.replace("/home");
                 }
@@ -91,15 +93,26 @@ class Login extends React.Component {
             password: e.target.value
         });
     }
-    
+
     render() {
         return (
-            <div className="auth-form-container">
-                <form className="login-form" id="login-form">
-                    <input id="username" type="text" placeholder="username" onChange={this.handleUserChange.bind(this)} />
-                    <input id="password" type="password" placeholder="password" onChange={this.handlePasswordChange.bind(this)} />
-                    <div className="auth-button" onClick={this.login.bind(this)}>login</div>
-                </form>
+            <div>
+                <div className="auth-form-container">
+                    <form className="login-form" id="login-form">
+                        <input id="username" type="text" placeholder="Username/Email" onChange={this.handleUserChange.bind(this)} />
+                        <input id="password" type="password" placeholder="Password" onChange={this.handlePasswordChange.bind(this)} />
+                        <div className="auth-button" onClick={this.login.bind(this)}>login</div>
+                    </form>
+                    <p>Haven't made an account yet?</p>
+                    <a href="/register">Sign Up</a>
+                </div>
+                <div className="discord-container">
+                    <p> Join the Discord Community for updates!</p>
+                    <a href="https://discord.gg/xW6AB6MT">
+
+                    <img width="100px" src={discord}></img>
+                    </a>
+                </div>
             </div>
         );
     }

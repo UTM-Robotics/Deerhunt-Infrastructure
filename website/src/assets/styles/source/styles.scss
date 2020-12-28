@@ -1,10 +1,37 @@
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+.app-header-img{
+    float: left;
+    position: relative;
+    margin: 10px 15px 15px 10px;
+    width: 50;
+    height: 50;
+}
+
+.app-header-container{
+    position:relative;
+    text-align: center;
+    h1{
+        font-size: 40px;
+        text-decoration: none;
+        color: black;
+        font-family: 'VT323', monospace;
+    }
+}
+//Discord embed
+.discord-container {
+    position: float;
+    text-align:center;
+    margin: auto;
+}
 //Login and Register Form
 .auth-form-container {
-    position: fixed;
+    position: float;
+    margin: auto;
     z-index: 1;
     background-size: 100% 75%;
     background-position: top center;
@@ -12,9 +39,6 @@ body {
     padding: 45px;
     text-align: center;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
 
     input {
         outline: 0;
@@ -76,22 +100,25 @@ $login-message-font-size: 16px;
 }
 
 .nav-container {
-    position: absolute;
-    top: 5%;
-    left: 50%;
-    transform: translate(-50%);
+    position: float;
+    text-align: center;
+    margin: 10px;
 }
 
 .nav-link {
     padding: 10px;
-    margin: 10px;
-    border: 1px solid black;
+    margin: 10px;        
+    font-size: 30px;
     text-decoration: none;
     color: black;
+    font-family: 'VT323', monospace;
+}
+.nav-link:hover {
+    color: #ffaf00;
 }
 
 .content-container {
-    position: absolute;
+    position: float;
     top: 10%;
 }
 
