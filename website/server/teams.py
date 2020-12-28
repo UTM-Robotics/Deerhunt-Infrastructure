@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from flask import Flask, jsonify, send_from_directory, request, abort, session
 from flask_cors import CORS
-
+import traceback
 '''
 Performs all Teams-related logic with Database.
 '''
@@ -22,9 +22,15 @@ class TeamController:
         self.session = self.client.start_session()
         return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, tb):
         self.session.end_session()
         self.session = None
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_value, tb)
+            # return False # uncomment to pass exception through
+            session.end_session()
+            return False
+        return True
 
     '''
     Returns true if the user can send an invite to the recipient
@@ -96,7 +102,7 @@ class TeamController:
         #    return False
         name = teamName.lower()
         if self.database.teams.find_one({"name": name}) != None:
-            self.error = TEAM_EXISTS_ERROR
+            self.error = self.TEAM_EXISTS_ERROR
             return False
         # Start the session for transaction
         session = self.session
@@ -113,19 +119,21 @@ class TeamController:
             )
             if not team_result.upserted_id:
                 self.session.abort_transaction()
-                self.error = TEAM_EXISTS_ERROR
+                self.error = self.TEAM_EXISTS_ERROR
                 return False
-            user_query = {'username': username, "$or": [
+            print("Transaction has completed the team creation")
+            user_query = {'username': {"$eq":username}, "$or": [
                 {"team": {"$exists": "true"}}, {"team": {"$eq": ""}}, ], }
             user_data = {"team": name}
             user_result = self.database.users.update_one(
                 user_query,
-                user_data,
+                {"$set":user_data},
                 session=self.session
             )
+            print("Transaction has completed the user creation")
             if not (user_result.modified_count == 1):
                 self.session.abort_transaction()
-                self.error = USER_ON_TEAM_ERROR
+                self.error = self.USER_ON_TEAM_ERROR
                 return False
             session.commit_transaction()
         except (Exception) as exc:

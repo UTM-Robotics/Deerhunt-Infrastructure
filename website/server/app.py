@@ -209,14 +209,15 @@ def respond_invite():
     
 @app.route('/api/createteam',methods=['POST'])
 def create_team():
-    #login_guard()
+    login_guard()
     print("Called Create Team!")
     with TeamController(client, database) as team_api:
         status = team_api.create_team("kyrel","TheGreatest1")
-    if status != 0:
-        print("Exited with error code:" + str(status))
-        abort(403)
-    print("")
+    if not status:
+        print("Exited with error code:" + str(team_api.error))
+        abort(409)
+    print("Successfully created a team")
+    return "Success"
 @app.route('/api/login', methods=['POST'])
 def login():
     u, p = safe_get_user_and_pass()
