@@ -203,11 +203,15 @@ def send_invite():
 
 @app.route('/api/userinvites',methods=['GET'])
 def user_invites():
-"""
+    """
     Gets the list of team display names and team names that a user has been invited to.
-"""
-    login_guard()
-    pass
+    """
+    # login_guard()
+    print
+    with TeamController(client, database) as team_api:
+        invites_team_dict = team_api.get_user_invites("alex")
+    print(invites_team_dict)
+    return invites_team_dict
 
 # Teams assigning api calls
 @app.route('/api/respondinvite',methods=['POST'])

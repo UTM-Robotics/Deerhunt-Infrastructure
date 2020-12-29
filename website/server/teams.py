@@ -14,80 +14,6 @@ class TeamController:
     USER_ON_TEAM_ERROR = 2
     INVALID_TEAM_ERROR = 3
 
-<<<<<<< HEAD
-    def __init__(self, username, teamname):
-        self.username = username
-        self.teamname = teamname
-
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *args):
-        pass
-
-    def set_db_client(self, database_client):
-        self.database_client = database_client
-
-    def is_valid_team_name(self):
-        return len(self.teamname) > 8
-
-    '''
-    Returns None if the user has no team, returns the team object otherwise.
-    '''
-    def get_user_team(self, teamCollection, userCollection):
-        # login_guard()
-        user_file=userCollection.find_one({"username": self.username})
-        if 'team' not in user_file or user_file['team'] == '':
-            print("returning none")
-            return None
-        return teamCollection.find_one({'name': user_file['team']})
-
-    '''
-        Creates a team for a user. Returns false if the user is already on a team.
-    '''
-    def create_team(self):
-        name = self.teamname.lower()
-        session = self.database_client.start_session()
-        teamCollection = session.client.get_database("deerhunt_db").teams
-        userCollection = session.client.get_database("deerhunt_db").users
-        if self.get_user_team(teamCollection, userCollection) != None or not self.is_valid_team_name():
-            return False
-        # if userCollection.find_one({"name": name}) != None:
-        #     return False
-
-        def transaction(session, teamCollection, userCollection):
-            team_data = {"name": name,
-                "displayName": self.teamname, "users": [self.username]}
-            team_query = {'name': name}
-            team_id = teamCollection.update_one(
-                team_query,
-                {"$setOnInsert": team_data},
-                upsert=True,
-                session=session
-            )
-            print(team_id)
-            print("got here")
-            user_query = {'username': self.username}
-            user_data = {"team": name}
-            user_id = userCollection.update_one(
-                user_query, {"$set": user_data}, upsert=True
-            )
-            print(user_id)
-        try:
-            transaction(session, teamCollection, userCollection)
-        except Exception:
-            pass
-        finally:
-            session.end_session()
-        return True
-
-
-
-
-
-
-=======
     def __init__(self, client, database):
         self.client = client
         self.database = database
@@ -106,7 +32,6 @@ class TeamController:
             session.end_session()
             return False
         return True
->>>>>>> kyrel-teams
 
     '''
     Returns true if the user can send an invite to the recipient
@@ -268,19 +193,9 @@ class TeamController:
     '''
     def leave_team(self, username):
         team = self.get_user_team(username)
-<<<<<<< HEAD
-
-        user = self.database.users.find_one({'username': username})
-=======
->>>>>>> kyrel-teams
         if team == None:
             self.error = self.INVALID_TEAM_ERROR
             return False
-<<<<<<< HEAD
-        self.database.teams.update_one(
-            {"_id": team["_id"]}, {"$pull": {"users": username}})
-        self.database.user.update_one({"_id": user["_id"]}, {"team": ""})
-=======
         print("User is on team:",str(team))
         team_name = team["name"]
 
@@ -340,4 +255,13 @@ class TeamController:
             {'name': user_file['team']}, session=self.session)
         print("Got user team")
         return team_document
->>>>>>> kyrel-teams
+
+    def get_user_invites(self, username):
+        user_file = self.database.users.find_one({"username": username})
+        invite_list = user_file["invites"]
+        ret = {}
+        for team in invite_list:
+            print(team)
+            temp_team = self.database.teams.find_one({"name": team})
+            ret[temp_team["name"]] = temp_team["displayName"]
+        return ret
