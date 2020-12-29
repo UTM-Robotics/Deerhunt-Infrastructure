@@ -495,9 +495,6 @@ if __name__ == '__main__':
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
         # database = PyMongo(app)
     else:
-<<<<<<< HEAD
-        app.run(host='0.0.0.0',port=8080, threaded=True)
-=======
         app.run(host='0.0.0.0', port=8080, threaded=True)
         # database = MongoClient(
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
@@ -505,4 +502,3 @@ if __name__ == '__main__':
         # database = database.deerhunt_db
         # print(database)
     # board = Leaderboard(database.leaderboard)
->>>>>>> dev
