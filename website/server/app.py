@@ -207,7 +207,9 @@ def user_invites():
         has been invited to.
     """
     login_guard()
-    pass
+    with TeamController(client, database) as team_api:
+        invites_team_dict = team_api.get_user_invites(session["username"])
+    return invites_team_dict
 
 # Teams assigning api calls
 @app.route('/api/acceptinvite',methods=['POST'])

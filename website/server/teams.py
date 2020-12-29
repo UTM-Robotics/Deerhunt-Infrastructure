@@ -294,6 +294,18 @@ class TeamController:
         return team_document
 
     def get_team(self, team_name):
+        ''' Gets the team document for a given team_name'''
         team_document = self.database.teams.find_one(
                 {'name': team_name}, session=self.session)
         return team_document
+
+    def get_user_invites(self, username):
+        '''Gets the invites received by a given user'''
+        user_file = self.database.users.find_one({"username": username}, session=self.session)
+        invite_list = user_file["invites"]
+        ret = {}
+        for team in invite_list:
+            print(team)
+            temp_team = self.database.teams.find_one({"name": team}, session=self.session)
+            ret[temp_team["name"]] = temp_team["displayName"]
+        return ret
