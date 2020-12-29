@@ -11,7 +11,6 @@ class Profile extends React.Component {
             currentPassword: "",
             newPassword: "",
             confirmPassword: "",
-            team: ""
         };
     }
 

@@ -249,6 +249,14 @@ def leave_team():
     print("Successfully created a team")
     return "Success"
 
+@app.route('/api/getTeam',methods=['POST'])
+def get_team():
+    login_guard()
+    
+    with TeamController(client, database) as team_api:
+        team = team_api.get_user_team(session["username"])
+    return team["name"] if team != None else ""
+
 @app.route('/api/login', methods=['POST'])
 def login():
     u, p = safe_get_user_and_pass()
