@@ -209,7 +209,7 @@ def user_invites():
     # login_guard()
     print
     with TeamController(client, database) as team_api:
-        invites_team_dict = team_api.get_user_invites("alex")
+        invites_team_dict = team_api.get_user_invites(session["username"])
     print(invites_team_dict)
     return invites_team_dict
 
