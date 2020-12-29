@@ -26,11 +26,7 @@ class Unit:
 class MeleeUnit(Unit):
     def __init__(self, x, y):
         self.type = "melee"
-        self.duplication_time = 4
         self.resource_cost = 100
-
-        self.duplication_status = 0
-        self.stasis_direction = None
 
         super().__init__(x, y)
 
@@ -40,19 +36,14 @@ class MeleeUnit(Unit):
     def __repr__(self):
         return 'm'
 
-    def can_duplicate(self, resouces):
-        return self.duplication_status <= 0
-
-    def is_duplicating(self):
-        return self.duplication_status > 0
-
     def is_mining(self):
         return False
 
-    def start_duplication(self, direction):
-        self.duplication_status = self.duplication_time
-        self.stasis_direction = direction
-        return self
+    def can_duplicate(self, resources):
+        return False
+
+    def is_duplicating(self):
+        return False
 
 
 class WorkerUnit(Unit):
@@ -60,6 +51,12 @@ class WorkerUnit(Unit):
         self.type = "worker"
         self.mining_time = 5
         self.mining_status = 0
+
+        self.duplication_status = 0
+        self.stasis_direction = None
+        self.resource_cost = 100
+
+        self.duplication_time = 4
 
         super().__init__(x, y)
 
@@ -79,8 +76,13 @@ class WorkerUnit(Unit):
         self.mining_status = self.mining_time
         return self
 
-    def can_duplicate(self, resources):
-        return False
+    def can_duplicate(self, resouces):
+        return self.duplication_status <= 0
 
     def is_duplicating(self):
-        return False
+        return self.duplication_status > 0
+
+    def start_duplication(self, direction):
+        self.duplication_status = self.duplication_time
+        self.stasis_direction = direction
+        return self

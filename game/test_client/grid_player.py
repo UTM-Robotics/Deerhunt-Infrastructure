@@ -21,15 +21,17 @@ class GridPlayer:
         enemy_distance = []
         for m in melees:
             enemy_coord = (abs(column - m.x), abs(row - m.y))
-            enemy_distance.append(len(game_map.bfs(enemy_coord,
-                                                   resource_nodes[0])) - 1)
+            distance = len(game_map.bfs(enemy_coord,
+                                        resource_nodes[0])) - 1
+            if distance is not None:
+                enemy_distance.append(distance)
         self.set_safety(min(enemy_distance))
 
     def tick(self, game_map: Map, your_units: Units, enemy_units: Units,
              resources: int, turns_left: int) -> [Move]:
 
         print("\n--------RESOURCES: {0} | TURNS LEFT: {1}--------".format(
-                resources, turns_left))
+            resources, turns_left))
 
         if turns_left == 100:
             # Pre-game calculations.
@@ -48,6 +50,8 @@ class GridPlayer:
         for unit in workers:
             if unit.can_mine(game_map):
                 moves.append(unit.mine())
+            elif unit.can_duplicate(resources):
+                moves.append(unit.duplicate('LEFT'))
             else:
                 closest_node = game_map.closest_resources(unit)
                 s_path = game_map.bfs(unit.position(), closest_node)
@@ -63,8 +67,6 @@ class GridPlayer:
                 else:
                     closest = enemy_units.units[enemy_list[0][0]]
                     moves.append(unit.move_towards((closest.x, closest.y)))
-            elif unit.can_duplicate(resources):
-                    moves.append(unit.duplicate('LEFT'))
             else:
                 moves.append(unit.move('DOWN'))
 

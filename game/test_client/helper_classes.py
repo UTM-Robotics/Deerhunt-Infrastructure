@@ -84,7 +84,7 @@ class Unit:
         """
         Returns if this Unit can duplicate.
         """
-        if self.type == 'melee' and self.attr['resource_cost'] <= resources \
+        if self.type == 'worker' and self.attr['resource_cost'] <= resources \
                 and self.attr['duplication_status'] <= 0:
             return True
         else:
