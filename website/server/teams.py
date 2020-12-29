@@ -12,6 +12,7 @@ class TeamController:
     # TeamController Errors
     TEAM_EXISTS_ERROR = 1
     USER_ON_TEAM_ERROR = 2
+    INVALID_TEAM_ERROR = 3
 
     def __init__(self, client, database):
         self.client = client
@@ -43,31 +44,75 @@ class TeamController:
         if len(team['members']) == self.MAX_TEAM_MEMBERS:
             return False
         if get_user_team(recipient_username) != None:
-            return False
+            return FalseUSER_NO
         return True
 
     '''
     '''
 
     def send_invite(self, team, user):
-        # Transaction safety
-        if not self.can_invite():
+        # Start the session for transaction
+        session = self.session
+        try:
+            session.start_transaction()
+            # Transaction safety
+            if not self.can_invite(self, recipient_username, team):
+                return False
+            if self.get_user_team(username) != None or not self.is_valid_team_name(teamName):
+                self.error = self.USER_ON_TEAM_ERROR
+                return False
+            name = teamName.lower()
+
+            if self.database.teams.find_one({"name": name}) != None:
+                self.error = self.TEAM_EXISTS_ERROR
+                return False
+
+            team_data = {"name": name,
+                         "displayName": displayName, "users": [username]}
+            team_query = {'name': name}
+            team_result = self.database.teams.update_one(
+                team_query,
+                {"$setOnInsert": team_data},
+                upsert=True,
+                session=session
+            )
+
+            if not team_result.upserted_id:
+                self.session.abort_transaction()
+                self.error = self.TEAM_EXISTS_ERROR
+                return False
+            user_query = {'username': {"$eq": username}, "$or": [
+                {"team": {"$exists": "true"}}, {"team": {"$eq": ""}}, ], }
+            user_data = {"team": name}
+            user_result = self.database.users.update_one(
+                user_query,
+                {"$set": user_data},
+                session=session
+            )
+            if not (user_result.modified_count == 1):
+                self.session.abort_transaction()
+                self.error = self.USER_ON_TEAM_ERROR
+                return False
+            session.commit_transaction()
+            print("Create Team Transaction success.")
+        except (Exception) as exc:
+            print(exc)
+            session.abort_transaction()
             return False
-        # TODO: Complete sending of in
+        return True
 
     '''
-    Returns True iff the user is able to
+    Returns True iff the user is able to accept
     '''
 
     def _can_accept(self, username):
-
         team = self.get_user_team(sender_username)
         if team == None:
-            return False  # abort(403)
-        if len(team['members']) == self.MAX_TEAM_MEMBERS:
-            return False  # abort(403)
-        if self.get_user_team(recipient_username) != None:
-            return False  # abort(403)
+            return False
+        # if len(team['members']) == self.MAX_TEAM_MEMBERS:
+        #     return False  # abort(403)
+        # if self.get_user_team(recipient_username) != None:
+        #     return False  # abort(403)
         return True
 
     '''
@@ -76,7 +121,6 @@ class TeamController:
         Returns False if accept could not be performed.
         Returns true otherwise.
     '''
-
     def accept(self, username, teamName):
         if not self._can_accept(username):
             return False
@@ -93,24 +137,26 @@ class TeamController:
         return len(teamName) > 8
 
     '''
-        Safely creates a team for a user. Returns false if the user is already on a team.
+        Safely creates a team for a user.
+        Returns false if the user is already on a team.
     '''
-
-    def create_team(self, username, teamName):
-        #if self.get_user_team(username) != None or not self.is_valid_team_name(teamName):
-        #    self.error = USER_ON_TEAM_ERROR
-        #    return False
-        name = teamName.lower()
-        if self.database.teams.find_one({"name": name}) != None:
+    def create_team(self, username, displayName):
+        
+        team_name = displayName.lower().strip()
+        if self.get_user_team(username) != None or not self.is_valid_team_name(team_name):
+            self.error = self.USER_ON_TEAM_ERROR
+            return False
+        if self.database.teams.find_one({"name": team_name}) != None:
             self.error = self.TEAM_EXISTS_ERROR
             return False
+
         # Start the session for transaction
         session = self.session
         try:
             session.start_transaction()
-            team_data = {"name": name,
-                         "displayName": teamName, "users": [username]}
-            team_query = {'name': name}
+            team_data = {"name": team_name,
+                         "displayName": displayName, "users": [username], "user_count": 1}
+            team_query = {'name': team_name}
             team_result = self.database.teams.update_one(
                 team_query,
                 {"$setOnInsert": team_data},
@@ -121,21 +167,20 @@ class TeamController:
                 self.session.abort_transaction()
                 self.error = self.TEAM_EXISTS_ERROR
                 return False
-            print("Transaction has completed the team creation")
-            user_query = {'username': {"$eq":username}, "$or": [
-                {"team": {"$exists": "true"}}, {"team": {"$eq": ""}}, ], }
-            user_data = {"team": name}
+            user_query = {'username': {"$eq": username}, "$or": [
+                {"team": {"$exists": "false"}}, {"team": {"$eq": ""}}, ], }
+            user_data = {"team": team_name}
             user_result = self.database.users.update_one(
                 user_query,
-                {"$set":user_data},
+                {"$set": user_data},
                 session=self.session
             )
-            print("Transaction has completed the user creation")
-            if not (user_result.modified_count == 1):
+            if user_result.modified_count != 1:
                 self.session.abort_transaction()
                 self.error = self.USER_ON_TEAM_ERROR
                 return False
             session.commit_transaction()
+            print("Create Team Transaction success.")
         except (Exception) as exc:
             print(exc)
             session.abort_transaction()
@@ -143,26 +188,71 @@ class TeamController:
         return True
 
     '''
-        Removes user with username from a team.
+        Removes user with username from their current team.
         Returns False on failure,
         Returns True on success.
     '''
-
     def leave_team(self, username):
         team = self.get_user_team(username)
-
-        user = self.database.users.find_one({'username': username})
         if team == None:
+            self.error = self.INVALID_TEAM_ERROR
             return False
-        self.database.teams.update_one(
-            {"_id": team["_id"]}, {"$pull": {"users": username}})
-        self.database.user.update_one({"_id": user["_id"]}, {"team": ""})
+        print("User is on team:",str(team))
+        team_name = team["name"]
+
+        # Start the session for transaction
+        session = self.session
+        try:
+            session.start_transaction()
+            team_data = {
+                "$pull": {"users": username},
+                "$inc": {"user_count": -1}, }
+            team_query = {'name': team_name,
+                          "users": username}
+            team_result = self.database.teams.update_one(
+                team_query,
+                team_data,
+                upsert=True,
+                session=session
+            )
+            print("Removed user from team object")
+            if team_result.modified_count != 1:
+                self.session.abort_transaction()
+                self.error = self.INVALID_TEAM_ERROR
+                return False
+
+            user_query = {'username': username,
+                          "team": team_name}
+            user_data = {"team": ""}
+            user_result = self.database.users.update_one(
+                user_query,
+                {"$set": user_data},
+                session=self.session
+            )
+            if user_result.modified_count != 1:
+                self.session.abort_transaction()
+                self.error = self.INVALID_TEAM_ERROR
+                return False
+            print("Removed team from user object")
+
+            session.commit_transaction()
+            print("Leaving Team Transaction success.")
+        except (Exception) as exc:
+            print(exc)
+            session.abort_transaction()
+            return False
+        return True
 
     '''
     Returns None if the user has no team, returns the team object otherwise.
     '''
+
     def get_user_team(self, username):
-        user_file = self.database.users.find_one({"username": username})
+        user_file = self.database.users.find_one(
+            {"username": username}, session=self.session)
         if 'team' not in user_file or user_file['team'] == '':
             return None
-        return self.database.teams.find_one({'_id': user_file['team']})
+        team_document = self.database.teams.find_one(
+            {'name': user_file['team']}, session=self.session)
+        print("Got user team")
+        return team_document

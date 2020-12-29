@@ -187,8 +187,17 @@ def run_match(position):
 @app.route('/api/sendinvite',methods=['POST'])
 def send_invite():
     login_guard()
-    if send_invite(): # TODO: Add/retrieve inputs from message, safely.
-        abort(403)
+    username = session["username"]
+
+    with TeamController(client, database) as team_api:
+        status = team_api.send_invite(username, team_name)
+
+    if not status:
+        print("Exited with error code:" + str(team_api.error))
+        abort(409)
+
+    print("Successfully created a team")
+    return "Success"
     return True
 
 @app.route('/api/sendinvite',methods=['GET'])
@@ -206,11 +215,10 @@ def user_invites():
 def respond_invite():
     login_guard()
     pass
-    
+
 @app.route('/api/createteam',methods=['POST'])
 def create_team():
-    login_guard()
-    print("Called Create Team!")
+    #login_guard()
     with TeamController(client, database) as team_api:
         status = team_api.create_team("kyrel","TheGreatest1")
     if not status:
@@ -218,6 +226,18 @@ def create_team():
         abort(409)
     print("Successfully created a team")
     return "Success"
+
+@app.route('/api/leaveteam',methods=['POST'])
+def leave_team():
+    #login_guard()
+    with TeamController(client, database) as team_api:
+        status = team_api.leave_team("kyrel")
+    if not status:
+        print("Exited with error code:" + str(team_api.error))
+        abort(409)
+    print("Successfully created a team")
+    return "Success"
+
 @app.route('/api/login', methods=['POST'])
 def login():
     u, p = safe_get_user_and_pass()
