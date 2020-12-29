@@ -210,10 +210,21 @@ def user_invites():
     pass
 
 # Teams assigning api calls
-@app.route('/api/respondinvite',methods=['POST'])
-def respond_invite():
-    login_guard()
-    pass
+@app.route('/api/acceptinvite',methods=['POST'])
+def accept_invite():
+    '''Accpets an invite on a user's account, if the invite is valid.'''
+    #login_guard()
+    #username = session["username"]
+
+    with TeamController(client, database) as team_api:
+        status = team_api.accept_invite("alex", "thegreatest2")
+    if not status:
+        print("Exited with error code:" + str(team_api.error))
+        abort(409)
+
+    print("Successfully sent invite")
+    return "Success"
+    return True
 
 @app.route('/api/createteam',methods=['POST'])
 def create_team():

@@ -61,8 +61,9 @@ class TeamController:
             if "name" not in sender_team:
                 self.error = INVALID_TEAM_ERROR
                 return False
+
             sender_team_name = sender_team["name"]
-            # add to list of invites on recipient user
+            # Add to list of invites on recipient user
             recipient_query = {'username': recipient_username,
                 "$or": [
                 {"team": {"$exists": False}}, {"team": {"$eq": ""}}, ],
@@ -80,8 +81,7 @@ class TeamController:
                 self.session.abort_transaction()
                 self.error = self.INVITE_EXISTS_ERROR
                 return False
-            print("Didn't reach here")
-            # add user list of invited users on team
+            # Add user list of invited users on team
             team_query = {'name': sender_team_name,
                         'user_count': {'$lt': self.MAX_TEAM_USER_COUNT + 1}
                         }
@@ -92,7 +92,6 @@ class TeamController:
                 upsert=True,
                 session=session
             )
-            print("Didn't reach here")
             if team_result.modified_count != 1:
                 self.session.abort_transaction()
                 self.error = self.INVITE_EXISTS_ERROR
@@ -106,35 +105,70 @@ class TeamController:
         return True
 
 
-    def _can_accept(self, username):
+    def _can_accept(self, username, team_name):
         """
         Returns True iff the user is able to accept.
         """
-        team = self.get_user_team(sender_username)
-        if team == None:
-            return False
-        # if len(team['members']) == self.MAX_TEAM_MEMBERS:
-        #     return False  # abort(403)
-        # if self.get_user_team(recipient_username) != None:
-        #     return False  # abort(403)
-        return True
+        user_team = self.get_user_team(username)
+        goal_team = self.get_team(team_name)
+        if user_team != None:
+            return self.USER_ON_TEAM_ERROR
+        elif not goal_team:
+            return self.INVALID_TEAM_ERROR
+        elif goal_team['user_count'] >= self.MAX_TEAM_USER_COUNT:
+            return self.TEAM_MAX_CAPACITY_ERROR
+        return 0
 
-    def accept(self, username, teamName):
+    def accept_invite(self, username, team_name):
+        ''' Joins team through an invite received.
+            Returns Error if accept could not be performed.
+            Returns 0 otherwise.
         '''
-            # Transaction safety
-            Joins team through an invite received.
-            Returns False if accept could not be performed.
-            Returns true otherwise.
-        '''
-        if not self._can_accept(username):
-            return False
-        team = self.database.teams.find_one({'name': teamName.lower()})
-        if team != null:
-            return False
+        session = self.session
+        try:
+            session.start_transaction()
+            can_accept = self._can_accept(username, team_name)
+            if can_accept != 0:
+                self.error = can_accept
+                return False
+            # Add the user to the team
+            print("User can accept!")
 
-        self.database.teams.update_one(team)
-        user = self.database.users.find_one({'username': username})
-        self.database.users.update_one({'username'})
+            team_data = {
+                "$push": {"users": username},
+                "$inc": {"user_count": 1}, }
+            team_query = {'name': team_name,
+                          "users": {"$nin":[username]},
+                          "user_count": {"$lt": self.MAX_TEAM_USER_COUNT}
+                          }
+            team_result = self.database.teams.update_one(
+                team_query,
+                team_data,
+                session=session
+            )
+            if team_result.modified_count != 1:
+                self.error = self.INVALID_TEAM_ERROR
+                return False
+
+           # Add the team to the user if possible
+        
+            user_query = {'username': username, "$or": [
+                {"team": {"$exists": False}}, {"team": {"$eq": ""}}, ], }
+            user_data = {"team": team_name}
+            user_result = self.database.users.update_one(
+                user_query,
+                {"$set": user_data},
+                session=session
+            )
+            if user_result.modified_count != 1:
+                self.error = self.USER_ON_TEAM_ERROR
+                return False
+            session.commit_transaction()
+            print("Accept Team invite success.")
+        except (Exception) as exc:
+            print(exc)
+            session.abort_transaction()
+            return False
         return True
 
     def is_valid_team_name(self, teamName):
@@ -170,7 +204,7 @@ class TeamController:
                 self.session.abort_transaction()
                 self.error = self.TEAM_EXISTS_ERROR
                 return False
-            user_query = {'username': {"$eq": username}, "$or": [
+            user_query = {'username': username, "$or": [
                 {"team": {"$exists": False}}, {"team": {"$eq": ""}}, ], }
             user_data = {"team": team_name}
             user_result = self.database.users.update_one(
@@ -215,7 +249,6 @@ class TeamController:
             team_result = self.database.teams.update_one(
                 team_query,
                 team_data,
-                upsert=True,
                 session=session
             )
             print("Removed user from team object")
@@ -246,11 +279,11 @@ class TeamController:
             return False
         return True
 
-    '''
-    Returns None if the user has no team, returns the team object otherwise.
-    '''
 
     def get_user_team(self, username):
+        '''
+        Returns None if the user has no team, returns the team object otherwise.
+        '''
         user_file = self.database.users.find_one(
             {"username": username}, session=self.session)
         if 'team' not in user_file or user_file['team'] == '':
@@ -258,4 +291,9 @@ class TeamController:
         team_document = self.database.teams.find_one(
             {'name': user_file['team']}, session=self.session)
         print("Got user team")
+        return team_document
+
+    def get_team(self, team_name):
+        team_document = self.database.teams.find_one(
+                {'name': team_name}, session=self.session)
         return team_document
