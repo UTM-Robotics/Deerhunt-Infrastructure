@@ -186,26 +186,26 @@ def run_match(position):
 # Teams assigning api calls
 @app.route('/api/sendinvite',methods=['POST'])
 def send_invite():
-    login_guard()
-    username = session["username"]
+    '''Sends an invite from a user's current team to a user.'''
+    #login_guard()
+    #username = session["username"]
 
     with TeamController(client, database) as team_api:
-        status = team_api.send_invite(username, team_name)
-
+        status = team_api.send_invite("alex", "kyrel")
     if not status:
         print("Exited with error code:" + str(team_api.error))
         abort(409)
 
-    print("Successfully created a team")
+    print("Successfully sent invite")
     return "Success"
     return True
 
 
 @app.route('/api/userinvites',methods=['GET'])
 def user_invites():
-"""
-    Gets the list of team display names and team names that a user has been invited to.
-"""
+    """Gets the list of team display names and team names that a user 
+        has been invited to.
+    """
     login_guard()
     pass
 
@@ -219,7 +219,7 @@ def respond_invite():
 def create_team():
     #login_guard()
     with TeamController(client, database) as team_api:
-        status = team_api.create_team("kyrel","TheGreatest1")
+        status = team_api.create_team("kyrel","TheGreatest2")
     if not status:
         print("Exited with error code:" + str(team_api.error))
         abort(409)
@@ -229,6 +229,7 @@ def create_team():
 @app.route('/api/leaveteam',methods=['POST'])
 def leave_team():
     #login_guard()
+    
     with TeamController(client, database) as team_api:
         status = team_api.leave_team("kyrel")
     if not status:
@@ -528,7 +529,7 @@ if __name__ == '__main__':
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
         # database = PyMongo(app)
     else:
-        app.run(host='0.0.0.0', port=8080, threaded=True)
+        app.run(host='0.0.0.0', port=8080, threaded=True, debug=True)
         # database = MongoClient(
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
         # database = mongo.init_app(app)      
