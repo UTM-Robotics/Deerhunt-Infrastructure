@@ -50,7 +50,7 @@ class TeamController:
     '''
     '''
 
-    def send_invite(self, team, user):
+    def send_invite(self, recipient_username, sender_username, team_name):
         # Start the session for transaction
         session = self.session
         try:
@@ -141,7 +141,6 @@ class TeamController:
         Returns false if the user is already on a team.
     '''
     def create_team(self, username, displayName):
-        
         team_name = displayName.lower().strip()
         if self.get_user_team(username) != None or not self.is_valid_team_name(team_name):
             self.error = self.USER_ON_TEAM_ERROR

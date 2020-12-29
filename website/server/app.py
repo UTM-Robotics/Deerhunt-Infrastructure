@@ -200,13 +200,12 @@ def send_invite():
     return "Success"
     return True
 
-@app.route('/api/sendinvite',methods=['GET'])
-def sent_invites():
-    login_guard()
 
-# Teams assigning api calls
 @app.route('/api/userinvites',methods=['GET'])
 def user_invites():
+"""
+    Gets the list of team display names and team names that a team has been invited to.
+"""
     login_guard()
     pass
 
