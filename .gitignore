@@ -4,3 +4,5 @@ __pycache__/
 *.css.map
 *.zip
 *.sh
+merge-dev.sh
+.vscode/

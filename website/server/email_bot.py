@@ -77,5 +77,7 @@ class EmailBot():
                 server.sendmail(sender, receiver, message)
                 # server.close()
                 print('successfully sent the mail')
+                return True
             except Exception:
                 print("failed to send mail")
+                return False
