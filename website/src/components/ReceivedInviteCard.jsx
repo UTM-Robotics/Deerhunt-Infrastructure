@@ -6,7 +6,9 @@ class ReceivedInviteCard extends React.Component {
         super();
         this.state = {
             "team": "",
-            "team_display": ""
+            "team_display": "",
+            "reloadCallback": ()=>{},
+            "errorCallback": (string)=>{}
         }
     }
 
@@ -21,11 +23,12 @@ class ReceivedInviteCard extends React.Component {
             data: requestData,
             contentType: 'application/json',
             success: (responseData) => {
-                alert('Success');
+                reloadCallback();
+
             },
             error: (err) => {
                 console.log(err);
-                alert('Error');
+                errorCallback("fail_accept");
             }
         });
     }

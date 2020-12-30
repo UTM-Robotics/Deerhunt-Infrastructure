@@ -287,6 +287,7 @@ $login-message-font-size: 16px;
 }
 
 .invite-card{
+    margin: 4px;
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.24);
     padding: 2px 4px;
 }
@@ -384,7 +385,7 @@ $login-message-font-size: 16px;
   height: 100px;
   margin: 6px;
   border-radius: 50%;
-  background: limegreen;
+  background: rgb(107, 128, 107);
   animation: lds-circle 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
@@ -514,13 +515,13 @@ $login-message-font-size: 16px;
         opacity: 0.9;
         width: 100%;
         border: 0;
-        margin: 0 0 15px;
+        margin: 15px 0px 15px 0px;
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
     }
 
-    .create-team-button, .send-invite-button {
+    .create-team-button, .leave-team-button, .send-invite-button {
         text-transform: uppercase;
         outline: 0;
         background: grey;
@@ -528,6 +529,7 @@ $login-message-font-size: 16px;
         padding: 15px;
         color: white;
         font-size: 14px;
+        margin: 4px;
         cursor: pointer;
 
         &:hover, &:active, &:focus {

@@ -105,7 +105,7 @@ class Teams extends React.Component {
     }
 
     createTeam() {
-        if (this.state.team != "" && this.state.team.length > 4 && this.state.team.length < 16) {
+        if (this.state.newTeamName === "" || this.state.team.length > 4 || this.state.team.length > 16) {
             this.addCreateTeamError('inval');
             return;
         }
