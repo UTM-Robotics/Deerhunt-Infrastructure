@@ -3,6 +3,14 @@ import copy
 from ctypes import c_uint32
 
 from move import GroundMove, StasisMove, AttackMove, MineMove
+from units import MELEE_UNIT, WORKER_UNIT
+
+
+CMD_DUPLICATE_WORKER = 'DUPLICATE_W'
+CMD_DUPLICATE_MELEE = 'DUPLICATE_M'
+CMD_ATTACK = 'ATTACK'
+CMD_MINE = 'MINE'
+
 
 class ClientConnection:
 
@@ -31,11 +39,14 @@ class ClientConnection:
         return [u.__dict__ for u in units.values()]
 
     def create_move(self, id, body):
-        if isinstance(body, list) and len(body) > 1 and body[0] == 'DUPLICATE':
-            return StasisMove(id, body[1])
-        elif isinstance(body, list) and len(body) > 1 and body[0] == 'ATTACK':
+        print(body[0] == CMD_DUPLICATE_WORKER)
+        if isinstance(body, list) and len(body) > 1 and body[0] == CMD_DUPLICATE_MELEE:
+            return StasisMove(id, body[1], MELEE_UNIT)
+        if isinstance(body, list) and len(body) > 1 and body[0] == CMD_DUPLICATE_WORKER:
+            return StasisMove(id, body[1], WORKER_UNIT)
+        elif isinstance(body, list) and len(body) > 1 and body[0] == CMD_ATTACK:
             return AttackMove(id, body[1:])
-        elif isinstance(body, list) and len(body) > 0 and body[0] == 'MINE':
+        elif isinstance(body, list) and len(body) > 0 and body[0] == CMD_MINE:
             return MineMove(id)
         else:
             return GroundMove(id, body)

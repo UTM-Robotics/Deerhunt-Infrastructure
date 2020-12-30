@@ -3,5 +3,9 @@ __pycache__/
 *$py.class
 *.css.map
 *.zip
+<<<<<<< HEAD
 merge-dev.sh
 .vscode/
+=======
+.vscode/
+>>>>>>> sam-gameDifficulty

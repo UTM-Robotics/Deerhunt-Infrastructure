@@ -43,11 +43,13 @@ class AttackMove(Move):
     def get_relative_moves(self):
         return Move._get_relative_moves(self.target)
 
+
 class StasisMove(Move):
 
-    def __init__(self, unit, direction):
+    def __init__(self, unit, direction, unit_type):
         self.unit = unit
         self.direction = direction
+        self.unit_type = unit_type
 
     def len(self):
         return 0
@@ -58,6 +60,7 @@ class StasisMove(Move):
             return False
 
         return '{},{}'.format(nx, ny) not in all_units
+
 
 class GroundMove(Move):
 

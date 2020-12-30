@@ -1,6 +1,6 @@
 import json
 from game import Game
-from units import Unit, MeleeUnit, WorkerUnit
+from units import Unit, MeleeUnit, WorkerUnit, MELEE_UNIT, WORKER_UNIT
 from move import GroundMove, StasisMove, AttackMove, Move, MineMove
 from tiles import GroundTile, WallTile, ResourceTile
 from copy import deepcopy
@@ -94,8 +94,8 @@ class GridFighters(Game):
         elif isinstance(v, AttackMove) and (self.get_matching_unit(x, y, enemy_units, v) is None or v.len() < 0 or v.len() > 1):
             print('ERROR: Unit {} cannot attack there'.format(k))
             return False
-        elif isinstance(v, StasisMove) and (not player_state[k].can_duplicate(player_resources) \
-                or player_resources < 100 or not v.free_spot(x, y, self.all_units, self.grid)):
+        elif isinstance(v, StasisMove) and (not player_state[k].can_duplicate(player_resources, v.unit_type)
+                                            or not v.free_spot(x, y, self.all_units, self.grid)):
             print('ERROR: Unit {} cannot duplicate now'.format(k))
             return False
         elif isinstance(v, MineMove) and (not player_state[k].can_mine() or not self.is_mining_resource(x, y)):
@@ -134,11 +134,15 @@ class GridFighters(Game):
 
             self.del_unit(x+rx, y+ry)
         elif isinstance(v, StasisMove):
-            self.currently_duplicating[k] = (player_state, player_state[k].start_duplication(v.direction))
-            self.resources[player_name] -= 100
+            self.currently_duplicating[k] = (
+                player_state, player_state[k].start_duplication(v.direction, v.unit_type))
+            if v.unit_type == MELEE_UNIT:
+                self.resources[player_name] -= player_state[k].melee_cost
+            else:
+                self.resources[player_name] -= player_state[k].worker_cost
         elif isinstance(v, MineMove):
-            self.currently_mining[k] = (player_name, player_state[k].start_mining())
-            
+            self.currently_mining[k] = (
+                player_name, player_state[k].start_mining())
 
     def tick_player(self, conn, current, opponent, name, turns):
         moves = conn.tick(self, current, opponent, self.resources, turns)
@@ -161,7 +165,10 @@ class GridFighters(Game):
         return False
 
     def create_duplicate(self, unit):
-        return MeleeUnit(*Move.transform(unit.x, unit.y, unit.stasis_direction))
+        if unit.duplication_unit == MELEE_UNIT:
+            return MeleeUnit(*Move.transform(unit.x, unit.y, unit.stasis_direction))
+        else:
+            return WorkerUnit(*Move.transform(unit.x, unit.y, unit.stasis_direction))
 
     def has_lost(self, enemy_units):
         return len(enemy_units) == 0
