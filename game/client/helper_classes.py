@@ -80,13 +80,16 @@ class Unit:
                 enemies.append((unit, direction))
         return enemies
 
-    def can_duplicate(self, resources: int) -> bool:
+    def can_duplicate(self, resources: int, unit_type: str) -> bool:
         """
         Returns if this Unit can duplicate.
         """
-        if self.type == 'worker' and self.attr['resource_cost'] <= resources \
+        if self.type == 'worker' \
                 and self.attr['duplication_status'] <= 0:
-            return True
+            if (unit_type == 'melee' and self.attr['melee_cost'] <= resources) or \
+                    (unit_type == 'worker' and self.attr['worker_cost'] <= resources):
+                return True
+            return False
         else:
             return False
 
@@ -106,11 +109,11 @@ class Unit:
         """
         return Move(self.id, 'MINE')
 
-    def duplicate(self, direction: (str)) -> Move:
+    def duplicate(self, direction: (str), unit_type: str) -> Move:
         """
         Returns a 'duplicate' Move for this Unit in the given <direction>.
         """
-        return Move(self.id, 'DUPLICATE', direction)
+        return Move(self.id, 'DUPLICATE_M' if unit_type == 'melee' else 'DUPLICATE_W')
 
 
 class Map:
