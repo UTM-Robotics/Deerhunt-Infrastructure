@@ -20,19 +20,21 @@ from bson.objectid import ObjectId
 from passlib.hash import sha512_crypt
 from leaderboard import Leaderboard
 from email_bot import EmailBot
-from tournament import TournamentLevel
+from tournament import TournamentController
+from code_generator import CodeGenerator
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
 app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
-database = MongoClient(app.config["MONGO_URI"])
+client = MongoClient(app.config["MONGO_URI"])
+PROD_FLAG = False
 if PROD_FLAG:
     # app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
     #     '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
-    database = database.deerhunt_prod
+    database = client.deerhunt_prod
 else:
     # app.run(host='0.0.0.0', port=8080, threaded=True)
-    database = database.deerhunt_db
+    database = client.deerhunt_db
 board = Leaderboard(database.leaderboard)
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
@@ -58,20 +60,16 @@ submitting = {} # dict looks like: {'some team name': }
 
 # Starting second thread for tournament timer.
 
-def job(arr):
-    tourny = TournamentLevel(arr)
-    x = tourny.run()
-    print(x)
 # def run_threaded(job_func):
-#     job_thread = threading.Thread(target=job_func)
+#     job_threa2d = threading.Thread(target=job_func)
 #     job_thread.start()
 # def runTournamentThread():
 #     schedule.every(1).second.do(run_threaded, job)
 #     while 1:
 #         schedule.run_pending()
 #         time.sleep(1)
-# tournament_timer = threading.Thread(target=runTournamentThread)
-# tournament_timer.start()
+tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
+tournament_timer.start()
 # test = {'alex2': '/deerhunt/submissions/alex2', 'kyrel': '/deerhunt/submissions/kyrel'}
 test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell', 'edmund', 'sova',
         'jasmine2', 'kyrel2', 'peter2', 'jarvis2', 'jack2', 'raze2', 'bufflin2', 'dell2', 'edmund2', 'sova2',
@@ -81,7 +79,6 @@ test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell'
         # 'jasmine6', 'kyrel6', 'peter6', 'jarvis6', 'jack6', 'raze6', 'bufflin6', 'dell6', 'edmund6', 'sova6',
         # 'jasmine7', 'kyrel7', 'peter7', 'jarvis7', 'jack7', 'raze7', 'bufflin7', 'dell7', 'edmund7', 'sova7',
         # 'jasmine8', 'kyrel8', 'peter8', 'jarvis8', 'jack8', 'raze8', 'bufflin8', 'dell8', 'edmund8', 'sova8']
-job(test)
 ##
 # API routes
 ##
@@ -198,7 +195,17 @@ def run_match(position):
 '''
 
 
-
+@app.route('/api/challenge', methods=['POST'])
+def challenge():
+    login_guard()
+    challenger = session['username']
+    
+    defender = request.get_json()["username"]
+    with TournamentController(client, database, challenger) as battle:
+        can_battle = battle.init_challenge(defender)
+        if can_battle:
+            result = battle.run_battle()
+        
 
 @app.route('/api/login', methods=['POST'])
 def login():
