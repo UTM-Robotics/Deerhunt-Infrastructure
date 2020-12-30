@@ -1,7 +1,10 @@
-
+@import url('https://fonts.googleapis.com/css2?family=Spartan:wght@700&display=swap');
+@import url("https://use.typekit.net/lrh2tnp.css");
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: aileron, Arial, sans-serif;
 }
 
 .app-header-img{
@@ -19,7 +22,12 @@ body {
         font-size: 40px;
         text-decoration: none;
         color: black;
-        font-family: 'VT323', monospace;
+        // KJ
+        font-family: 'Spartan', sans-serif;
+        text-transform: uppercase;
+        font-weight:700;
+        color: #ffaf00;
+        //  font-family: 'VT323', monospace;
     }
 }
 //Discord embed
@@ -111,10 +119,37 @@ $login-message-font-size: 16px;
     font-size: 30px;
     text-decoration: none;
     color: black;
-    font-family: 'VT323', monospace;
-}
-.nav-link:hover {
+
+    font-family: 'Spartan', sans-serif;
+    text-transform: uppercase;
+    font-weight:700;
     color: #ffaf00;
+    // font-family: 'VT323', monospace;
+}
+
+.nav-link:hover {
+    // color: #ffaf00;
+    color:#ffec37;
+    -webkit-animation-duration: 0.75s;
+    -webkit-animation-name: nav-link;
+    animation-duration: 1s;
+    animation-name: nav-link;
+}
+@-webkit-keyframes nav-link {
+    from {
+        color: #ffaf00;
+    }
+    to {
+        color: #ffec37;
+    }
+}
+@keyframes nav-link {
+    from {
+        color: #ffaf00;
+    }
+    to {
+        color: #ffec37;
+    }
 }
 
 .content-container {
