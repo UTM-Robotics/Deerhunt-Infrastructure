@@ -37,6 +37,9 @@ class TeamController:
 
     def can_invite(self, sender_username, recipient_username):
         """Returns true if the user can send an invite to the recipient."""
+        print("Sender username: ", sender_username)
+        print("Recipient username: ", recipient_username)
+        
         sender_team = self.get_user_team(sender_username)
         # Transaction safety
         if sender_team == None:
@@ -47,7 +50,7 @@ class TeamController:
             return self.USER_ON_TEAM_ERROR
         return 0
 
-    def send_invite(self, recipient_username, sender_username):
+    def send_invite(self, sender_username, recipient_username):
         '''Sends an invite from recipient user to sender user.'''
         session = self.session
         try:
@@ -61,7 +64,6 @@ class TeamController:
             if "name" not in sender_team:
                 self.error = INVALID_TEAM_ERROR
                 return False
-
             sender_team_name = sender_team["name"]
             # Add to list of invites on recipient user
             recipient_query = {'username': recipient_username,
@@ -97,9 +99,8 @@ class TeamController:
                 self.error = self.INVITE_EXISTS_ERROR
                 return False
             session.commit_transaction()
-            print("Successfully invited user to team.")
         except (Exception) as exc:
-            print(exc)
+            traceback.print_exc()
             session.abort_transaction()
             return False
         return True
@@ -191,8 +192,11 @@ class TeamController:
         session = self.session
         try:
             session.start_transaction()
-            team_data = {"name": team_name,
-                         "displayName": displayName, "users": [username], "user_count": 1}
+            team_data = {
+                        "name": team_name,
+                         "displayName": displayName, "users": [username], "user_count": 1,
+                         "invites:": []
+                         }
             team_query = {'name': team_name}
             team_result = self.database.teams.update_one(
                 team_query,
@@ -290,7 +294,6 @@ class TeamController:
             return None
         team_document = self.database.teams.find_one(
             {'name': user_file['team']}, session=self.session)
-        print("Got user team")
         return team_document
 
     def get_team(self, team_name):
@@ -302,6 +305,8 @@ class TeamController:
     def get_user_invites(self, username):
         '''Gets the invites received by a given user'''
         user_file = self.database.users.find_one({"username": username}, session=self.session)
+        if "invites" not in user_file:
+            return {} 
         invite_list = user_file["invites"]
         ret = {}
         for team in invite_list:

@@ -184,24 +184,30 @@ def run_match(position):
 
 # Teams
 # Teams assigning api calls
-@app.route('/api/sendinvite',methods=['POST'])
+
+
+@app.route('/api/sendinvite', methods=['POST'])
 def send_invite():
     '''Sends an invite from a user's current team to a user.'''
-    #login_guard()
-    #username = session["username"]
-
+    login_guard()
+    username = session["username"]
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    if not "recipient" in body:
+        abort(400)
+    recipient_doc = database.users.find_one({'username': body["recipient"]})
+    if not recipient_doc:
+        abort(400)
     with TeamController(client, database) as team_api:
-        status = team_api.send_invite("alex", "kyrel")
+        status = team_api.send_invite(username, body["recipient"])
     if not status:
         print("Exited with error code:" + str(team_api.error))
         abort(409)
-
-    print("Successfully sent invite")
     return "Success"
-    return True
 
 
-@app.route('/api/userinvites',methods=['GET'])
+@app.route('/api/userinvites', methods=['GET'])
 def user_invites():
     """Gets the list of team display names and team names that a user 
         has been invited to.
@@ -212,52 +218,80 @@ def user_invites():
     return invites_team_dict
 
 # Teams assigning api calls
-@app.route('/api/acceptinvite',methods=['POST'])
+
+
+@app.route('/api/acceptinvite', methods=['POST'])
 def accept_invite():
     '''Accpets an invite on a user's account, if the invite is valid.'''
-    #login_guard()
-    #username = session["username"]
+    login_guard()
+    username = session["username"]
+    if not "team" in body:
+        abort(400)
 
     with TeamController(client, database) as team_api:
-        status = team_api.accept_invite("alex", "thegreatest2")
+        status = team_api.accept_invite(username, body["team"])
     if not status:
         print("Exited with error code:" + str(team_api.error))
         abort(409)
 
-    print("Successfully sent invite")
     return "Success"
-    return True
 
-@app.route('/api/createteam',methods=['POST'])
+
+@app.route('/api/createteam', methods=['POST'])
 def create_team():
-    #login_guard()
+    login_guard()
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    if not "team" in body:
+        abort(400)
+
     with TeamController(client, database) as team_api:
-        status = team_api.create_team("kyrel","TheGreatest2")
+        status = team_api.create_team(session["username"], body["team"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
+        print("Request failed with error code:" + str(team_api.error))
         abort(409)
-    print("Successfully created a team")
     return "Success"
 
-@app.route('/api/leaveteam',methods=['POST'])
+
+@app.route('/api/leaveteam', methods=['POST'])
 def leave_team():
-    #login_guard()
-    
+    login_guard()
     with TeamController(client, database) as team_api:
-        status = team_api.leave_team("kyrel")
+        status = team_api.leave_team(session["username"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
+        print("Request failed with error code:" + str(team_api.error))
         abort(409)
-    print("Successfully created a team")
     return "Success"
 
-@app.route('/api/getTeam',methods=['POST'])
+
+@app.route('/api/getteam', methods=['GET'])
 def get_team():
     login_guard()
-    
+
     with TeamController(client, database) as team_api:
         team = team_api.get_user_team(session["username"])
-    return team["name"] if team != None else ""
+    if not team:
+        return {}
+    team_json = {
+        "name": team.get("name", ""),
+        "display_name": team.get("displayName", ""),
+        "invites":  team.get("invites",[])
+    }
+    return team_json
+
+
+@app.route('/api/getteaminvites', methods=['GET'])
+def get_team_invites():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team = team_api.get_user_team(session["username"])
+    if not team:
+        return {"invited_users": []}
+    return {"invited_users": team.get("invites", [])}
+
+# Login and Registstration Routes
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -268,7 +302,8 @@ def login():
 
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
-    if result['verified'] == 'False':
+    if result['verified'] == False:
+        print(result['verified'])
         abort(403)
 
     session['logged_in'] = True
@@ -356,6 +391,8 @@ def register():
 
 ''' Safe For Upsert!!!
 '''
+
+
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
     login_guard()
@@ -553,7 +590,7 @@ if __name__ == '__main__':
         app.run(host='0.0.0.0', port=8080, threaded=True, debug=True)
         # database = MongoClient(
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
-        # database = mongo.init_app(app)      
+        # database = mongo.init_app(app)
         # database = database.deerhunt_db
         # print(database)
     # board = Leaderboard(database.leaderboard)

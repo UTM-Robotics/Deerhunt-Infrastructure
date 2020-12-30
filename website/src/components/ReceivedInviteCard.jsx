@@ -12,7 +12,7 @@ class ReceivedInviteCard extends React.Component {
 
     acceptInvite() {
         const requestData = JSON.stringify({
-            "team": this.state.team,
+            "team": this.props.team,
         });
 
         $.ajax({
@@ -32,7 +32,7 @@ class ReceivedInviteCard extends React.Component {
     render() {
         return (
             <div className="invite-card">
-                <h2>Team name: {this.state.team_display}</h2>
+                <h2>Team name: {this.props.team_display}</h2>
                 <div className="invite-button" onClick={this.acceptInvite.bind(this)}>Accept Invite</div>
             </div>
         );

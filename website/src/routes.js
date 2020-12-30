@@ -21,7 +21,7 @@ class Routes extends React.Component {
                     <Route path='/register' component={Register} />
                     <Route path='/home' component={Home} />
                     <Route path='/replay' component={Replay} />
-                    <Route path='/team' component={Teams} /> 
+                    <Route path='/teams' component={Teams} /> 
                     <Route path='/submit' component={Submit} />
                     <Route path='/88388' component={AdminPanel} />
                     <Route path='/profile' component={Profile} />

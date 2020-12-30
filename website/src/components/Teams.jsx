@@ -1,6 +1,8 @@
 import React from 'react';
 import $ from 'jquery';
-import InviteCard from "./ReceivedInviteCard";
+import ReceivedInviteCard from "./ReceivedInviteCard";
+import SentInviteCard from "./SentInviteCard";
+
 class Teams extends React.Component {
 
     constructor() {
@@ -8,51 +10,57 @@ class Teams extends React.Component {
         this.state = {
             loggedIn: false,
             team: "",
+            team_display: "",
             newTeamName: "",
-            invites: [],
-            sentInvites: [],
+            usersInvited: [],
             canInvite: false,
+            invites: {},
+            invitedUser: "",
         };
     }
 
     componentDidMount() {
-        document.addEventListener("keypress", this.handleEnterKeyPress.bind(this));
         this.isLoggedIn();
-        this.loadTeam();
-        this.loadInvites();
-        this.loadIn
+        this.reloadAllData();
     }
-    loadInvites() {
+
+    reloadAllData() {
+        this.loadTeam();
+        this.loadReceivedInvites();
+    }
+
+    loadTeam() {
         $.ajax({
-            url: '/api/userinvites',
+            url: '/api/getteam',
             type: 'GET',
+            dataType: 'JSON',
             success: (responseData) => {
-                var parsed = JSON.parse(responseData);
-                if (parsed) {
+                console.log("Team Received:", responseData);
+                if (responseData) {
                     this.setState({
-                        invites: parsed
+                        team: responseData['name'] || "",
+                        team_display: responseData['display_name'] || "",
+                        usersInvited: responseData['invites'] || [],
                     });
-                }
-                else{
-                    
                 }
             }
         });
     }
 
-    loadInvites() {
+    loadReceivedInvites() {
         $.ajax({
-            url: '/api/isloggedin',
+            url: '/api/userinvites',
             type: 'GET',
+            dataType: 'JSON',
             success: (responseData) => {
-                var parsed = JSON.parse(responseData);
-                if (parsed) {
+                console.log(responseData);
+                if (responseData) {
                     this.setState({
-                        invites: parsed
+                        invites: responseData["invited_users"]
                     });
                 }
-                else{
-                    
+                else {
+
                 }
             }
         });
@@ -74,39 +82,38 @@ class Teams extends React.Component {
                 }
             }
         });
-    } 1
-
-    handleEnterKeyPress(e) {
-        if (e.charCode == 13 || e.keyCode == 13) {
-            this.change();
-        }
     }
 
     handleCreateTeamNameChange(e) {
         this.setState({
-            createTeamName: e.target.value
+            newTeamName: e.target.value
         });
     }
 
-    addError(type: string) {
+    addCreateTeamError(type) {
         $('.error-message').remove();
         $('.success-message').remove();
         var message = "";
-        if (type === 'cup') {
-            message = "Please enter your current password"
+        if (type === 'inval') {
+            message = "Team name must have between 4 and 16 non-whitespace characters."
+        }
+        else if(type === 'exists'){
+            message = "This team already exists, please choose another name.";
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
-        $('.register-button').after(errorMessage);
+        $('.create-team-button').after(errorMessage);
     }
 
     createTeam() {
-        if (this.state.team != "") {
-            this.addError('');
+        if (this.state.team != "" && this.state.team.length > 4 && this.state.team.length < 16) {
+            this.addCreateTeamError('inval');
             return;
         }
-
+        const requestData = JSON.stringify({
+            "team": this.state.newTeamName,
+        });
         $.ajax({
-            url: '/api/createTeam',
+            url: '/api/createteam',
             type: 'POST',
             data: requestData,
             contentType: 'application/json',
@@ -114,24 +121,89 @@ class Teams extends React.Component {
                 $('.error-message').remove();
                 $('.success-message').remove();
                 var successMessage = '<p class="success-message">Created Team!</p>';
-                $('.register-button').after(successMessage);
-                this.state
+                $('.create-team-button').after(successMessage);
+                this.reloadAllData();
             },
             error: () => {
-                this.addError('');
+                this.addCreateTeamError('exists');
+                return;
+            }
+        });
+    }
+    leaveTeam() {
+        $.ajax({
+            url: '/api/leaveteam',
+            type: 'POST',
+            contentType: 'application/json',
+            success: () => {
+                this.reloadAllData();
+            }
+        });
+    }
+    addInviteError(type) {
+        $('.error-message').remove();
+        $('.success-message').remove();
+        var message = "";
+        if (type === 'no_user') {
+            message = "Please enter the email of the user to invite.";
+        }
+        else if(type === 'invalid_user'){
+            message = "Invalid user, please ensure the email is valid and the user is registered.";
+        }
+        var errorMessage = '<p class="error-message">' + message + '</p>';
+        $('.send-invite-button').after(errorMessage);
+    }
+    handleInviteUserChange(e) {
+        this.setState({
+            invitedUser: e.target.value
+        });
+    }
+
+    sendInvite() {
+        console.log("Sending invite");
+        if (this.state.invitedUser === "") {
+            this.addInviteError("no_user");
+            return;
+        }
+        const requestData = JSON.stringify({
+            "recipient": this.state.invitedUser,
+        });
+        console.log(requestData);
+        $.ajax({
+            url: '/api/sendinvite',
+            type: 'POST',
+            data: requestData,
+            contentType: 'application/json',
+            success: () => {
+                $('.error-message').remove();
+                $('.success-message').remove();
+                var successMessage = '<p class="success-message">Invite Sent!</p>';
+                $('.send-invite-button').after(successMessage);
+                this.reloadAllData();
+            },
+            error: () => {
+                console.log("Error!");
+                this.addInviteError('invalid_user');
                 return;
             }
         });
     }
 
     render() {
-        if (this.state.team != "") {
-            cardsArray = this.state.invites.map(
-                invite => (<InviteCard
-                    team_name={invite}
-                />)
-            );
+        console.log("Team: ", this.state.team);
+        var invites = this.state.invites;
 
+        if (this.state.team === "") {
+            console.log("Invites: ", this.state.invites);
+            var inviteCards = [];
+            if (invites) {
+                inviteCards = Object.entries(this.state.invites).map(
+                    (team_name) => (<ReceivedInviteCard
+                        team={team_name}
+                        team_display={this.state.invites.display_name}
+                    />)
+                );
+            }
             return (
                 <div className="no-team-container">
                     <h1>Join or Create a Team</h1>
@@ -143,16 +215,16 @@ class Teams extends React.Component {
                     {cardsArray}
                 </div>);
         }
-        cardsArray = this.state.invites.map(
-            invite => (<InviteCard
-                team_name={invite}
+        var cardsArray = this.state.usersInvited.map(
+            invitedUser => (<SentInviteCard
+                username={invitedUser}
             />)
         );
         return (
             <div className="on-team-container">
-                <h1>Team name: {this.state.team}</h1>
+                <h1>Team name: {this.state.team_display}</h1>
                 <form className="invite-input">
-
+                    <div className="leave-team-button" onClick={this.leaveTeam.bind(this)}>Leave Team</div>
                     <input placeholder="User to Invite" onChange={this.handleInviteUserChange.bind(this)} />
                     <div className="send-invite-button" onClick={this.sendInvite.bind(this)}>Send Invite</div>
                 </form>
