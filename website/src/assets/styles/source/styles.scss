@@ -5,6 +5,7 @@
 
 body {
     font-family: aileron, Arial, sans-serif;
+    color:#e6e6e6;
 }
 
 .app-header-img{
@@ -18,6 +19,7 @@ body {
 .app-header-container{
     position:relative;
     text-align: center;
+    border-bottom: solid white 0.15vh;
     h1{
         font-size: 40px;
         text-decoration: none;
@@ -30,6 +32,18 @@ body {
         //  font-family: 'VT323', monospace;
     }
 }
+.nav-br {
+   color:white !important; width:50vw !important; height:2em !important;
+}
+// image center and sizing changes
+.deer-hunt-logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 12.5%;
+}
+
+
 //Discord embed
 .discord-container {
     position: float;
@@ -40,17 +54,20 @@ body {
 .auth-form-container {
     position: float;
     margin: auto;
+    // margin-top:5em;
     z-index: 1;
     background-size: 100% 75%;
     background-position: top center;
+    background-color: #272933;
     max-width: 400px;
     padding: 45px;
     text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+    box-shadow: 0 0 0.3em 0.3em rgba(0, 0, 0, 0.5);
+    // box-shadow: 0 0 0.2em 0.2em rgba(0, 0, 0, 0.5), 0 0.2em 0.2em 0 rgba(0, 0, 0, 0.5);
 
     input {
         outline: 0;
-        background: #f2f2f2;
+        background: #1d1f27;;
         opacity: 0.9;
         width: 100%;
         border: 0;
@@ -58,21 +75,45 @@ body {
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
+        color:#e6e6e6;
     }
 
     .auth-button {
         text-transform: uppercase;
         outline: 0;
-        background: grey;
+        background: #ffec37;
         border: 0;
         padding: 15px;
-        color: white;
+        color:black;
         font-size: 14px;
         cursor: pointer;
 
         &:hover, &:active, &:focus {
-            background: darkgrey;
+            // background: darkgrey;
+            // -webkit-animation-duration: 0.5s;
+            // -webkit-animation-name: upgrade-yellow-background;
+            // animation-duration: 0.5s;
+            // animation-name: upgrade-yellow-background;
+            transition: all 0.25s ease-in;
+            transform: scale(1.05);
         }
+
+        // @-webkit-keyframes upgrade-yellow-background {
+        //     from {
+        //         background: #ffaf00;
+        //     }
+        //     to {
+        //         background: #ffec37;
+        //     }
+        // }
+        // @keyframes upgrade-yellow-background {
+        //     from {
+        //         background: #ffaf00;
+        //     }
+        //     to {
+        //         background: #ffec37;
+        //     }
+        // }
     }
 }
 
@@ -131,11 +172,11 @@ $login-message-font-size: 16px;
     // color: #ffaf00;
     color:#ffec37;
     -webkit-animation-duration: 0.75s;
-    -webkit-animation-name: nav-link;
-    animation-duration: 1s;
-    animation-name: nav-link;
+    -webkit-animation-nam: upgrade-yellow;
+    animation-duration: 0.75s;
+    animation-name: upgrade-yellow;
 }
-@-webkit-keyframes nav-link {
+@-webkit-keyframes upgrade-yellow {
     from {
         color: #ffaf00;
     }
@@ -143,7 +184,7 @@ $login-message-font-size: 16px;
         color: #ffec37;
     }
 }
-@keyframes nav-link {
+@keyframes upgrade-yellow {
     from {
         color: #ffaf00;
     }
