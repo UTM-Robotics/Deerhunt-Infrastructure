@@ -26,4 +26,9 @@ websocket-client==0.57.0
 Werkzeug==1.0.1
 wrapt==1.12.1
 smtp==0.1.0
-scheduler
+schedule
+flask
+flask-cors
+pymongo
+passlib
+dnspython

@@ -16,6 +16,7 @@ class Routes extends React.Component {
             <AppWrapper>
                 <Switch>
                     <Route exact path='/' component={Login} />
+                    <Route path='/deerhunt' component={Login} />
                     <Route path='/register' component={Register} />
                     <Route path='/home' component={Home} />
                     <Route path='/replay' component={Replay} />
