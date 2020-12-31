@@ -2,6 +2,22 @@
 @import url("https://use.typekit.net/lrh2tnp.css");
 @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
 
+/* VARIABLES */
+// FOR BACKGROUNDS
+$backgroundblack: #1d1f27;
+// FOR LIGHTER BACKGROUNDS/CREATE CONTRAST
+$bluishblack: #272933;
+// FOR LETTERING ON LIGHT BACKGROUNDS
+$verydarkgrey: #212121;
+// FOR LETTERING ON DARK BACKGROUNDS
+$almostwhite: #e6e6e6;
+// FOR PLACEHOLDER LETTERING ON LIGHT BACKGROUNDS (E.G: INPUT BOXES)
+$placeholderdark: #36352f;
+// ACCENT
+$goldenyellow: #ffaf00;
+// USE SPARINGLY:
+$brightyellow:#ffec37;
+
 
 body {
     font-family: aileron, Arial, sans-serif;
@@ -23,12 +39,12 @@ body {
     h1{
         font-size: 40px;
         text-decoration: none;
-        color: black;
+        color: $verydarkgrey;
         // KJ
         font-family: 'Spartan', sans-serif;
         text-transform: uppercase;
         font-weight:700;
-        color: #ffaf00;
+        color: $goldenyellow;
         //  font-family: 'VT323', monospace;
     }
 }
@@ -58,7 +74,7 @@ body {
     z-index: 1;
     background-size: 100% 75%;
     background-position: top center;
-    background-color: #272933;
+    background-color: $bluishblack;
     max-width: 400px;
     padding: 45px;
     text-align: center;
@@ -67,7 +83,7 @@ body {
 
     input {
         outline: 0;
-        background: #1d1f27;;
+        background: $backgroundblack;
         opacity: 0.9;
         width: 100%;
         border: 0;
@@ -75,13 +91,17 @@ body {
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
-        color:#e6e6e6;
+        color:$almostwhite;
+    }
+    input::placeholder {
+        color:$goldenyellow;
+        opacity:1;
     }
 
     .auth-button {
         text-transform: uppercase;
         outline: 0;
-        background: #ffec37;
+        background:$brightyellow;
         border: 0;
         padding: 15px;
         color:black;
@@ -95,7 +115,7 @@ body {
             // animation-duration: 0.5s;
             // animation-name: upgrade-yellow-background;
             transition: all 0.25s ease-in;
-            transform: scale(1.05);
+            transform: scale(1.01);
         }
 
         // @-webkit-keyframes upgrade-yellow-background {
@@ -164,13 +184,13 @@ $login-message-font-size: 16px;
     font-family: 'Spartan', sans-serif;
     text-transform: uppercase;
     font-weight:700;
-    color: #ffaf00;
+    color:$goldenyellow;
     // font-family: 'VT323', monospace;
 }
 
 .nav-link:hover {
     // color: #ffaf00;
-    color:#ffec37;
+    color:$brightyellow;
     -webkit-animation-duration: 0.75s;
     -webkit-animation-nam: upgrade-yellow;
     animation-duration: 0.75s;
@@ -178,18 +198,18 @@ $login-message-font-size: 16px;
 }
 @-webkit-keyframes upgrade-yellow {
     from {
-        color: #ffaf00;
+        color:$goldenyellow;
     }
     to {
-        color: #ffec37;
+        color:$brightyellow;
     }
 }
 @keyframes upgrade-yellow {
     from {
-        color: #ffaf00;
+        color:$goldenyellow;
     }
     to {
-        color: #ffec37;
+        color:$brightyellow;
     }
 }
 
@@ -293,7 +313,8 @@ $login-message-font-size: 16px;
 
     input {
         outline: 0;
-        background: #f2f2f2;
+        // background: #f2f2f2;
+        background:$almostwhite;
         opacity: 0.9;
         border: 0;
         margin: 0 0 15px;
@@ -301,6 +322,11 @@ $login-message-font-size: 16px;
         box-sizing: border-box;
         font-size: 14px;
         min-width: 300px;
+        color:$verydarkgrey;
+    }
+    input::placeholder {
+        color:$placeholderdark;
+        opacity:1;
     }
 
 
@@ -344,6 +370,7 @@ $login-message-font-size: 16px;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
     left: 50%;
     top: 50%;
+    margin-top:3em;
     transform: translate(-50%, -50%);
 
     input {
@@ -357,6 +384,11 @@ $login-message-font-size: 16px;
         box-sizing: border-box;
         font-size: 14px;
         text-align: center;
+        color: $verydarkgrey;
+    }
+    input::placeholder {
+        color:$placeholderdark !important;
+        opacity:1;
     }
 
     .submit-button {
@@ -482,8 +514,9 @@ $login-message-font-size: 16px;
     transform: translate(-50%);
 
     input {
+        color:$verydarkgrey;
         outline: 0;
-        background: #f2f2f2;
+        background:$almostwhite;
         opacity: 0.9;
         width: 100%;
         border: 0;
@@ -491,6 +524,10 @@ $login-message-font-size: 16px;
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
+    }
+    input::placeholder {
+        color:$placeholderdark;
+        opacity:1;
     }
 
     .register-button {
@@ -552,7 +589,7 @@ $login-message-font-size: 16px;
 
     input {
         outline: 0;
-        background: #f2f2f2;
+        background:$almostwhite;
         opacity: 0.9;
         width: 100%;
         border: 0;
@@ -560,6 +597,11 @@ $login-message-font-size: 16px;
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
+        color:$verydarkgrey;
+    }
+    input::placeholder {
+        color:$placeholderdark;
+        opacity:1;
     }
 
     .create-team-button, .leave-team-button, .send-invite-button {
