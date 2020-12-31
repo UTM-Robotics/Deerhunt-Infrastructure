@@ -85,6 +85,8 @@ class Teams extends React.Component {
     }
 
     handleCreateTeamNameChange(e) {
+        
+        console.log("Updating newTeamName: ", e.target.value);
         this.setState({
             newTeamName: e.target.value
         });
@@ -108,10 +110,11 @@ class Teams extends React.Component {
     }
 
     createTeam() {
-        if (this.state.newTeamName === "" || this.state.team.length < 4 || this.state.team.length > 16) {
+        if (this.state.newTeamName === "" || this.state.newTeamName.length < 4 || this.state.newTeamName.length > 16) {
             this.addCreateTeamError('inval');
             return;
         }
+        console.log("Creating Team: ", this.state.newTeamName);
         const requestData = JSON.stringify({
             "team": this.state.newTeamName,
         });

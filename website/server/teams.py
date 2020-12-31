@@ -167,7 +167,7 @@ class TeamController:
                 "$pull": {"invites":username}}
             user_result = self.database.users.update_one(
                 user_query,
-                {"$set": user_data},
+                user_data,
                 session=session
             )
             if user_result.modified_count != 1:
