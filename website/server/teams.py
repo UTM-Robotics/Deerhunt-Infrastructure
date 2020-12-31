@@ -164,7 +164,7 @@ class TeamController:
             user_query = {'username': username, "$or": [
                 {"team": {"$exists": False}}, {"team": {"$eq": ""}}, ], }
             user_data = {"$set":{"team": team_name},
-                "$pull": {"invites":username}}
+                "$pull": {"invites":team_name}}
             user_result = self.database.users.update_one(
                 user_query,
                 user_data,

@@ -10,6 +10,7 @@ class Teams extends React.Component {
         this.state = {
             loggedIn: false,
             team: "",
+            teammates: [],
             team_display: "",
             newTeamName: "",
             usersInvited: [],
@@ -39,6 +40,7 @@ class Teams extends React.Component {
                 if (responseData) {
                     this.setState({
                         team: responseData['name'] || "",
+                        teammates: responseData['users'] || [],
                         team_display: responseData['display_name'] || "",
                         usersInvited: responseData['invites'] || [],
                     });
@@ -85,8 +87,6 @@ class Teams extends React.Component {
     }
 
     handleCreateTeamNameChange(e) {
-        
-        console.log("Updating newTeamName: ", e.target.value);
         this.setState({
             newTeamName: e.target.value
         });
@@ -114,7 +114,6 @@ class Teams extends React.Component {
             this.addCreateTeamError('inval');
             return;
         }
-        console.log("Creating Team: ", this.state.newTeamName);
         const requestData = JSON.stringify({
             "team": this.state.newTeamName,
         });
@@ -166,7 +165,6 @@ class Teams extends React.Component {
     }
 
     sendInvite() {
-        console.log("Sending invite");
         if (this.state.invitedUser === "") {
             this.addInviteError("no_user");
             return;
@@ -174,7 +172,6 @@ class Teams extends React.Component {
         const requestData = JSON.stringify({
             "recipient": this.state.invitedUser,
         });
-        console.log(requestData);
         $.ajax({
             url: '/api/sendinvite',
             type: 'POST',
@@ -185,6 +182,9 @@ class Teams extends React.Component {
                 $('.success-message').remove();
                 var successMessage = '<p class="success-message">Invite Sent!</p>';
                 $('.send-invite-button').after(successMessage);
+                this.setState({
+                    invitedUser:""
+                });
                 this.reloadAllData();
             },
             error: () => {
@@ -196,11 +196,8 @@ class Teams extends React.Component {
     }
 
     render() {
-        console.log("Team: ", this.state.team);
         var invites = this.state.invites;
-
         if (this.state.team === "") {
-            console.log("Invites: ", this.state.invites);
             var inviteCards = [];
             if (invites) {
                 inviteCards = Object.entries(this.state.invites).map(
@@ -223,6 +220,10 @@ class Teams extends React.Component {
                     {inviteCards}
                 </div>);
         }
+        console.log(this.state.teammates);
+        var usersArray = this.state.teammates.map(
+            teammate_name => (<p>{teammate_name}</p>)
+        );
         var cardsArray = this.state.usersInvited.map(
             invitedUser => (<SentInviteCard
                 username={invitedUser}
@@ -234,6 +235,7 @@ class Teams extends React.Component {
         return (
             <div className="on-team-container">
                 <h1>Team name: {this.state.team_display}</h1>
+                {usersArray}
                 <form className="invite-input">
                     <div className="leave-team-button" onClick={this.leaveTeam.bind(this)}>Leave Team</div>
                     <input placeholder="User to Invite" onChange={this.handleInviteUserChange.bind(this)} />
