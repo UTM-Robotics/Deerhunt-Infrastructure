@@ -9,6 +9,7 @@ import AdminPanel from './components/AdminPanel';
 import ErrorPage from './components/ErrorPage';
 import Profile from './components/Profile';
 import Register from './components/Register';
+import Teams from './components/Teams';
 
 class Routes extends React.Component {
     render() {
@@ -20,6 +21,7 @@ class Routes extends React.Component {
                     <Route path='/register' component={Register} />
                     <Route path='/home' component={Home} />
                     <Route path='/replay' component={Replay} />
+                    <Route path='/teams' component={Teams} /> 
                     <Route path='/submit' component={Submit} />
                     <Route path='/88388' component={AdminPanel} />
                     <Route path='/profile' component={Profile} />

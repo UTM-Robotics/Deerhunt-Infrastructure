@@ -11,7 +11,6 @@ class Profile extends React.Component {
             currentPassword: "",
             newPassword: "",
             confirmPassword: "",
-            team: ""
         };
     }
 
@@ -62,7 +61,7 @@ class Profile extends React.Component {
         });
     }
 
-    addError(type: string) {
+    addError(type) {
         $('.error-message').remove();
         $('.success-message').remove();
         var message = "";

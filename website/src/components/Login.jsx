@@ -1,6 +1,6 @@
 import React from 'react';
 import $ from 'jquery';
-
+import logo from './../assets/images/deerhuntcropped.png'
 import discord from './../assets/images/discord_logo.png';
 
 class Login extends React.Component {
@@ -97,6 +97,7 @@ class Login extends React.Component {
     render() {
         return (
             <div>
+                <img src={logo} alt="Deer Hunt Logo" className="deer-hunt-logo"/>
                 <div className="auth-form-container">
                     <form className="login-form" id="login-form">
                         <input id="username" type="text" placeholder="Username/Email" onChange={this.handleUserChange.bind(this)} />

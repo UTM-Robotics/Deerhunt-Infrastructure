@@ -2,26 +2,30 @@
 import os
 import uuid
 import time
-# import sched
 import threading
 import shutil
 import schedule
+import traceback
 # import docker
 # import re
-# import traceback
 # from datetime import datetime
 from zipfile import ZipFile, BadZipFile
 from flask import Flask, jsonify, send_from_directory, request, abort, session
 from flask_cors import CORS
 from pymongo import MongoClient
-# from flask_pymongo import PyMongo
-# from db import database
 from bson.objectid import ObjectId
 from passlib.hash import sha512_crypt
 from leaderboard import Leaderboard
 from email_bot import EmailBot
 from tournament import TournamentController
 from code_generator import CodeGenerator
+from teams import TeamController
+
+
+'''
+Application Run Flags
+'''
+PROD_FLAG = False
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
@@ -194,6 +198,118 @@ def run_match(position):
     return jsonify(game_id=str(game_id), message=lines[-1])
 '''
 
+# Teams
+# Teams assigning api calls
+
+
+@app.route('/api/sendinvite', methods=['POST'])
+def send_invite():
+    '''Sends an invite from a user's current team to a user.'''
+    login_guard()
+    username = session["username"]
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    if not "recipient" in body:
+        abort(400)
+    recipient_doc = database.users.find_one({'username': body["recipient"]})
+    if not recipient_doc:
+        abort(400)
+    with TeamController(client, database) as team_api:
+        status = team_api.send_invite(username, body["recipient"])
+    if not status:
+        print("Exited with error code:" + str(team_api.error))
+        abort(409)
+    return "Success"
+
+
+@app.route('/api/userinvites', methods=['GET'])
+def user_invites():
+    """Gets the list of team display names and team names that a user 
+        has been invited to.
+    """
+    login_guard()
+    with TeamController(client, database) as team_api:
+        invites_team_dict = team_api.get_user_invites(session["username"])
+    return invites_team_dict
+
+# Teams assigning api calls
+
+
+@app.route('/api/acceptinvite', methods=['POST'])
+def accept_invite():
+    '''Accpets an invite on a user's account, if the invite is valid.'''
+    login_guard()
+    username = session["username"]
+
+    body = request.get_json()
+    if not "team" in body:
+        abort(400)
+
+    with TeamController(client, database) as team_api:
+        status = team_api.accept_invite(username, body["team"])
+    if not status:
+        print("Exited with error code:" + str(team_api.error))
+        abort(409)
+
+    return "Success"
+
+
+@app.route('/api/createteam', methods=['POST'])
+def create_team():
+    login_guard()
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    if not "team" in body:
+        abort(400)
+
+    with TeamController(client, database) as team_api:
+        status = team_api.create_team(session["username"], body["team"])
+    if not status:
+        print("Request failed with error code:" + str(team_api.error))
+        abort(409)
+    return "Success"
+
+
+@app.route('/api/leaveteam', methods=['POST'])
+def leave_team():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        status = team_api.leave_team(session["username"])
+    if not status:
+        print("Request failed with error code:" + str(team_api.error))
+        abort(409)
+    return "Success"
+
+
+@app.route('/api/getteam', methods=['GET'])
+def get_team():
+    login_guard()
+
+    with TeamController(client, database) as team_api:
+        team = team_api.get_user_team(session["username"])
+    if not team:
+        return {}
+    team_json = {
+        "name": team.get("name", ""),
+        "display_name": team.get("displayName", ""),
+        "invites":  team.get("invites",[])
+    }
+    return team_json
+
+
+@app.route('/api/getteaminvites', methods=['GET'])
+def get_team_invites():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team = team_api.get_user_team(session["username"])
+    if not team:
+        return {"invited_users": []}
+    return {"invited_users": team.get("invites", [])}
+
+# Login and Registstration Routes
+
 
 @app.route('/api/challenge', methods=['POST'])
 def challenge():
@@ -216,7 +332,8 @@ def login():
 
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
-    if result['verified'] == 'False':
+    if result['verified'] == False:
+        print(result['verified'])
         abort(403)
 
     session['logged_in'] = True
@@ -266,7 +383,6 @@ def verify_email(code: str):
     return "Account has been verified successfully"
 
 
-# TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use. Update using upsert
 @app.route('/api/register', methods=['POST'])
 def register():
     u, p = safe_get_user_and_pass()
@@ -502,10 +618,10 @@ if __name__ == '__main__':
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
         # database = PyMongo(app)
     else:
-        app.run(host='0.0.0.0', port=8080, threaded=True)
+        app.run(host='0.0.0.0', port=8080, threaded=True, debug=True)
         # database = MongoClient(
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
-        # database = mongo.init_app(app)      
+        # database = mongo.init_app(app)
         # database = database.deerhunt_db
         # print(database)
     # board = Leaderboard(database.leaderboard)

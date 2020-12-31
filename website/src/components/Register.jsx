@@ -16,7 +16,7 @@ class Register extends React.Component {
     }
 
 
-    addLoginError(type: string) {
+    addLoginError(type) {
         $('.error-message').remove();
         $('.success-message').remove();
         var message = "";
@@ -41,7 +41,7 @@ class Register extends React.Component {
             this.addLoginError('user');
             return;
         }
-        if (this.state.password == "") {
+        if (this.state.password == "" || this.state.password.length < 10) {
             this.addLoginError('password');
             return;
         }
