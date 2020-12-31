@@ -225,6 +225,8 @@ def accept_invite():
     '''Accpets an invite on a user's account, if the invite is valid.'''
     login_guard()
     username = session["username"]
+
+    body = request.get_json()
     if not "team" in body:
         abort(400)
 

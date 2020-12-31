@@ -56,7 +56,7 @@ class Teams extends React.Component {
                 console.log(responseData);
                 if (responseData) {
                     this.setState({
-                        invites: responseData["invited_users"]
+                        invites: responseData
                     });
                 }
                 else {
@@ -97,15 +97,18 @@ class Teams extends React.Component {
         if (type === 'inval') {
             message = "Team name must have between 4 and 16 non-whitespace characters."
         }
-        else if(type === 'exists'){
+        else if (type === 'exists') {
             message = "This team already exists, please choose another name.";
+        }
+        else if (type === 'fail_accept') {
+            message = "Could not accept invite, team is empty or full.(Names cannot be reused)";
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
         $('.create-team-button').after(errorMessage);
     }
 
     createTeam() {
-        if (this.state.newTeamName === "" || this.state.team.length > 4 || this.state.team.length > 16) {
+        if (this.state.newTeamName === "" || this.state.team.length < 4 || this.state.team.length > 16) {
             this.addCreateTeamError('inval');
             return;
         }
@@ -147,7 +150,7 @@ class Teams extends React.Component {
         if (type === 'no_user') {
             message = "Please enter the email of the user to invite.";
         }
-        else if(type === 'invalid_user'){
+        else if (type === 'invalid_user') {
             message = "Invalid user, please ensure the email is valid and the user is registered.";
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
@@ -198,9 +201,11 @@ class Teams extends React.Component {
             var inviteCards = [];
             if (invites) {
                 inviteCards = Object.entries(this.state.invites).map(
-                    (team_name) => (<ReceivedInviteCard
+                    ([team_name, display_name]) => (<ReceivedInviteCard
                         team={team_name}
-                        team_display={this.state.invites.display_name}
+                        reloadCallback={this.reloadAllData}
+                        errorCallback={this.addCreateTeamError}
+                        team_display={display_name}
                     />)
                 );
             }
@@ -212,7 +217,7 @@ class Teams extends React.Component {
                         <div className="create-team-button" onClick={this.createTeam.bind(this)}>Create Team</div>
                     </form>
                     <h2>Invites Received</h2>
-                    {cardsArray}
+                    {inviteCards}
                 </div>);
         }
         var cardsArray = this.state.usersInvited.map(
@@ -220,6 +225,9 @@ class Teams extends React.Component {
                 username={invitedUser}
             />)
         );
+        if (cardsArray.length == 0) {
+            cardsArray = (<p> No users invited!</p>);
+        }
         return (
             <div className="on-team-container">
                 <h1>Team name: {this.state.team_display}</h1>

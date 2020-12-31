@@ -4,12 +4,6 @@ import $ from 'jquery';
 class ReceivedInviteCard extends React.Component {
     constructor() {
         super();
-        this.state = {
-            "team": "",
-            "team_display": "",
-            "reloadCallback": ()=>{},
-            "errorCallback": (string)=>{}
-        }
     }
 
     acceptInvite() {
@@ -23,12 +17,12 @@ class ReceivedInviteCard extends React.Component {
             data: requestData,
             contentType: 'application/json',
             success: (responseData) => {
-                reloadCallback();
+                this.props.reloadCallback();
 
             },
             error: (err) => {
                 console.log(err);
-                errorCallback("fail_accept");
+                this.props.errorCallback("fail_accept");
             }
         });
     }
