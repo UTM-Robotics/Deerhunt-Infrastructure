@@ -202,7 +202,6 @@ def send_invite():
     with TeamController(client, database) as team_api:
         status = team_api.send_invite(username, body["recipient"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
         abort(409)
     return "Success"
 
@@ -233,7 +232,6 @@ def accept_invite():
     with TeamController(client, database) as team_api:
         status = team_api.accept_invite(username, body["team"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
         abort(409)
 
     return "Success"
@@ -305,7 +303,6 @@ def login():
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
     if result['verified'] == False:
-        print(result['verified'])
         abort(403)
 
     session['logged_in'] = True
@@ -364,7 +361,6 @@ def register():
         abort(409)
 
     if not is_allowed(u):
-        print("invalid email")
         abort(409)
 
     code = codeGenerator.generate()
@@ -383,7 +379,6 @@ def register():
         verification_domain+"/verify/"+code)
     email_status = EmailBot.sendmail(u, "Account Verification", msg)
     if not email_status:
-        print("Could not send email")
         database.errors.insert_one({"error": "Email could not send, error ",
                                     'time': datetime.utcnow()
                                     })
