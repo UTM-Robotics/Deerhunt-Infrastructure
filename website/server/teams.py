@@ -38,9 +38,6 @@ class TeamController:
 
     def can_invite(self, sender_username, recipient_username):
         """Returns true if the user can send an invite to the recipient."""
-        print("Sender username: ", sender_username)
-        print("Recipient username: ", recipient_username)
-
         sender_team = self.get_user_team(sender_username)
         # Transaction safety
         if sender_team == None:
@@ -139,8 +136,6 @@ class TeamController:
                 self.error = can_accept
                 return False
             # Add the user to the team
-            print("User can accept!")
-
             team_data = {
                 "$push": {"users": username},
                 "$pull": {"invites": username},
@@ -154,7 +149,6 @@ class TeamController:
                 team_data,
                 session=session
             )
-            print(team_result)
             if team_result.modified_count != 1:
                 self.error = self.INVALID_TEAM_ERROR
                 return False
@@ -174,7 +168,6 @@ class TeamController:
                 self.error = self.USER_ON_TEAM_ERROR
                 return False
             session.commit_transaction()
-            print("Accept Team invite success.")
         except (Exception) as exc:
             print(exc)
             session.abort_transaction()
@@ -236,7 +229,6 @@ class TeamController:
                 self.error = self.USER_ON_TEAM_ERROR
                 return False
             session.commit_transaction()
-            print("Create Team Transaction success.")
         except (Exception) as exc:
             print(exc)
             session.abort_transaction()
@@ -254,9 +246,7 @@ class TeamController:
         if team == None:
             self.error = self.INVALID_TEAM_ERROR
             return False
-        print("User is on team:", str(team))
         team_name = team["name"]
-
         # Start the session for transaction
         session = self.session
         try:
@@ -271,7 +261,6 @@ class TeamController:
                 team_data,
                 session=session
             )
-            print("Removed user from team object")
             if team_result.modified_count != 1:
                 self.session.abort_transaction()
                 self.error = self.INVALID_TEAM_ERROR
@@ -289,10 +278,8 @@ class TeamController:
                 self.session.abort_transaction()
                 self.error = self.INVALID_TEAM_ERROR
                 return False
-            print("Removed team from user object")
 
             session.commit_transaction()
-            print("Leaving Team Transaction success.")
         except (Exception) as exc:
             print(exc)
             session.abort_transaction()
@@ -326,7 +313,6 @@ class TeamController:
         invite_list = user_file["invites"]
         ret = {}
         for team in invite_list:
-            print(team)
             temp_team = self.database.teams.find_one(
                 {"name": team}, session=self.session)
             ret[temp_team["name"]] = temp_team["displayName"]
