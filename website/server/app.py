@@ -440,12 +440,11 @@ def leaderboard():
 def isloggedin():
     return str(logged_in())
 
+# Admin access and Status
 
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
     return str(is_admin_check())
-
-
 '''
  TODO: LEADERBOARD - Use db-based check, check if required at all?
 '''

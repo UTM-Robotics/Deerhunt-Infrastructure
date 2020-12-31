@@ -39,7 +39,6 @@ class AdminPanel extends React.Component {
     render() {
         return (
             this.state.isadmin && <div>
-                <Register />
                 <div className="status-container">
                     <LeaderboardStatus />
                     <SubmitStatus />
