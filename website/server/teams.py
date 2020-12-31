@@ -164,10 +164,10 @@ class TeamController:
             user_query = {'username': username, "$or": [
                 {"team": {"$exists": False}}, {"team": {"$eq": ""}}, ], }
             user_data = {"$set":{"team": team_name},
-                "$pull": {"invites":username}}
+                "$pull": {"invites":team_name}}
             user_result = self.database.users.update_one(
                 user_query,
-                {"$set": user_data},
+                user_data,
                 session=session
             )
             if user_result.modified_count != 1:
