@@ -72,8 +72,12 @@ submitting = {} # dict looks like: {'some team name': }
 #     while 1:
 #         schedule.run_pending()
 #         time.sleep(1)
-tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
-tournament_timer.start()
+
+# tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
+t1 = TournamentController(client, database)
+t1.daemon = True
+t1.start()
+
 # test = {'alex2': '/deerhunt/submissions/alex2', 'kyrel': '/deerhunt/submissions/kyrel'}
 test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell', 'edmund', 'sova',
         'jasmine2', 'kyrel2', 'peter2', 'jarvis2', 'jack2', 'raze2', 'bufflin2', 'dell2', 'edmund2', 'sova2',

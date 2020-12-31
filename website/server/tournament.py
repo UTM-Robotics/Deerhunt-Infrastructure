@@ -4,13 +4,14 @@ import time
 import schedule
 import threading
 
-class TournamentController:
+class TournamentController(threading.Thread):
 
     DEFENDER_IN_BATTLE = 1
     CHALLENGER_IN_BATTLE = 2
     
 
     def __init__(self, client, database, challenger=None):
+        threading.Thread.__init__(self)
         self.client = client
         self.database = database
         self.challenger = challenger
@@ -25,6 +26,18 @@ class TournamentController:
         if exc_type is not None:
             return False
         return True
+
+    def run(self):
+        '''
+        This runs when thread object calls .start()
+        '''
+        schedule.every(3).seconds.do(self.run_single_elimintation)
+        while True:
+                schedule.run_pending()
+                time.sleep(1)
+
+    def run_single_elimintation(self):
+        print("Everything is locked. Running top 8.")
 
     def init_challenge(self, defender):
         session = self.session
