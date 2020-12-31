@@ -18,6 +18,7 @@ class Teams extends React.Component {
             invites: {},
             invitedUser: "",
         };
+        this.reloadAllData = this.reloadAllData.bind(this);
     }
 
     componentDidMount() {
