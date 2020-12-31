@@ -298,7 +298,8 @@ def get_team():
     team_json = {
         "name": team.get("name", ""),
         "display_name": team.get("displayName", ""),
-        "invites":  team.get("invites",[])
+        "invites":  team.get("invites",[]),
+        "users": team.get("users",[])
     }
     return team_json
 
