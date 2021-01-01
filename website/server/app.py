@@ -28,7 +28,7 @@ import _thread
 '''
 Application Run Flags
 '''
-PROD_FLAG = False
+PROD_FLAG = True
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
