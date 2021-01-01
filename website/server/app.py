@@ -12,6 +12,7 @@ from datetime import datetime
 from code_generator import CodeGenerator
 from email_bot import EmailBot
 from teams import TeamController
+from global_state import GlobalController
 import email_bot
 import code_generator
 import traceback
@@ -60,7 +61,6 @@ template_folder = f'{prefix}/template'
 server_folder = f'{prefix}/server'
 
 should_display_leaderboards = False
-can_submit = False
 submitting = {}
 
 ##
@@ -202,7 +202,6 @@ def send_invite():
     with TeamController(client, database) as team_api:
         status = team_api.send_invite(username, body["recipient"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
         abort(409)
     return "Success"
 
@@ -233,7 +232,6 @@ def accept_invite():
     with TeamController(client, database) as team_api:
         status = team_api.accept_invite(username, body["team"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
         abort(409)
 
     return "Success"
@@ -278,8 +276,8 @@ def get_team():
     team_json = {
         "name": team.get("name", ""),
         "display_name": team.get("displayName", ""),
-        "invites":  team.get("invites",[]),
-        "users": team.get("users",[])
+        "invites":  team.get("invites", []),
+        "users": team.get("users", [])
     }
     return team_json
 
@@ -305,8 +303,7 @@ def login():
 
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
-    if result['verified'] == False:
-        print(result['verified'])
+    if result['verified'] != True:
         abort(403)
 
     session['logged_in'] = True
@@ -365,7 +362,6 @@ def register():
         abort(409)
 
     if not is_allowed(u):
-        print("invalid email")
         abort(409)
 
     code = codeGenerator.generate()
@@ -384,7 +380,6 @@ def register():
         verification_domain+"/verify/"+code)
     email_status = EmailBot.sendmail(u, "Account Verification", msg)
     if not email_status:
-        print("Could not send email")
         database.errors.insert_one({"error": "Email could not send, error ",
                                     'time': datetime.utcnow()
                                     })
@@ -416,10 +411,6 @@ def getmatch():
     return jsonify(result['maps'])
 
 
-''' TODO: LEADERBOARD - DISREGARD UNTIL TEAMS COMPLETION
-'''
-
-
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
     login_guard()
@@ -441,48 +432,49 @@ def leaderboard():
 def isloggedin():
     return str(logged_in())
 
+# Admin access and Status
+
 
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
     return str(is_admin_check())
 
-
-'''
- TODO: LEADERBOARD - Use db-based check, check if required at all?
-'''
-
+@app.route('/api/initglobalstate', methods=['POST'])
+def initglobalstate():
+    admin_guard()
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.init_state():
+            abort(400)
+    return str(True)
 
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
-    global should_display_leaderboards
-
     if request.method == 'GET':
-        return str(should_display_leaderboards)
-
+        with GlobalController(client, database) as globals_api:
+            if not globals_api.get_leaderboard_state():
+                abort(400)
+        return str(globals_api.ret_val)
     admin_guard()
 
-    should_display_leaderboards = not should_display_leaderboards
-    return str(should_display_leaderboards)
-
-
-''' TODO: LEADERBOARD - Use db-based check, currently not ephemeral-safe.
-'''
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.leaderboard_toggle():
+            abort(400)
+    return str(globals_api.ret_val)
 
 
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
-    global can_submit
     if request.method == 'GET':
-        return str(can_submit)
-
+        with GlobalController(client, database) as globals_api:
+            if not globals_api.get_submit_state():
+                abort(400)
+        return str(globals_api.ret_val)
     admin_guard()
 
-    can_submit = not can_submit
-    return str(can_submit)
-
-
-''' TODO: LEADERBOARD - Use db-based check, Submission system will be reconfigured.
-'''
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.submit_toggle():
+            abort(400)
+    return str(globals_api.ret_val)
 
 
 @app.route('/api/resetlockout', methods=['GET', 'POST'])

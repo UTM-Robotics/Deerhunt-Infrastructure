@@ -28,18 +28,14 @@ class TeamController:
 
     def __exit__(self, exc_type, exc_value, tb):
         self.session.end_session()
-        self.session = None
         if exc_type is not None:
             traceback.print_exception(exc_type, exc_value, tb)
-            # return False # uncomment to pass exception through
-            session.end_session()
             return False
         return True
 
     def can_invite(self, sender_username, recipient_username):
         """Returns true if the user can send an invite to the recipient."""
         sender_team = self.get_user_team(sender_username)
-        # Transaction safety
         if sender_team == None:
             return self.INVALID_TEAM_ERROR
         elif sender_team['user_count'] == self.MAX_TEAM_USER_COUNT:
@@ -53,7 +49,6 @@ class TeamController:
         session = self.session
         try:
             session.start_transaction()
-            # Transaction safety
             invite_validity = self.can_invite(
                 sender_username, recipient_username)
             if invite_validity != 0:
@@ -193,7 +188,6 @@ class TeamController:
             self.error = self.TEAM_EXISTS_ERROR
             return False
 
-        # Start the session for transaction
         session = self.session
         try:
             session.start_transaction()
@@ -247,7 +241,7 @@ class TeamController:
             self.error = self.INVALID_TEAM_ERROR
             return False
         team_name = team["name"]
-        # Start the session for transaction
+
         session = self.session
         try:
             session.start_transaction()

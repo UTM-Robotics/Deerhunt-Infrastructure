@@ -10,7 +10,7 @@ class SentInviteCard extends React.Component {
     render() {
         return (
             <div className="invite-card">
-                <h5>Invite sent to: {this.props.username}</h5>
+                <h4>Invite sent to: {this.props.username}</h4>
             </div>
         );
     }
