@@ -15,7 +15,11 @@ class Move:
         x = 0
         y = 0
         for m in lst:
-            x, y = Move.transform(x, y, m)
+            if isinstance(m, list):
+                for n in m:
+                    x, y = Move.transform(x, y, n)
+            else:
+                x, y = Move.transform(x, y, m)
 
         return x, y
 
@@ -32,6 +36,18 @@ class Move:
         return True
 
 class AttackMove(Move):
+
+    def __init__(self, unit, target):
+        self.unit = unit
+        self.target = target
+
+    def len(self):
+        return len(self.target)
+
+    def get_relative_moves(self):
+        return Move._get_relative_moves(self.target)
+
+class StunMove(Move):
 
     def __init__(self, unit, target):
         self.unit = unit

@@ -1,7 +1,7 @@
 import json
 from game import Game
 from units import Unit, MeleeUnit, WorkerUnit, MELEE_UNIT, WORKER_UNIT
-from move import GroundMove, StasisMove, AttackMove, Move, MineMove
+from move import GroundMove, StasisMove, AttackMove, Move, MineMove, StunMove
 from tiles import GroundTile, WallTile, ResourceTile
 from copy import deepcopy
 
@@ -11,6 +11,7 @@ class GridFighters(Game):
         self.next_id = 0
         self.currently_duplicating = {}
         self.currently_mining = {}
+        self.currently_stunned = {}
         self.all_units = {}
 
         self.p1_conn = player_one_connection
@@ -80,6 +81,10 @@ class GridFighters(Game):
                 print('ERROR: {} cannot act while mining'.format(k))
                 return False
 
+            if player_state[k].is_stunned():
+                print('ERROR: {} cannot act while stunned'.format(k))
+                return False
+
             if k in moved_units:
                 print('ERROR: Cannot make multiple actions for unit {}'.format(k))
                 return False
@@ -91,8 +96,11 @@ class GridFighters(Game):
         if isinstance(v, GroundMove) and (not v.valid_path(self.grid, self.all_units, x, y) or v.len() < 0 or v.len() > 1):
             print('ERROR: Invalid path for unit {}'.format(k))
             return False
-        elif isinstance(v, AttackMove) and (self.get_matching_unit(x, y, enemy_units, v) is None or v.len() < 0 or v.len() > 1):
+        elif isinstance(v, AttackMove) and (self.get_matching_unit(x, y, v) is None or v.len() < 0 or v.len() > 1):
             print('ERROR: Unit {} cannot attack there'.format(k))
+            return False
+        elif isinstance(v, StunMove) and (self.get_matching_unit(x, y, v) is None or v.len() < 0 or v.len() > 2):
+            print('ERROR: Unit {} cannot stun there'.format(k))
             return False
         elif isinstance(v, StasisMove) and (not player_state[k].can_duplicate(player_resources, v.unit_type)
                                             or not v.free_spot(x, y, self.all_units, self.grid)):
@@ -107,8 +115,7 @@ class GridFighters(Game):
     def is_mining_resource(self, x, y):
         return isinstance(self.grid[y][x], ResourceTile)
     
-
-    def get_matching_unit(self, x, y, units, attack):
+    def get_matching_unit(self, x, y, attack):
         rx, ry = attack.get_relative_moves()
 
         x += rx
@@ -143,6 +150,15 @@ class GridFighters(Game):
         elif isinstance(v, MineMove):
             self.currently_mining[k] = (
                 player_name, player_state[k].start_mining())
+        elif isinstance(v, StunMove):
+            x, y = player_state[k].pos_tuple()
+            rx, ry = v.get_relative_moves()
+            uid = str(self.get_unit(x+rx, y+ry).id)
+            try:
+                opponent_state[uid].stun()
+                self.resources[player_name] -= player_state[k].stun_cost
+            except:
+                pass
 
     def tick_player(self, conn, current, opponent, name, turns):
         moves = conn.tick(self, current, opponent, self.resources, turns)

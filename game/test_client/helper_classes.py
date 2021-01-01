@@ -80,6 +80,30 @@ class Unit:
                 enemies.append((unit, direction))
         return enemies
 
+    def stun(self, *directions: (str)) -> Move:
+        """
+        Return an 'stun' Move for this Unit in the given <*directions>.
+        """
+        return Move(self.id, 'STUN', *directions)
+
+    def can_stun(self, enemy_units: 'Units') -> ['Unit', [str]]:
+        """
+        Returns a list of enemy Units that can be stunned and 
+        the direction needed to attack them.
+        """
+        enemies = []
+        for id in enemy_units.units:
+            unit = enemy_units.get_unit(id)
+            direction = self.direction_to((unit.x, unit.y))
+            check_coord = coordinate_from_direction(self.x, self.y, direction)
+            check_coord2 = coordinate_from_direction(check_coord[0], check_coord[1], direction)
+            if check_coord == \
+                    (unit.x, unit.y):
+                enemies.append((unit, [direction]))
+            elif check_coord2 == (unit.x, unit.y):
+                enemies.append((unit, [direction, direction]))
+        return enemies
+
     def can_duplicate(self, resources: int, unit_type: str) -> bool:
         """
         Returns if this Unit can duplicate.

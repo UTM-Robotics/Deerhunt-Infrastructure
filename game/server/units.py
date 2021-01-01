@@ -32,6 +32,7 @@ class Unit:
 class MeleeUnit(Unit):
     def __init__(self, x, y):
         self.type = MELEE_UNIT
+        self.stun_cost = STUN_COST
 
         super().__init__(x, y)
 
