@@ -29,8 +29,8 @@ class Register extends React.Component {
         else if(type === 'confirmPassword'){
             message =  "Passwords do not match.";
         }
-        else {
-            message = "Sorry, this user already exists. Please contact Deerhunt moderators."
+        else if(type==='request_fail'){
+            message = "Sorry, this user already exists, or is not verified Please contact Deerhunt moderators."
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
         $('.register-button').after(errorMessage);
@@ -66,7 +66,7 @@ class Register extends React.Component {
                 $('.register-button').after(successMessage);
             },
             error: () => {
-                this.addLoginError('user');
+                this.addLoginError('request_fail');
                 return;
             }
         });
