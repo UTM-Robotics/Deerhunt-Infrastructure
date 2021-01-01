@@ -49,7 +49,7 @@ CORS(app)
 # database = None
 # dock = docker.from_env()
 
-allowed_emails = ["@mail.utoronto.ca"]
+allowed_emails = ["@mail.utoronto.ca", "@utoronto.ca"]
 codeGenerator = CodeGenerator(64)
 verification_domain = 'https://mcss.utmrobotics.com'
 
