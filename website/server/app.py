@@ -99,11 +99,15 @@ def submit():
     if session['username'] in submitting:
         shutil.rmtree(submitting[session['username']])
     user_file = database.users.find_one({"username": session["username"]})
-    user_file["team"]
-    print(user_team)
-    submit_folder = f'{user_file["team"]}-{time.time()}'
+    team_name = user_file['team']
+    team_file = database.teams.find_one({"name": team_name})
+    if "last_submit" in team_file:
+        # NEED TO CHECK IF 5 MINUTES HAVE PASSED.
+        
+        
+    submit_folder = f'{user_file["team"]}'
     submit_path = f'{submissions_folder}/{submit_folder}'
-    # NEED TO CHECK IF 5 MINUTES HAVE PASSED.
+    
     request.files['upload'].save(f'{submit_path}.zip')
     try:
         with ZipFile(f'{submit_path}.zip', 'r') as z:
