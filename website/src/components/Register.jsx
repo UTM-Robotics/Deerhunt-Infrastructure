@@ -30,7 +30,8 @@ class Register extends React.Component {
             message =  "Passwords do not match.";
         }
         else if(type==='request_fail'){
-            message = "Sorry, this user already exists, or is not verified Please contact Deerhunt moderators."
+            message = "Sorry, this user already exists, or is not verified. Please check your spam folder,\
+             and if this does not work, please contact Technical Admins through Discord."
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
         $('.register-button').after(errorMessage);
