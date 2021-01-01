@@ -8,9 +8,10 @@ Performs all Teams-related logic with Database.
 
 
 class GlobalController:
-    # TeamController Errors
+    # GlobalController Errors
     FAILED_STATE_CHANGE = 1
 
+    # Global Document Query
     STATE_DOCUMENT_QUERY = {"file_type": "global"}
 
     def __init__(self, client, database):
@@ -25,15 +26,12 @@ class GlobalController:
 
     def __exit__(self, exc_type, exc_value, tb):
         self.session.end_session()
-        self.session = None
         if exc_type is not None:
             traceback.print_exception(exc_type, exc_value, tb)
-            # return False # uncomment to pass exception through
-            session.end_session()
             return False
         return True
 
-    def get_leaderboard_state(self, username):
+    def get_leaderboard_state(self):
         # Start the session for transaction
         session = self.session
         try:
@@ -48,7 +46,7 @@ class GlobalController:
                 self.error = self.FAILED_STATE_CHANGE
                 return False
             session.commit_transaction()
-            self.ret_val = state_document["leaderboard_enabled"]}
+            self.ret_val = state_document["leaderboard_enabled"]
         except (Exception) as exc:
             print(exc)
             session.abort_transaction()
@@ -56,7 +54,7 @@ class GlobalController:
             return False
         return True
 
-    def get_submit_state(self, username):
+    def get_submit_state(self):
         # Start the session for transaction
         session = self.session
         try:
@@ -68,7 +66,7 @@ class GlobalController:
                 self.error = self.STATE_DOCUMENT_QUERY
                 return False
             session.commit_transaction()
-            self.ret_val = state_document["submit_enabled"]}
+            self.ret_val = state_document["submit_enabled"]
         except (Exception) as exc:
             print(exc)
             session.abort_transaction()
@@ -76,7 +74,7 @@ class GlobalController:
             return False
         return True
 
-    def leaderboard_toggle(self, username):
+    def leaderboard_toggle(self):
         # Start the session for transaction
         session = self.session
         try:
@@ -107,7 +105,7 @@ class GlobalController:
             return False
         return True
 
-    def submit_toggle(self, username):
+    def submit_toggle(self):
         # Start the session for transaction
         session = self.session
         try:

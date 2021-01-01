@@ -28,11 +28,9 @@ class TeamController:
 
     def __exit__(self, exc_type, exc_value, tb):
         self.session.end_session()
-        self.session = None
         if exc_type is not None:
             traceback.print_exception(exc_type, exc_value, tb)
             # return False # uncomment to pass exception through
-            session.end_session()
             return False
         return True
 

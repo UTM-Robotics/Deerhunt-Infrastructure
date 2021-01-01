@@ -12,6 +12,7 @@ from datetime import datetime
 from code_generator import CodeGenerator
 from email_bot import EmailBot
 from teams import TeamController
+from global_state import GlobalController
 import email_bot
 import code_generator
 import traceback
@@ -60,7 +61,6 @@ template_folder = f'{prefix}/template'
 server_folder = f'{prefix}/server'
 
 should_display_leaderboards = False
-can_submit = False
 submitting = {}
 
 ##
@@ -276,8 +276,8 @@ def get_team():
     team_json = {
         "name": team.get("name", ""),
         "display_name": team.get("displayName", ""),
-        "invites":  team.get("invites",[]),
-        "users": team.get("users",[])
+        "invites":  team.get("invites", []),
+        "users": team.get("users", [])
     }
     return team_json
 
@@ -438,41 +438,40 @@ def isloggedin():
 
 # Admin access and Status
 
+
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
     return str(is_admin_check())
-'''
- TODO: LEADERBOARD - Use db-based check, check if required at all?
-'''
 
 
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
-    global should_display_leaderboards
-
     if request.method == 'GET':
-        return str(should_display_leaderboards)
-
+        with GlobalController(client, database) as globals_api:
+            if not globals_api.get_leaderboard_state():
+                abort(400)
+        return globals_api.ret_val
     admin_guard()
 
-    should_display_leaderboards = not should_display_leaderboards
-    return str(should_display_leaderboards)
-
-
-''' TODO: LEADERBOARD - Use db-based check, currently not ephemeral-safe.
-'''
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.toggle_leaderboard_state():
+            abort(400)
+    return globals_api.ret_val
 
 
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
-    global can_submit
     if request.method == 'GET':
-        return str(can_submit)
-
+        with GlobalController(client, database) as globals_api:
+            if not globals_api.get_submit_state():
+                abort(400)
+        return globals_api.ret_val
     admin_guard()
 
-    can_submit = not can_submit
-    return str(can_submit)
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.toggle_submit_state():
+            abort(400)
+    return globals_api.ret_val
 
 
 ''' TODO: LEADERBOARD - Use db-based check, Submission system will be reconfigured.
