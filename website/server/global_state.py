@@ -1,9 +1,13 @@
 from pymongo import MongoClient
 from flask import Flask, jsonify, send_from_directory, request, abort, session
 from flask_cors import CORS
+from datetime import datetime
 import traceback
+
+
 '''
-Performs all Teams-related logic with Database.
+Performs all global_state logic with Database.
+Enables all instances of the API to act as one instance.
 '''
 
 
@@ -31,17 +35,35 @@ class GlobalController:
             return False
         return True
 
+    def init_state(self):
+        try:
+            col = self.database.globals
+            self.database.globals.drop()
+            col = self.database.globals
+            col.insert_one(
+                {
+                    "file_type":"global",
+                    "leaderboard_enabled": False,
+                    "submit_enabled": False,
+                    "server_start_time": datetime.utcnow()
+                }
+            )
+        except (Exception) as exc:
+            print(exc)
+            self.error = self.FAILED_STATE_CHANGE
+            return False
+        return True
+
     def get_leaderboard_state(self):
-        # Start the session for transaction
         session = self.session
         try:
             session.start_transaction()
-            read_state_query = {
 
-            }
             state_document = self.database.globals.find_one(
-                read_state_query
+                self.STATE_DOCUMENT_QUERY,
+                session=session
             )
+            print("get",state_document)
             if not "leaderboard_enabled" in state_document:
                 self.error = self.FAILED_STATE_CHANGE
                 return False
@@ -53,14 +75,13 @@ class GlobalController:
             self.error = self.FAILED_STATE_CHANGE
             return False
         return True
-
     def get_submit_state(self):
-        # Start the session for transaction
         session = self.session
         try:
             session.start_transaction()
             state_document = self.database.globals.find_one(
-                read_state_query
+                self.STATE_DOCUMENT_QUERY,
+                session=session
             )
             if not "submit_enabled" in state_document:
                 self.error = self.STATE_DOCUMENT_QUERY
@@ -75,20 +96,20 @@ class GlobalController:
         return True
 
     def leaderboard_toggle(self):
-        # Start the session for transaction
         session = self.session
         try:
             session.start_transaction()
             state = self.database.globals.find_one(
-                STATE_DOCUMENT_QUERY
+                self.STATE_DOCUMENT_QUERY,
+                session=session
             )
             if not "leaderboard_enabled" in state:
                 session.abort_transaction()
                 self.error = self.FAILED_STATE_CHANGE
                 return False
-            state_data = {"leaderboard_enabled": not state["leaderboard_enabled"]}
+            state_data = {"$set":{"leaderboard_enabled": not state["leaderboard_enabled"]}}
             state_result = self.database.globals.update_one(
-                STATE_DOCUMENT_QUERY,
+                self.STATE_DOCUMENT_QUERY,
                 state_data,
                 session=session
             )
@@ -106,18 +127,18 @@ class GlobalController:
         return True
 
     def submit_toggle(self):
-        # Start the session for transaction
         session = self.session
         try:
             session.start_transaction()
             state = self.database.globals.find_one(
-                STATE_DOCUMENT_QUERY
+                self.STATE_DOCUMENT_QUERY,
+                session=session
             )
             if not "submit_enabled" in state:
                 abort(403)
-            state_data = {"submit_enabled": not state["submit_enabled"]}
+            state_data = {"$set":{"submit_enabled": not state["submit_enabled"]}}
             state_result = self.database.globals.update_one(
-                STATE_DOCUMENT_QUERY,
+                self.STATE_DOCUMENT_QUERY,
                 state_data,
                 session=session
             )

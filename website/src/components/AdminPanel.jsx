@@ -1,9 +1,9 @@
 import React from 'react';
 import $ from 'jquery';
-import Register from './Register';
 import LeaderboardStatus from './LeaderboardStatus';
 import SubmitStatus from './SubmitStatus';
 import ResetLockout from './ResetLockout';
+import ServerReset from './ServerReset';
 
 
 class AdminPanel extends React.Component {
@@ -12,6 +12,7 @@ class AdminPanel extends React.Component {
         this.state = {
             "isadmin": false
         }
+        this.reload = this.reload.bind(this);
     }
 
     componentDidMount() {
@@ -36,10 +37,15 @@ class AdminPanel extends React.Component {
         });
     }
 
+    reload(){
+        this.setState({});
+    }
+
     render() {
         return (
             this.state.isadmin && <div>
                 <div className="status-container">
+                    <ServerReset reloadParent={this.reload}/>
                     <LeaderboardStatus />
                     <SubmitStatus />
                     <ResetLockout />

@@ -443,6 +443,13 @@ def isloggedin():
 def isadmin():
     return str(is_admin_check())
 
+@app.route('/api/initglobalstate', methods=['POST'])
+def initGlobalState():
+    admin_guard()
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.init_state():
+            abort(400)
+    return str(True)
 
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
@@ -450,13 +457,13 @@ def leaderboardtoggle():
         with GlobalController(client, database) as globals_api:
             if not globals_api.get_leaderboard_state():
                 abort(400)
-        return globals_api.ret_val
+        return str(globals_api.ret_val)
     admin_guard()
 
     with GlobalController(client, database) as globals_api:
-        if not globals_api.toggle_leaderboard_state():
+        if not globals_api.leaderboard_toggle():
             abort(400)
-    return globals_api.ret_val
+    return str(globals_api.ret_val)
 
 
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
@@ -465,17 +472,13 @@ def submittoggle():
         with GlobalController(client, database) as globals_api:
             if not globals_api.get_submit_state():
                 abort(400)
-        return globals_api.ret_val
+        return str(globals_api.ret_val)
     admin_guard()
 
     with GlobalController(client, database) as globals_api:
-        if not globals_api.toggle_submit_state():
+        if not globals_api.submit_toggle():
             abort(400)
-    return globals_api.ret_val
-
-
-''' TODO: LEADERBOARD - Use db-based check, Submission system will be reconfigured.
-'''
+    return str(globals_api.ret_val)
 
 
 @app.route('/api/resetlockout', methods=['GET', 'POST'])
