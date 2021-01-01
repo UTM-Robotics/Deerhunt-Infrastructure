@@ -23,9 +23,9 @@ class GlobalController:
         self.database = database
         self.error = None
         self.ret_val = None
+        self.session = self.client.start_session()
 
     def __enter__(self):
-        self.session = self.client.start_session()
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
@@ -34,6 +34,9 @@ class GlobalController:
             traceback.print_exception(exc_type, exc_value, tb)
             return False
         return True
+
+    def end_session(self):
+        self.session.end_session()
 
     def init_state(self):
         try:
@@ -63,7 +66,6 @@ class GlobalController:
                 self.STATE_DOCUMENT_QUERY,
                 session=session
             )
-            print("get",state_document)
             if not "leaderboard_enabled" in state_document:
                 self.error = self.FAILED_STATE_CHANGE
                 return False
@@ -75,6 +77,7 @@ class GlobalController:
             self.error = self.FAILED_STATE_CHANGE
             return False
         return True
+
     def get_submit_state(self):
         session = self.session
         try:
@@ -154,3 +157,10 @@ class GlobalController:
             self.error = self.FAILED_STATE_CHANGE
             return False
         return True
+
+    @staticmethod
+    def is_submit_locked(self, client, database):
+        with GlobalController(client, database) as globals_api:
+            if not globals_api.get_submit_state():
+               raise Exception("Is Submit Failed")
+        return globals_api.ret_val

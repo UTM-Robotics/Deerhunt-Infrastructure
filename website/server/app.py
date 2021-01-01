@@ -411,10 +411,6 @@ def getmatch():
     return jsonify(result['maps'])
 
 
-''' TODO: LEADERBOARD - DISREGARD UNTIL TEAMS COMPLETION
-'''
-
-
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
     login_guard()
@@ -444,7 +440,7 @@ def isadmin():
     return str(is_admin_check())
 
 @app.route('/api/initglobalstate', methods=['POST'])
-def initGlobalState():
+def initglobalstate():
     admin_guard()
     with GlobalController(client, database) as globals_api:
         if not globals_api.init_state():
