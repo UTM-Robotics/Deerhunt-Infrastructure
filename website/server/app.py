@@ -61,24 +61,10 @@ should_display_leaderboards = True
 can_submit = True
 submitting = {} # dict looks like: {'some team name': }
 
-
-# Starting second thread for tournament timer.
-
-# def run_threaded(job_func):
-#     job_threa2d = threading.Thread(target=job_func)
-#     job_thread.start()
-# def runTournamentThread():
-#     schedule.every(1).second.do(run_threaded, job)
-#     while 1:
-#         schedule.run_pending()
-#         time.sleep(1)
-
 # tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
-t1 = TournamentController(client, database)
-t1.daemon = True
-t1.start()
-
-# test = {'alex2': '/deerhunt/submissions/alex2', 'kyrel': '/deerhunt/submissions/kyrel'}
+# t1 = TournamentController(client, database)
+# t1.daemon = True
+# t1.start()
 test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell', 'edmund', 'sova',
         'jasmine2', 'kyrel2', 'peter2', 'jarvis2', 'jack2', 'raze2', 'bufflin2', 'dell2', 'edmund2', 'sova2',
         'jasmine3', 'kyrel3', 'peter3', 'jarvis3', 'jack3', 'raze3', 'bufflin3', 'dell3', 'edmund3', 'sova3',
@@ -87,6 +73,11 @@ test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell'
         # 'jasmine6', 'kyrel6', 'peter6', 'jarvis6', 'jack6', 'raze6', 'bufflin6', 'dell6', 'edmund6', 'sova6',
         # 'jasmine7', 'kyrel7', 'peter7', 'jarvis7', 'jack7', 'raze7', 'bufflin7', 'dell7', 'edmund7', 'sova7',
         # 'jasmine8', 'kyrel8', 'peter8', 'jarvis8', 'jack8', 'raze8', 'bufflin8', 'dell8', 'edmund8', 'sova8']
+
+
+
+
+
 ##
 # API routes
 ##
@@ -107,8 +98,22 @@ def submit():
     if 'upload' not in request.files:
         abort(400)
 
-    saveSubmission()
-
+    if session['username'] in submitting:
+        shutil.rmtree(submitting[session['username']])
+    user_file = database.users.find_one({"username": session["username"]})
+    user_file["team"]
+    print(user_team)
+    submit_folder = f'{user_file["team"]}-{time.time()}'
+    submit_path = f'{submissions_folder}/{submit_folder}'
+    # NEED TO CHECK IF 5 MINUTES HAVE PASSED.
+    request.files['upload'].save(f'{submit_path}.zip')
+    try:
+        with ZipFile(f'{submit_path}.zip', 'r') as z:
+            z.extractall(submit_path)
+    except BadZipFile:
+        abort(400)
+    os.remove(f'{submit_path}.zip')
+    # NEED TO UPLOAD TO STORAGE HERE.
     return "Zip submitted! Thanks"
 
     # try:
@@ -132,75 +137,6 @@ def submit():
     #     submitting[session['username']] = False
 
 
-'''
-def saveSubmission():
-    if session['username'] in submitting:
-        shutil.rmtree(submitting[session['username']])
-    submit_folder = f'{session["username"]}-{time.time()}'
-    submit_path = f'{submissions_folder}/{submit_folder}'
-    request.files['upload'].save(f'{submit_path}.zip')
-    submitting[session['username']] = submit_path
-    try:
-        with ZipFile(f'{submit_path}.zip', 'r') as z:
-            z.extractall(submit_path)
-    except BadZipFile:
-        abort(400)
-    os.remove(f'{submit_path}.zip')
-
-
-
-def run_match(position):
-    leader = board.acquire(position)
-    leader_path = f'{submissions_folder}/{leader}'
-
-    if leader is None:
-        board.replace(position, submit_folder)
-        board.save('default')
-        return 'Victory by default'
-
-    uid = uuid.uuid4().hex
-    build_path = f'{build_folder}/{uid}'
-
-    shutil.copytree(template_folder, f'{build_path}/')
-    copy_dir_contents(leader_path, f'{build_path}/p1')
-    copy_dir_contents(submit_path, f'{build_path}/p2')
-    shutil.copytree(server_folder, f'{build_path}/server')
-
-    img = dock.images.build(path=build_path, tag=uid, rm=True, network_mode=None)
-    container = dock.containers.run(uid, detach=True, auto_remove=True, network_mode=None,
-                                    cpu_count=1, mem_limit='512m')
-
-    lines = []
-    maps = []
-    errors = []
-
-    for line in container.logs(stream=True):
-        l = line.decode().strip()
-        if 'ERROR:' == l[0:6]:
-            errors.append(l[6:])
-        elif 'MAP:' == l[0:4]:
-            maps.append(l[4:])
-        else:
-            lines.append(l)
-
-    lines = lines[3:]
-
-    if 'Winner: p2' == lines[-1]:
-        board.replace(position, submit_folder)
-        board.save(uid)
-
-    board.release(position)
-
-    game_id = database.logs.insert_one({'lines': lines,
-                                        'maps': maps,
-                                        'errors': errors,
-                                        'build_id': uid,
-                                        'defender': leader,
-                                        'challenger': submit_folder,
-                                        'submitter': session['username']}).inserted_id
-
-    return jsonify(game_id=str(game_id), message=lines[-1])
-'''
 
 # Teams
 # Teams assigning api calls
@@ -320,8 +256,8 @@ def get_team_invites():
 def challenge():
     login_guard()
     challenger = session['username']
-    
-    defender = request.get_json()["username"]
+    defender = request.get_json()
+    print(defender)
     with TournamentController(client, database, challenger) as battle:
         can_battle = battle.init_challenge(defender)
         if can_battle:

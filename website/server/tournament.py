@@ -14,6 +14,7 @@ class TournamentController(threading.Thread):
         threading.Thread.__init__(self)
         self.client = client
         self.database = database
+        self.is_running_tournament = False
         self.challenger = challenger
 
     def __enter__(self):
@@ -31,10 +32,13 @@ class TournamentController(threading.Thread):
         '''
         This runs when thread object calls .start()
         '''
-        schedule.every(3).seconds.do(self.run_single_elimintation)
+        schedule.every().seconds.do(self.run_single_elimintation)
         while True:
                 schedule.run_pending()
                 time.sleep(1)
+
+    def is_running(self):
+        return self.is_running_tournament
 
     def run_single_elimintation(self):
         print("Everything is locked. Running top 8.")
