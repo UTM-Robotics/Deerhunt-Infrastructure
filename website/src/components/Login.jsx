@@ -31,7 +31,7 @@ class Login extends React.Component {
     }
 
 
-    addLoginError(type: string) {
+    addLoginError(type) {
         $('.error-message').remove();
         var message = "";
         if (type === 'user') {
