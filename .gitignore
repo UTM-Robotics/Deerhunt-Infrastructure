@@ -5,3 +5,4 @@ __pycache__/
 *.zip
 merge-dev.sh
 .vscode/
+.vscode/settings.json
