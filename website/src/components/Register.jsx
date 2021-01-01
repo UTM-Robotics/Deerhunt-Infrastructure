@@ -24,7 +24,7 @@ class Register extends React.Component {
             message = " Please enter a valid UofT email."
         }
         else if (type === 'password') {
-            message = "Please enter a password.";
+            message = "Please enter a password 10 characters or longer.";
         }
         else if(type === 'confirmPassword'){
             message =  "Passwords do not match.";
