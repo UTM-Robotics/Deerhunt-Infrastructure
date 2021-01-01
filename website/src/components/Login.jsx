@@ -31,7 +31,7 @@ class Login extends React.Component {
     }
 
 
-    addLoginError(type: string) {
+    addLoginError(type) {
         $('.error-message').remove();
         var message = "";
         if (type === 'user') {
@@ -41,7 +41,7 @@ class Login extends React.Component {
             message = "Please enter a password";
         }
         else if (type === 'login') {
-            message = "The user or password is incorrect/invalid/not verified"
+            message = "The user or password is incorrect/invalid/unverified. If you still cannot log in, please contact us via Discord."
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
         $('.auth-button').after(errorMessage);

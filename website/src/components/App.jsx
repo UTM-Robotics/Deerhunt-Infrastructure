@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import $ from 'jquery';
-import deerhuntLogo from './../assets/images/deerhuntLogo.png';
+import mcssLogo from './../assets/images/mcsslogo.png';
+import utmRoboticsLogo from './../assets/images/UTMRoboticslogo.png';
 
 class AppWrapper extends React.Component {
     constructor() {
@@ -31,7 +32,9 @@ class AppWrapper extends React.Component {
         return (
             <div className='app-container'>
                 <div className='app-header-container'>
-                    <h1>Battlecode: Deerhunt</h1>
+                    <img src={mcssLogo} alt="MCSS Logo" className="headerLogo"/>
+                    <h1 className="shine">Battlecode: Deerhunt</h1>
+                    <img src={utmRoboticsLogo} alt="UTM Robotics Logo" className="headerLogo"/>
                 </div>
                 {this.state.loggedIn && <div className="nav-container">
                     <Link className="nav-link" to={'/home'}>Home</Link>

@@ -18,6 +18,7 @@ class Teams extends React.Component {
             invites: {},
             invitedUser: "",
         };
+        this.reloadAllData = this.reloadAllData.bind(this);
     }
 
     componentDidMount() {
@@ -200,7 +201,7 @@ class Teams extends React.Component {
         if (this.state.team === "") {
             var inviteCards = [];
             if (invites) {
-                inviteCards = Object.entries(this.state.invites).map(
+                inviteCards = Object.entries(invites).map(
                     ([team_name, display_name]) => (<ReceivedInviteCard
                         team={team_name}
                         reloadCallback={this.reloadAllData}
@@ -208,6 +209,9 @@ class Teams extends React.Component {
                         team_display={display_name}
                     />)
                 );
+            }
+            if (inviteCards.length == 0) {
+                inviteCards = (<p> No invites Received!</p>);
             }
             return (
                 <div className="no-team-container">

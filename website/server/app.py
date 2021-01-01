@@ -1,13 +1,6 @@
 '''server/app.py - main api app declaration'''
-import os
-import uuid
-import time
 import threading
-import shutil
 import schedule
-import traceback
-# import docker
-# import re
 # from datetime import datetime
 from zipfile import ZipFile, BadZipFile
 from flask import Flask, jsonify, send_from_directory, request, abort, session
@@ -20,6 +13,15 @@ from email_bot import EmailBot
 from tournament import TournamentController
 from code_generator import CodeGenerator
 from teams import TeamController
+from global_state import GlobalController
+import code_generator
+import traceback
+import uuid
+import docker
+import time
+import shutil
+import os
+# import re
 
 
 '''
@@ -65,18 +67,14 @@ submitting = {} # dict looks like: {'some team name': }
 # t1 = TournamentController(client, database)
 # t1.daemon = True
 # t1.start()
-test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell', 'edmund', 'sova',
-        'jasmine2', 'kyrel2', 'peter2', 'jarvis2', 'jack2', 'raze2', 'bufflin2', 'dell2', 'edmund2', 'sova2',
-        'jasmine3', 'kyrel3', 'peter3', 'jarvis3', 'jack3', 'raze3', 'bufflin3', 'dell3', 'edmund3', 'sova3',
-        'jasmine4', 'kyrel4', 'peter4', 'jarvis4', 'jack4', 'raze4', 'bufflin4', 'dell4', 'edmund4']
+# test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell', 'edmund', 'sova',
+#         'jasmine2', 'kyrel2', 'peter2', 'jarvis2', 'jack2', 'raze2', 'bufflin2', 'dell2', 'edmund2', 'sova2',
+#         'jasmine3', 'kyrel3', 'peter3', 'jarvis3', 'jack3', 'raze3', 'bufflin3', 'dell3', 'edmund3', 'sova3',
+#         'jasmine4', 'kyrel4', 'peter4', 'jarvis4', 'jack4', 'raze4', 'bufflin4', 'dell4', 'edmund4']
         # 'jasmine5', 'kyrel5', 'peter5', 'jarvis5', 'jack5', 'raze5', 'bufflin5', 'dell5', 'edmund5', 'sova5',
         # 'jasmine6', 'kyrel6', 'peter6', 'jarvis6', 'jack6', 'raze6', 'bufflin6', 'dell6', 'edmund6', 'sova6',
         # 'jasmine7', 'kyrel7', 'peter7', 'jarvis7', 'jack7', 'raze7', 'bufflin7', 'dell7', 'edmund7', 'sova7',
         # 'jasmine8', 'kyrel8', 'peter8', 'jarvis8', 'jack8', 'raze8', 'bufflin8', 'dell8', 'edmund8', 'sova8']
-
-
-
-
 
 ##
 # API routes
@@ -158,7 +156,6 @@ def send_invite():
     with TeamController(client, database) as team_api:
         status = team_api.send_invite(username, body["recipient"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
         abort(409)
     return "Success"
 
@@ -189,7 +186,6 @@ def accept_invite():
     with TeamController(client, database) as team_api:
         status = team_api.accept_invite(username, body["team"])
     if not status:
-        print("Exited with error code:" + str(team_api.error))
         abort(409)
 
     return "Success"
@@ -234,8 +230,8 @@ def get_team():
     team_json = {
         "name": team.get("name", ""),
         "display_name": team.get("displayName", ""),
-        "invites":  team.get("invites",[]),
-        "users": team.get("users",[])
+        "invites":  team.get("invites", []),
+        "users": team.get("users", [])
     }
     return team_json
 
@@ -273,8 +269,7 @@ def login():
 
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
-    if result['verified'] == False:
-        print(result['verified'])
+    if result['verified'] != True:
         abort(403)
 
     session['logged_in'] = True
@@ -334,7 +329,6 @@ def register():
         abort(409)
 
     if not is_allowed(u):
-        print("invalid email")
         abort(409)
 
     code = codeGenerator.generate()
@@ -353,7 +347,6 @@ def register():
         verification_domain+"/verify/"+code)
     email_status = EmailBot.sendmail(u, "Account Verification", msg)
     if not email_status:
-        print("Could not send email")
         database.errors.insert_one({"error": "Email could not send, error ",
                                     'time': datetime.utcnow()
                                     })
@@ -385,10 +378,6 @@ def getmatch():
     return jsonify(result['maps'])
 
 
-''' TODO: LEADERBOARD - DISREGARD UNTIL TEAMS COMPLETION
-'''
-
-
 @app.route('/api/leaderboard', methods=['GET', 'POST'])
 def leaderboard():
     login_guard()
@@ -410,48 +399,49 @@ def leaderboard():
 def isloggedin():
     return str(logged_in())
 
+# Admin access and Status
+
 
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
     return str(is_admin_check())
 
-
-'''
- TODO: LEADERBOARD - Use db-based check, check if required at all?
-'''
-
+@app.route('/api/initglobalstate', methods=['POST'])
+def initglobalstate():
+    admin_guard()
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.init_state():
+            abort(400)
+    return str(True)
 
 @app.route('/api/leaderboardtoggle', methods=['GET', 'POST'])
 def leaderboardtoggle():
-    global should_display_leaderboards
-
     if request.method == 'GET':
-        return str(should_display_leaderboards)
-
+        with GlobalController(client, database) as globals_api:
+            if not globals_api.get_leaderboard_state():
+                abort(400)
+        return str(globals_api.ret_val)
     admin_guard()
 
-    should_display_leaderboards = not should_display_leaderboards
-    return str(should_display_leaderboards)
-
-
-''' TODO: LEADERBOARD - Use db-based check, currently not ephemeral-safe.
-'''
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.leaderboard_toggle():
+            abort(400)
+    return str(globals_api.ret_val)
 
 
 @app.route('/api/submittoggle', methods=['GET', 'POST'])
 def submittoggle():
-    global can_submit
     if request.method == 'GET':
-        return str(can_submit)
-
+        with GlobalController(client, database) as globals_api:
+            if not globals_api.get_submit_state():
+                abort(400)
+        return str(globals_api.ret_val)
     admin_guard()
 
-    can_submit = not can_submit
-    return str(can_submit)
-
-
-''' TODO: LEADERBOARD - Use db-based check, Submission system will be reconfigured.
-'''
+    with GlobalController(client, database) as globals_api:
+        if not globals_api.submit_toggle():
+            abort(400)
+    return str(globals_api.ret_val)
 
 
 @app.route('/api/resetlockout', methods=['GET', 'POST'])

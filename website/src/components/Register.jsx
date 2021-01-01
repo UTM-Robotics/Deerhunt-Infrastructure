@@ -24,13 +24,14 @@ class Register extends React.Component {
             message = " Please enter a valid UofT email."
         }
         else if (type === 'password') {
-            message = "Please enter a password.";
+            message = "Please enter a password 10 characters or longer.";
         }
         else if(type === 'confirmPassword'){
             message =  "Passwords do not match.";
         }
-        else {
-            message = "Sorry, this user already exists. Please contact Deerhunt moderators."
+        else if(type==='request_fail'){
+            message = "Sorry, this user already exists, or is not verified. Please check your spam folder,\
+             and if this does not work, please contact Technical Admins through Discord."
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
         $('.register-button').after(errorMessage);
@@ -66,7 +67,7 @@ class Register extends React.Component {
                 $('.register-button').after(successMessage);
             },
             error: () => {
-                this.addLoginError('user');
+                this.addLoginError('request_fail');
                 return;
             }
         });
