@@ -576,7 +576,7 @@ def copy_dir_contents(src, dest):
 
 if __name__ == '__main__':
     if PROD_FLAG:
-        app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
+        app.run(host='0.0.0.0', port=443, threaded=True, ssl_context=(
             '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
         # database = MongoClient(
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
