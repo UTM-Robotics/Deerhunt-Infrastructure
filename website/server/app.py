@@ -303,7 +303,7 @@ def login():
 
     if not sha512_crypt.verify(p, result['password']):
         abort(403)
-    if result['verified'] != 'False':
+    if result['verified'] == 'False':
         abort(403)
 
     session['logged_in'] = True
