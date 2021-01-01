@@ -36,6 +36,7 @@ body {
     position:relative;
     text-align: center;
     border-bottom: solid white 0.15vh;
+    height:100%;
     h1{
         font-size: 40px;
         text-decoration: none;
@@ -45,8 +46,48 @@ body {
         text-transform: uppercase;
         font-weight:700;
         color: $goldenyellow;
+        display:inline-block;
+        vertical-align: middle;
         //  font-family: 'VT323', monospace;
     }
+    .headerLogo {
+        display: inline-block;
+        // margin-left: auto;
+        // margin-right: auto;
+        // width: 5%;
+        max-height:60px;
+        vertical-align: middle;
+        transition:transform  .2s;
+        margin-bottom:10px;
+        margin-right:10px;
+    }
+    .headerLogo:hover {
+        transform:scale(1.15);
+    }
+    // TODO: fix shine css animation
+    // https://codepen.io/fazlurr/pen/qbWMRv
+    .shine {
+        background:$backgroundblack -webkit-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff)) 0 0 no-repeat;
+        -webkit-background-clip: text;
+        -webkit-animation-name: shine;
+        -webkit-animation-duration: 5s;
+        -webkit-animation-iteration-count: infinite;
+        text-shadow: 0 0px 0px $brightyellow;
+    }
+    @-webkit-keyframes shine {
+        0%, 10% {
+            background-position: -1000px;
+        }
+        20% {
+            background-position: top left;
+        }
+        90% {
+            background-position: top right;
+        }
+        100% {
+            background-position: 1000px;
+        }
+    }   
 }
 .nav-br {
    color:white !important; width:50vw !important; height:2em !important;
@@ -214,32 +255,32 @@ $login-message-font-size: 16px;
     font-family: 'Spartan', sans-serif;
     text-transform: uppercase;
     font-weight:700;
-    color:$goldenyellow;
+    color:$brightyellow;
     // font-family: 'VT323', monospace;
 }
 
 .nav-link:hover {
     // color: #ffaf00;
-    color:$brightyellow;
+    color:$goldenyellow;
     -webkit-animation-duration: 0.75s;
-    -webkit-animation-nam: upgrade-yellow;
+    -webkit-animation-name: upgrade-yellow;
     animation-duration: 0.75s;
     animation-name: upgrade-yellow;
 }
 @-webkit-keyframes upgrade-yellow {
     from {
-        color:$goldenyellow;
+        color:$brightyellow;
     }
     to {
-        color:$brightyellow;
+        color:$goldenyellow;
     }
 }
 @keyframes upgrade-yellow {
     from {
-        color:$goldenyellow;
+        color:$brightyellow;
     }
     to {
-        color:$brightyellow;
+        color:$goldenyellow;
     }
 }
 
