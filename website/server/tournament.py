@@ -37,18 +37,14 @@ class TournamentController(threading.Thread):
                 schedule.run_pending()
                 time.sleep(1)
 
-    def is_running(self):
-        return self.is_running_tournament
-
     def run_single_elimintation(self):
-        print("Everything is locked. Running top 8.")
+        pass
 
     def init_challenge(self, defender):
         session = self.session
         chal_user_file = self.database.users.find_one({"username": self.challenger}, session=self.session)
-        def_user_file = self.database.users.find_one({"username": defender}, session=self.session)
         self.chall_team = self.database.teams.find_one({"name": chal_user_file["team"]}, session=self.session)
-        self.def_team = self.database.teams.find_one({"name": def_user_file["team"]}, session=self.session)
+        self.def_team = self.database.teams.find_one({"name": defender }, session=self.session)
         if def_team['is_fighting'] or chall_team['is_fighting']:
             return False
         return True

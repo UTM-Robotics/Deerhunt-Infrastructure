@@ -89,25 +89,30 @@ def submit():
     Instanstly saves a team's submission to /deerhunt/submissions/someTeamname/
     Also removes zip after extracting.
     '''
-    print(submitting)
     login_guard()
     if not can_submit:
         abort(403)
     if 'upload' not in request.files:
         abort(400)
-
-    if session['username'] in submitting:
-        shutil.rmtree(submitting[session['username']])
-    user_file = database.users.find_one({"username": session["username"]})
+    session = client.start_session()
+    session.start_transaction()
+    user_file = database.users.find_one({"username": session["username"]}, session=session)
     team_name = user_file['team']
-    team_file = database.teams.find_one({"name": team_name})
+    team_file = database.teams.find_one({"name": team_name}, session=session)
     if "last_submit" in team_file:
         # NEED TO CHECK IF 5 MINUTES HAVE PASSED.
-        
-        
-    submit_folder = f'{user_file["team"]}'
+        database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
+    else:
+        last_submitted = team_file["last_submitted"] # this should be a datetime.datetime object
+        current_time = datetime.datetime.now()
+        if (last_submitted + datetime.timedelta(minutes=5)) > current_time:
+            # not enough time has passed
+            session.abort_transaction()
+            return False
+        else:
+            database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
+    submit_folder = team_name
     submit_path = f'{submissions_folder}/{submit_folder}'
-    
     request.files['upload'].save(f'{submit_path}.zip')
     try:
         with ZipFile(f'{submit_path}.zip', 'r') as z:
@@ -115,7 +120,8 @@ def submit():
     except BadZipFile:
         abort(400)
     os.remove(f'{submit_path}.zip')
-    # NEED TO UPLOAD TO STORAGE HERE.
+    session.commit_transaction()
+    session.end_session()
     return "Zip submitted! Thanks"
 
     # try:
@@ -256,7 +262,7 @@ def get_team_invites():
 def challenge():
     login_guard()
     challenger = session['username']
-    defender = request.get_json()
+    defender = request.get_json() # defender should be the team name that is being challenged.
     print(defender)
     with TournamentController(client, database, challenger) as battle:
         can_battle = battle.init_challenge(defender)
