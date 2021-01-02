@@ -42,7 +42,9 @@ class GameController:
 
         match_result = {'lines': lines,
                         'maps': maps,
-                        'errors': errors}
+                        'errors': errors,
+                        'build_id': container_tag
+                        }
         if lines[-1] == 'Winner: p2':
             winner = 2
         else:
