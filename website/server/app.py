@@ -51,7 +51,7 @@ CORS(app)
 
 allowed_emails = ["@mail.utoronto.ca", "@utoronto.ca"]
 codeGenerator = CodeGenerator(64)
-verification_domain = 'https://mcss.utmrobotics.com'
+verification_domain = 'home.parthjpatel.com'
 
 
 prefix = '/deerhunt'
@@ -293,6 +293,30 @@ def get_team_invites():
 
 # Login and Registstration Routes
 
+@app.route('/api/reset', methods=['POST'])
+def reset_password():
+    user = safe_get_only_username()
+    user = user.lower()
+    user = user.strip(" ")
+    result = database.users.find_one({'username': user})
+    if result is None:
+        abort(403)
+    code = codeGenerator.generate()
+    query = {'username': user}
+    newvalues = {'$set': {'code': code, 'time': str(datetime.now())}}
+    database.users.update_one(query, newvalues)
+    msg = '\n\nPlease click on the link below to reset your password.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
+        verification_domain+"/forgotpassword/"+code)
+    email_status = EmailBot.sendmail(user, "BattleCode:Deerhunt Password Reset", msg)
+    if not email_status:
+        database.errors.insert_one({"error": "Email could not send, error ",
+                                    'time': datetime.utcnow()
+                                    })
+        abort(400)
+    return 'Reset link sent!'
+
+
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -334,9 +358,9 @@ def changePassword():
 
     return 'Change successful'
 
-@app.route('/api/forgotpassword/<code>', methods=['GET', 'POST'])
-def ForgotPassword(code:str):
-    nep, cop = safe_get_reset_passwords()
+@app.route('/api/forgotpassword/<random>', methods=['GET', 'POST'])
+def ForgotPassword(random):
+    nep, cop, code= safe_get_reset_passwords()
     result = database.users.find_one({'code' : code})
     if result is None:
         abort(403)
@@ -531,28 +555,11 @@ def index(path):
 # Helpers
 ##
 
-
-def send_resetlink(user : str):
-    user = user.lower()
-    user = user.strip(" ")
-    result = database.users.find_one({'username': user})
-    if result is None:
-        return "invalid user"
-    code = codeGenerator.generate()
-    query = {'username': user}
-    newvalues = {'$set': {'code': code, 'time': str(datetime.now()}}
-    msg = '\n\nPlease click on the link below to reset your password.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
-        verification_domain+"/forgotpassword/"+code)
-    email_status = EmailBot.sendmail(u, "BattleCode:Deerhunt Password Reset", msg)
-    if not email_status:
-        database.errors.insert_one({"error": "Email could not send, error ",
-                                    'time': datetime.utcnow()
-                                    })
-        return "error with email"
-    return 'Reset successful'
-
-
-
+def safe_get_only_username():
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    return body['username']
 
 def safe_get_user_and_pass():
     if not request.is_json:
@@ -563,12 +570,13 @@ def safe_get_user_and_pass():
     return body['username'], body['password']
 
 def safe_get_reset_passwords():
+
     if not request.is_json:
-        abort(400)
+        return
 
     body = request.get_json()
 
-    return body['newPassword'], body['confirmPassword']
+    return body['newPassword'], body['confirmPassword'], body['code']
 
 
 def safe_get_passwords():
@@ -627,7 +635,7 @@ if __name__ == '__main__':
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
         # database = PyMongo(app)
     else:
-        app.run(host='0.0.0.0', port=8080, threaded=True, debug=True)
+        app.run(host='0.0.0.0', port=80, threaded=True, debug=True)
         # database = MongoClient(
         #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
         # database = mongo.init_app(app)

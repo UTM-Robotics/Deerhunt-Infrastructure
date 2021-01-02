@@ -10,6 +10,8 @@ import ErrorPage from './components/ErrorPage';
 import Profile from './components/Profile';
 import Register from './components/Register';
 import Teams from './components/Teams';
+import ForgotPassword from './components/ForgotPassword'
+import Reset from './components/Reset'
 
 class Routes extends React.Component {
     render() {
@@ -25,6 +27,8 @@ class Routes extends React.Component {
                     <Route path='/submit' component={Submit} />
                     <Route path='/88388' component={AdminPanel} />
                     <Route path='/profile' component={Profile} />
+                    <Route path='/forgotpassword/:reset_code/' component={ForgotPassword} />
+                    <Route path='/reset' component={Reset} />
                     <Route path='*' component={ErrorPage} />
                 </Switch>
             </AppWrapper>

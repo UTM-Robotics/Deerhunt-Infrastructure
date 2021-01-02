@@ -106,6 +106,8 @@ class Login extends React.Component {
                     </form>
                     <p>Haven't made an account yet?</p>
                     <a href="/register">Sign Up</a>
+                    <br></br>
+                    <a href="/reset"> Forgot Password?</a>
                 </div>
                 <div className="discord-container">
                     <p> Join the Discord Community for updates!</p>
