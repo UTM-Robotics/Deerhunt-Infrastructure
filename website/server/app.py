@@ -334,6 +334,20 @@ def changePassword():
 
     return 'Change successful'
 
+@app.route('/api/forgotpassword/<code>', methods=['GET', 'POST'])
+def ForgotPassword(code:str):
+    nep, cop = safe_get_reset_passwords()
+    result = database.users.find_one({'code' : code})
+    if result is None:
+        abort(403)
+    if nep != cop:
+        abort(400)
+    query = {'code': code}
+    newvalues = {'$set': {'password': sha512_crypt.encrypt(nep)}}
+
+    database.users.update_one(query, newvalues)
+
+    return 'Reset successful'
 
 @app.route('/verify/<code>')
 def verify_email(code: str):
@@ -518,6 +532,28 @@ def index(path):
 ##
 
 
+def send_resetlink(user : str):
+    user = user.lower()
+    user = user.strip(" ")
+    result = database.users.find_one({'username': user})
+    if result is None:
+        return "invalid user"
+    code = codeGenerator.generate()
+    query = {'username': user}
+    newvalues = {'$set': {'code': code, 'time': str(datetime.now()}}
+    msg = '\n\nPlease click on the link below to reset your password.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
+        verification_domain+"/forgotpassword/"+code)
+    email_status = EmailBot.sendmail(u, "BattleCode:Deerhunt Password Reset", msg)
+    if not email_status:
+        database.errors.insert_one({"error": "Email could not send, error ",
+                                    'time': datetime.utcnow()
+                                    })
+        return "error with email"
+    return 'Reset successful'
+
+
+
+
 def safe_get_user_and_pass():
     if not request.is_json:
         abort(400)
@@ -525,6 +561,14 @@ def safe_get_user_and_pass():
     body = request.get_json()
 
     return body['username'], body['password']
+
+def safe_get_reset_passwords():
+    if not request.is_json:
+        abort(400)
+
+    body = request.get_json()
+
+    return body['newPassword'], body['confirmPassword']
 
 
 def safe_get_passwords():
