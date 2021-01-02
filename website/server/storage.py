@@ -3,6 +3,8 @@
 import os
 import uuid
 import shutil
+from zipfile import ZipFile, BadZipFile
+
 class StorageAPI:
     ''' Class for all storage-related actions'''
     PREFIX = '/deerhunt'
@@ -14,7 +16,14 @@ class StorageAPI:
     @staticmethod
     def save(file, team_name):
         ''' Saves the file using the team name'''
+        file_path = f'{StorageAPI.SUBMISSIONS_FOLDER}/{team_name}'
         file.save(f'{StorageAPI.SUBMISSIONS_FOLDER}/{team_name}.zip')
+        try:
+            with ZipFile(f'{file_path}.zip', 'r') as z:
+                z.extractall(file_path)
+        except BadZipFile:
+            return False
+        os.remove(f'{file_path}.zip')
         return True
 
     @staticmethod
