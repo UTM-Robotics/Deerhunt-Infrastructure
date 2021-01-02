@@ -378,7 +378,7 @@ def register():
         abort(409)
     msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
         verification_domain+"/verify/"+code)
-    email_status = EmailBot.sendmail(u, "Account Verification", msg)
+    email_status = EmailBot.sendmail(u, "BattleCode:Deerhunt Account Verification", msg)
     if not email_status:
         database.errors.insert_one({"error": "Email could not send, error ",
                                     'time': datetime.utcnow()
