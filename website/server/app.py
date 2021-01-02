@@ -263,7 +263,7 @@ def register():
     code = codeGenerator.generate()
     msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(verification_domain+"/verify/"+code)
     try:
-        _thread.start_new_thread(emailBot.sendmail,(u, "Account Verification", msg))
+        _thread.start_new_thread(emailBot.sendmail,(u, "BattleCode:Deerhunt Account Verification", msg))
     except:
         print("some error in multithreading")
 
