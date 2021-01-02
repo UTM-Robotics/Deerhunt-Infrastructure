@@ -1,24 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Spartan:wght@700&display=swap');
+@import url("https://use.typekit.net/lrh2tnp.css");
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+/* VARIABLES */
+// FOR BACKGROUNDS
+$backgroundblack: #1d1f27;
+// FOR LIGHTER BACKGROUNDS/CREATE CONTRAST
+$bluishblack: #272933;
+// FOR LETTERING ON LIGHT BACKGROUNDS
+$verydarkgrey: #212121;
+// FOR LETTERING ON DARK BACKGROUNDS
+$almostwhite: #e6e6e6;
+// FOR PLACEHOLDER LETTERING ON LIGHT BACKGROUNDS (E.G: INPUT BOXES)
+$placeholderdark: #36352f;
+// ACCENT
+$goldenyellow: #ffaf00;
+// USE SPARINGLY:
+$brightyellow:#ffec37;
+
+
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: aileron, Arial, sans-serif;
+    color:#e6e6e6;
 }
 
+.app-header-img{
+    float: left;
+    position: relative;
+    margin: 10px 15px 15px 10px;
+    width: 50;
+    height: 50;
+}
+
+.app-header-container{
+    position:relative;
+    text-align: center;
+    border-bottom: solid white 0.15vh;
+    height:100%;
+    h1{
+        font-size: 40px;
+        text-decoration: none;
+        color: $verydarkgrey;
+        // KJ
+        font-family: 'Spartan', sans-serif;
+        text-transform: uppercase;
+        font-weight:700;
+        color: $goldenyellow;
+        display:inline-block;
+        vertical-align: middle;
+        //  font-family: 'VT323', monospace;
+    }
+    .headerLogo {
+        display: inline-block;
+        // margin-left: auto;
+        // margin-right: auto;
+        // width: 5%;
+        max-height:60px;
+        vertical-align: middle;
+        transition:transform  .2s;
+        margin-bottom:10px;
+        margin-right:10px;
+    }
+    .headerLogo:hover {
+        transform:scale(1.15);
+    }
+    // TODO: fix shine css animation
+    // https://codepen.io/fazlurr/pen/qbWMRv
+    .shine {
+        background:$backgroundblack -webkit-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff)) 0 0 no-repeat;
+        -webkit-background-clip: text;
+        -webkit-animation-name: shine;
+        -webkit-animation-duration: 5s;
+        -webkit-animation-iteration-count: infinite;
+        text-shadow: 0 0px 0px $brightyellow;
+    }
+    @-webkit-keyframes shine {
+        0%, 10% {
+            background-position: -1000px;
+        }
+        20% {
+            background-position: top left;
+        }
+        90% {
+            background-position: top right;
+        }
+        100% {
+            background-position: 1000px;
+        }
+    }   
+}
+.nav-br {
+   color:white !important; width:50vw !important; height:2em !important;
+}
+// image center and sizing changes
+.deer-hunt-logo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 12.5%;
+}
+
+
+//Discord embed
+.discord-container {
+    position: float;
+    text-align:center;
+    margin: auto;
+}
+.invite-card {
+
+    margin: 4px;
+    margin-top:0.5em;
+    padding: 2px 4px;
+    z-index: 1;
+    background-color: $bluishblack;
+    box-shadow: 0 0 0.25em 0.25em rgba(0, 0, 0, 0.5);
+    .invite-button {
+       text-transform: uppercase;
+       outline: 0;
+       background-color:$goldenyellow;
+       border: 0;
+       padding: 15px;
+       color:$almostwhite;
+       font-size: 14px;
+       margin: 4px;
+       color:$backgroundblack;
+       cursor: pointer;
+        transition:0.3s;
+       &:hover, &:active, &:focus {
+           background-color: $brightyellow;
+       }
+    }
+    h2 {
+        color:$goldenyellow;
+    }  
+    h4 {
+        color: $goldenyellow;
+    }
+}
 //Login and Register Form
 .auth-form-container {
-    position: fixed;
+    position: float;
+    margin: auto;
+    // margin-top:5em;
     z-index: 1;
     background-size: 100% 75%;
     background-position: top center;
+    background-color: $bluishblack;
     max-width: 400px;
     padding: 45px;
     text-align: center;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0.3em 0.3em rgba(0, 0, 0, 0.5);
+    // box-shadow: 0 0 0.2em 0.2em rgba(0, 0, 0, 0.5), 0 0.2em 0.2em 0 rgba(0, 0, 0, 0.5);
 
     input {
         outline: 0;
-        background: #f2f2f2;
+        background: $backgroundblack;
         opacity: 0.9;
         width: 100%;
         border: 0;
@@ -26,21 +163,48 @@ body {
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
+        color:$almostwhite;
+    }
+    input::placeholder {
+        color:$goldenyellow;
+        opacity:1;
     }
 
     .auth-button {
         text-transform: uppercase;
         outline: 0;
-        background: grey;
+        background:$brightyellow;
         border: 0;
         padding: 15px;
-        color: white;
+        color:black;
         font-size: 14px;
         cursor: pointer;
-
+        transition:0.3s;
         &:hover, &:active, &:focus {
-            background: darkgrey;
+            // background: darkgrey;
+            // -webkit-animation-duration: 0.5s;
+            // -webkit-animation-name: upgrade-yellow-background;
+            // animation-duration: 0.5s;
+            // animation-name: upgrade-yellow-background;
+            background-color:$brightyellow;
         }
+
+        // @-webkit-keyframes upgrade-yellow-background {
+        //     from {
+        //         background: #ffaf00;
+        //     }
+        //     to {
+        //         background: #ffec37;
+        //     }
+        // }
+        // @keyframes upgrade-yellow-background {
+        //     from {
+        //         background: #ffaf00;
+        //     }
+        //     to {
+        //         background: #ffec37;
+        //     }
+        // }
     }
 }
 
@@ -76,22 +240,52 @@ $login-message-font-size: 16px;
 }
 
 .nav-container {
-    position: absolute;
-    top: 5%;
-    left: 50%;
-    transform: translate(-50%);
+    position: float;
+    text-align: center;
+    margin: 10px;
 }
 
 .nav-link {
     padding: 10px;
-    margin: 10px;
-    border: 1px solid black;
+    margin: 10px;        
+    font-size: 30px;
     text-decoration: none;
     color: black;
+
+    font-family: 'Spartan', sans-serif;
+    text-transform: uppercase;
+    font-weight:700;
+    color:$brightyellow;
+    // font-family: 'VT323', monospace;
+}
+
+.nav-link:hover {
+    // color: #ffaf00;
+    color:$goldenyellow;
+    -webkit-animation-duration: 0.75s;
+    -webkit-animation-name: upgrade-yellow;
+    animation-duration: 0.75s;
+    animation-name: upgrade-yellow;
+}
+@-webkit-keyframes upgrade-yellow {
+    from {
+        color:$brightyellow;
+    }
+    to {
+        color:$goldenyellow;
+    }
+}
+@keyframes upgrade-yellow {
+    from {
+        color:$brightyellow;
+    }
+    to {
+        color:$goldenyellow;
+    }
 }
 
 .content-container {
-    position: absolute;
+    position: float;
     top: 10%;
 }
 
@@ -171,6 +365,7 @@ $login-message-font-size: 16px;
         transition: all 0.3s linear;
         cursor: pointer;
         text-decoration: none;
+        transition:0.3s;
         
         &:hover {
             background: #5A5C6C;
@@ -190,7 +385,8 @@ $login-message-font-size: 16px;
 
     input {
         outline: 0;
-        background: #f2f2f2;
+        // background: #f2f2f2;
+        background:$almostwhite;
         opacity: 0.9;
         border: 0;
         margin: 0 0 15px;
@@ -198,6 +394,11 @@ $login-message-font-size: 16px;
         box-sizing: border-box;
         font-size: 14px;
         min-width: 300px;
+        color:$verydarkgrey;
+    }
+    input::placeholder {
+        color:$placeholderdark;
+        opacity:1;
     }
 
 
@@ -236,6 +437,7 @@ $login-message-font-size: 16px;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
     left: 50%;
     top: 50%;
+    margin-top:3em;
     transform: translate(-50%, -50%);
 
     input {
@@ -249,6 +451,11 @@ $login-message-font-size: 16px;
         box-sizing: border-box;
         font-size: 14px;
         text-align: center;
+        color: $verydarkgrey;
+    }
+    input::placeholder {
+        color:$placeholderdark !important;
+        opacity:1;
     }
 
     .submit-button {
@@ -260,6 +467,7 @@ $login-message-font-size: 16px;
         color: white;
         font-size: 14px;
         cursor: pointer;
+        transition:0.3s;
 
         &:hover, &:active, &:focus {
             background: darkgrey;
@@ -318,7 +526,7 @@ $login-message-font-size: 16px;
   height: 100px;
   margin: 6px;
   border-radius: 50%;
-  background: limegreen;
+  background: rgb(107, 128, 107);
   animation: lds-circle 2.4s cubic-bezier(0, 0.2, 0.8, 1) infinite;
 }
 
@@ -374,8 +582,9 @@ $login-message-font-size: 16px;
     transform: translate(-50%);
 
     input {
+        color:$verydarkgrey;
         outline: 0;
-        background: #f2f2f2;
+        background:$almostwhite;
         opacity: 0.9;
         width: 100%;
         border: 0;
@@ -383,6 +592,10 @@ $login-message-font-size: 16px;
         padding: 15px;
         box-sizing: border-box;
         font-size: 14px;
+    }
+    input::placeholder {
+        color:$placeholderdark;
+        opacity:1;
     }
 
     .register-button {
@@ -394,6 +607,7 @@ $login-message-font-size: 16px;
         color: white;
         font-size: 14px;
         cursor: pointer;
+        transition:0.3s;
 
         &:hover, &:active, &:focus {
             background: darkgrey;
@@ -402,10 +616,6 @@ $login-message-font-size: 16px;
 }
 
 .status-container {
-    position: fixed;
-    bottom: 20%;
-    left: 50%;
-    transform: translate(-50%);
     text-align: center;
 
     .status {
@@ -424,11 +634,62 @@ $login-message-font-size: 16px;
             color: white;
             font-size: 14px;
             cursor: pointer;
+            transition:0.3s;
 
             &:hover, &:active, &:focus {
                 background: darkgrey;
             }
         }
     }
+    
+}
+
+.no-team-container, .on-team-container {
+    border-radius:15px;
+    background-color: $bluishblack;
+    box-shadow: 0 0 0.25em 0.25em rgba(0, 0, 0, 0.5);
+    position: float;
+    z-index: 1;
+    background-size: 100% 75%;
+    max-width: 450px;
+    margin: auto;
+    padding: 45px;
+    text-align: center;
+    margin-top:2em;
+
+    input {
+        outline: 0;
+        background:$almostwhite;
+        opacity: 0.9;
+        width: 100%;
+        border: 0;
+        margin: 15px 0px 15px 0px;
+        padding: 15px;
+        box-sizing: border-box;
+        font-size: 14px;
+        color:$verydarkgrey;
+    }
+    input::placeholder {
+        color:$placeholderdark;
+        opacity:1;
+    }
+
+    .create-team-button, .leave-team-button, .send-invite-button {
+        text-transform: uppercase;
+        outline: 0;
+        background: grey;
+        border: 0;
+        padding: 15px;
+        color: white;
+        font-size: 14px;
+        margin: 4px;
+        cursor: pointer;
+        transition:0.3s;
+
+        &:hover, &:active, &:focus {
+            background: darkgrey;
+        }
+    }
+
     
 }

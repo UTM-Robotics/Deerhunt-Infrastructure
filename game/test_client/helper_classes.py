@@ -80,13 +80,39 @@ class Unit:
                 enemies.append((unit, direction))
         return enemies
 
-    def can_duplicate(self, resources: int) -> bool:
+    def stun(self, *directions: (str)) -> Move:
+        """
+        Return an 'stun' Move for this Unit in the given <*directions>.
+        """
+        return Move(self.id, 'STUN', *directions)
+
+    def can_stun(self, enemy_units: 'Units') -> ['Unit', [str]]:
+        """
+        Returns a list of enemy Units that can be stunned and 
+        the direction needed to attack them.
+        """
+        enemies = []
+        for id in enemy_units.units:
+            unit = enemy_units.get_unit(id)
+            direction = self.direction_to((unit.x, unit.y))
+            check_coord = coordinate_from_direction(self.x, self.y, direction)
+            check_coord2 = coordinate_from_direction(check_coord[0], check_coord[1], direction)
+            if check_coord == \
+                    (unit.x, unit.y):
+                enemies.append((unit, [direction]))
+            elif check_coord2 == (unit.x, unit.y):
+                enemies.append((unit, [direction, direction]))
+        return enemies
+
+    def can_duplicate(self, resources: int, unit_type: str) -> bool:
         """
         Returns if this Unit can duplicate.
         """
-        if self.type == 'melee' and self.attr['resource_cost'] <= resources \
+        if self.type == 'worker' \
                 and self.attr['duplication_status'] <= 0:
-            return True
+            if (unit_type == 'melee' and self.attr['melee_cost'] <= resources) or \
+                    (unit_type == 'worker' and self.attr['worker_cost'] <= resources):
+                return True
         else:
             return False
 
@@ -106,11 +132,11 @@ class Unit:
         """
         return Move(self.id, 'MINE')
 
-    def duplicate(self, direction: (str)) -> Move:
+    def duplicate(self, direction: (str), unit_type: str) -> Move:
         """
         Returns a 'duplicate' Move for this Unit in the given <direction>.
         """
-        return Move(self.id, 'DUPLICATE', direction)
+        return Move(self.id, 'DUPLICATE_M' if unit_type == 'melee' else 'DUPLICATE_W', direction)
 
 
 class Map:

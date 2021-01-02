@@ -1,5 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
+import logo from './../assets/images/deerhuntcropped.png'
+import discord from './../assets/images/discord_logo.png';
 
 class Login extends React.Component {
     constructor() {
@@ -20,7 +22,7 @@ class Login extends React.Component {
             url: '/api/isloggedin',
             type: 'GET',
             success: (responseData) => {
-                var parsed = responseData == "True" ? true: false;
+                var parsed = responseData == "True" ? true : false;
                 if (parsed) {
                     window.location.replace("/home");
                 }
@@ -29,7 +31,7 @@ class Login extends React.Component {
     }
 
 
-    addLoginError(type: string) {
+    addLoginError(type) {
         $('.error-message').remove();
         var message = "";
         if (type === 'user') {
@@ -39,7 +41,7 @@ class Login extends React.Component {
             message = "Please enter a password";
         }
         else if (type === 'login') {
-            message = "The user or password is incorrect/invalid/not verified"
+            message = "The user or password is incorrect/invalid/unverified. If you still cannot log in, please contact us via Discord."
         }
         var errorMessage = '<p class="error-message">' + message + '</p>';
         $('.auth-button').after(errorMessage);
@@ -91,15 +93,27 @@ class Login extends React.Component {
             password: e.target.value
         });
     }
-    
+
     render() {
         return (
-            <div className="auth-form-container">
-                <form className="login-form" id="login-form">
-                    <input id="username" type="text" placeholder="username" onChange={this.handleUserChange.bind(this)} />
-                    <input id="password" type="password" placeholder="password" onChange={this.handlePasswordChange.bind(this)} />
-                    <div className="auth-button" onClick={this.login.bind(this)}>login</div>
-                </form>
+            <div>
+                <img src={logo} alt="Deer Hunt Logo" className="deer-hunt-logo"/>
+                <div className="auth-form-container">
+                    <form className="login-form" id="login-form">
+                        <input id="username" type="text" placeholder="Username/Email" onChange={this.handleUserChange.bind(this)} />
+                        <input id="password" type="password" placeholder="Password" onChange={this.handlePasswordChange.bind(this)} />
+                        <div className="auth-button" onClick={this.login.bind(this)}>login</div>
+                    </form>
+                    <p>Haven't made an account yet?</p>
+                    <a href="/register">Sign Up</a>
+                </div>
+                <div className="discord-container">
+                    <p> Join the Discord Community for updates!</p>
+                    <a href="https://discord.gg/xW6AB6MT">
+
+                    <img width="100px" src={discord}></img>
+                    </a>
+                </div>
             </div>
         );
     }
