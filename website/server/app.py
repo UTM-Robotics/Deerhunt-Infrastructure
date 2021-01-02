@@ -1,7 +1,7 @@
 '''server/app.py - main api app declaration'''
 import threading
 import schedule
-# from datetime import datetime
+from datetime import datetime
 from zipfile import ZipFile, BadZipFile
 from flask import Flask, jsonify, send_from_directory, request, abort, session
 from flask_cors import CORS
@@ -80,9 +80,11 @@ submitting = {} # dict looks like: {'some team name': }
 # API routes
 ##
 
+
+## Leaderboard and rank related routes.
+
+
 # TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use.
-
-
 @app.route('/api/submit', methods=['POST'])
 def submit():
     '''
@@ -144,229 +146,22 @@ def submit():
     # finally:
     #     submitting[session['username']] = False
 
-
-
-# Teams
-# Teams assigning api calls
-
-
-@app.route('/api/sendinvite', methods=['POST'])
-def send_invite():
-    '''Sends an invite from a user's current team to a user.'''
-    login_guard()
-    username = session["username"]
-    if not request.is_json:
-        abort(400)
-    body = request.get_json()
-    if not "recipient" in body:
-        abort(400)
-    recipient_doc = database.users.find_one({'username': body["recipient"]})
-    if not recipient_doc:
-        abort(400)
-    with TeamController(client, database) as team_api:
-        status = team_api.send_invite(username, body["recipient"])
-    if not status:
-        abort(409)
-    return "Success"
-
-
-@app.route('/api/userinvites', methods=['GET'])
-def user_invites():
-    """Gets the list of team display names and team names that a user 
-        has been invited to.
-    """
-    login_guard()
-    with TeamController(client, database) as team_api:
-        invites_team_dict = team_api.get_user_invites(session["username"])
-    return invites_team_dict
-
-# Teams assigning api calls
-
-
-@app.route('/api/acceptinvite', methods=['POST'])
-def accept_invite():
-    '''Accpets an invite on a user's account, if the invite is valid.'''
-    login_guard()
-    username = session["username"]
-
-    body = request.get_json()
-    if not "team" in body:
-        abort(400)
-
-    with TeamController(client, database) as team_api:
-        status = team_api.accept_invite(username, body["team"])
-    if not status:
-        abort(409)
-
-    return "Success"
-
-
-@app.route('/api/createteam', methods=['POST'])
-def create_team():
-    login_guard()
-    if not request.is_json:
-        abort(400)
-    body = request.get_json()
-    if not "team" in body:
-        abort(400)
-
-    with TeamController(client, database) as team_api:
-        status = team_api.create_team(session["username"], body["team"])
-    if not status:
-        print("Request failed with error code:" + str(team_api.error))
-        abort(409)
-    return "Success"
-
-
-@app.route('/api/leaveteam', methods=['POST'])
-def leave_team():
-    login_guard()
-    with TeamController(client, database) as team_api:
-        status = team_api.leave_team(session["username"])
-    if not status:
-        print("Request failed with error code:" + str(team_api.error))
-        abort(409)
-    return "Success"
-
-
-@app.route('/api/getteam', methods=['GET'])
-def get_team():
-    login_guard()
-
-    with TeamController(client, database) as team_api:
-        team = team_api.get_user_team(session["username"])
-    if not team:
-        return {}
-    team_json = {
-        "name": team.get("name", ""),
-        "display_name": team.get("displayName", ""),
-        "invites":  team.get("invites", []),
-        "users": team.get("users", [])
-    }
-    return team_json
-
-
-@app.route('/api/getteaminvites', methods=['GET'])
-def get_team_invites():
-    login_guard()
-    with TeamController(client, database) as team_api:
-        team = team_api.get_user_team(session["username"])
-    if not team:
-        return {"invited_users": []}
-    return {"invited_users": team.get("invites", [])}
-
-# Login and Registstration Routes
-
-
 @app.route('/api/challenge', methods=['POST'])
 def challenge():
+    """ Allows the currently logged in user to challenge another user's rank.
+        Follows the implication that if ranks are [A,B,C], if C beats A, ranks
+        become [C,A,B]. Else, ranks are [A,B,C]
+    """
     login_guard()
     challenger = session['username']
+    if not request.is_json:
+        abort(400)
     defender = request.get_json() # defender should be the team name that is being challenged.
     print(defender)
     with TournamentController(client, database, challenger) as battle:
         can_battle = battle.init_challenge(defender)
         if can_battle:
             result = battle.run_battle()
-        
-
-@app.route('/api/login', methods=['POST'])
-def login():
-    u, p = safe_get_user_and_pass()
-    result = database.users.find_one({'username': u})
-    if result is None or 'password' not in result:
-        abort(403)
-
-    if not sha512_crypt.verify(p, result['password']):
-        abort(403)
-    if result['verified'] != True:
-        abort(403)
-
-    session['logged_in'] = True
-    session['username'] = u
-    # submitting[session['username']] = False
-    submitting[session['username']] = ''
-
-    return 'Login successful'
-
-# TODO: SYNCUPDATE-Extra work: Proper Variable naming.
-
-
-@app.route('/api/changepassword', methods=['GET', 'POST'])
-def changePassword():
-    login_guard()
-
-    cup, nep, cop = safe_get_passwords()
-    result = database.users.find_one({'username': session['username']})
-    if result is None:
-        abort(403)
-    if not sha512_crypt.verify(cup, result['password']):
-        abort(403)
-    if nep != cop:
-        abort(400)
-    query = {'username': session['username']}
-    newvalues = {'$set': {'password': sha512_crypt.encrypt(nep)}}
-
-    database.users.update_one(query, newvalues)
-
-    return 'Change successful'
-
-
-@app.route('/verify/<code>')
-def verify_email(code: str):
-    result = database.users.find_one({'code': code})
-    if result is None:
-        return "Invalid Verification Link."
-    reg_time = datetime.strptime(result['time'], '%Y-%m-%d %H:%M:%S.%f')
-    curr_time = datetime.now()
-    time_delta = curr_time-reg_time
-    if time_delta.seconds > 60*30:
-        database.users.delete_one({"code": code})
-        return "Verification link has expired, Please recreate the account."
-    query = {'code': code}
-    newvalues = {'$set': {'verified': 'True'}}
-    database.users.update_one(query, newvalues)
-    return "Account has been verified successfully"
-
-
-@app.route('/api/register', methods=['POST'])
-def register():
-    u, p = safe_get_user_and_pass()
-    u = u.lower()
-    u = u.strip(" ")
-    result = database.users.find_one({'username': u})
-    if result is not None:
-        abort(409)
-
-    if not is_allowed(u):
-        abort(409)
-
-    code = codeGenerator.generate()
-    query = {'username': u}
-    data = {'username': u,
-            'password': sha512_crypt.encrypt(p),
-            'code': code, 'time': str(datetime.now()),
-            'verified': 'False'}
-    writeResult = database.users.update_one(
-        query,
-        {"$setOnInsert": data},
-        upsert=True)
-    if not writeResult.upserted_id:
-        abort(409)
-    msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
-        verification_domain+"/verify/"+code)
-    email_status = EmailBot.sendmail(u, "Account Verification", msg)
-    if not email_status:
-        database.errors.insert_one({"error": "Email could not send, error ",
-                                    'time': datetime.utcnow()
-                                    })
-        return abort(400)
-    return 'Register successful'
-
-
-''' Safe For Upsert!!!
-'''
-
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
@@ -404,6 +199,217 @@ def leaderboard():
 
     return jsonify(lst)
 
+# Teams
+# Teams assigning api calls
+
+
+@app.route('/api/sendinvite', methods=['POST'])
+def send_invite():
+    '''Sends an invite from a user's current team to a user.'''
+    login_guard()
+    username = session["username"]
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    if not "recipient" in body:
+        abort(400)
+    recipient_doc = database.users.find_one({'username': body["recipient"]})
+    if not recipient_doc:
+        abort(400)
+    with TeamController(client, database) as team_api:
+        status = team_api.send_invite(username, body["recipient"])
+    if not status:
+        abort(409)
+    return "Success"
+
+
+@app.route('/api/userinvites', methods=['GET'])
+def user_invites():
+    """Gets the list of team display names and team names that a user
+        has been invited to.
+    """
+    login_guard()
+    with TeamController(client, database) as team_api:
+        invites_team_dict = team_api.get_user_invites(session["username"])
+    return invites_team_dict
+
+# Teams assigning api calls
+
+
+@app.route('/api/acceptinvite', methods=['POST'])
+def accept_invite():
+    '''Accpets an invite on a user's account, if the invite is valid.'''
+    login_guard()
+    username = session["username"]
+
+    body = request.get_json()
+    if not "team" in body:
+        abort(400)
+
+    with TeamController(client, database) as team_api:
+        status = team_api.accept_invite(username, body["team"])
+    if not status:
+        abort(409)
+
+    return "Success"
+
+
+@app.route('/api/createteam', methods=['POST'])
+def create_team():
+    '''Creates a team if the team name is not taken, and the current logged-in
+        user is not on a team.
+    '''
+    login_guard()
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    if not "team" in body:
+        abort(400)
+
+    with TeamController(client, database) as team_api:
+        status = team_api.create_team(session["username"], body["team"])
+    if not status:
+        print("Request failed with error code:" + str(team_api.error))
+        abort(409)
+    return "Success"
+
+
+@app.route('/api/leaveteam', methods=['POST'])
+def leave_team():
+    ''' Removes the current user from their team.'''
+    login_guard()
+    with TeamController(client, database) as team_api:
+        status = team_api.leave_team(session["username"])
+    if not status:
+        print("Request failed with error code:" + str(team_api.error))
+        abort(409)
+    return "Success"
+
+
+@app.route('/api/getteam', methods=['GET'])
+def get_team():
+    ''' Gets the current user's team'''
+    login_guard()
+
+    with TeamController(client, database) as team_api:
+        team = team_api.get_user_team(session["username"])
+    if not team:
+        return {}
+    team_json = {
+        "name": team.get("name", ""),
+        "display_name": team.get("displayName", ""),
+        "invites":  team.get("invites", []),
+        "users": team.get("users", [])
+    }
+    return team_json
+
+
+@app.route('/api/getteaminvites', methods=['GET'])
+def get_team_invites():
+    ''' Gets the invites sent out by the team.'''
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team = team_api.get_user_team(session["username"])
+    if not team:
+        return {"invited_users": []}
+    return {"invited_users": team.get("invites", [])}
+
+
+# Login and Registstration Routes
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    ''' Checks the users inputs against database to validate for login.'''
+    username, password = safe_get_user_and_pass()
+    result = database.users.find_one({'username': username})
+    if result is None or 'password' not in result:
+        abort(403)
+
+    if not sha512_crypt.verify(password, result['password']):
+        abort(403)
+    if result['verified'] != True:
+        abort(403)
+
+    session['logged_in'] = True
+    session['username'] = username
+    submitting[session['username']] = ''
+
+    return 'Login successful'
+
+# TODO: Tech-Debt: Proper Variable naming.
+@app.route('/api/changepassword', methods=['GET', 'POST'])
+def change_password():
+    ''' Changes the current user's password.'''
+    login_guard()
+
+    cup, nep, cop = safe_get_passwords()
+    result = database.users.find_one({'username': session['username']})
+    if result is None:
+        abort(403)
+    if not sha512_crypt.verify(cup, result['password']):
+        abort(403)
+    if nep != cop:
+        abort(400)
+    query = {'username': session['username']}
+    newvalues = {'$set': {'password': sha512_crypt.encrypt(nep)}}
+
+    database.users.update_one(query, newvalues)
+
+    return 'Change successful'
+
+
+@app.route('/verify/<code>')
+def verify_email(code: str):
+    result = database.users.find_one({'code': code})
+    if result is None:
+        return "Invalid Verification Link."
+    reg_time = datetime.strptime(result['time'], '%Y-%m-%d %H:%M:%S.%f')
+    curr_time = datetime.now()
+    time_delta = curr_time-reg_time
+    if time_delta.seconds > 60*30:
+        database.users.delete_one({"code": code})
+        return "Verification link has expired, Please recreate the account."
+    query = {'code': code}
+    newvalues = {'$set': {'verified': 'True'}}
+    database.users.update_one(query, newvalues)
+    return "Account has been verified successfully"
+
+
+@app.route('/api/register', methods=['POST'])
+def register():
+    ''' Registers a user via their username and password if the inputs are valid.'''
+    u, p = safe_get_user_and_pass()
+    u = u.lower()
+    u = u.strip(" ")
+    result = database.users.find_one({'username': u})
+    if result is not None:
+        abort(409)
+
+    if not is_allowed(u):
+        abort(409)
+
+    code = codeGenerator.generate()
+    query = {'username': u}
+    data = {'username': u,
+            'password': sha512_crypt.encrypt(p),
+            'code': code, 'time': str(datetime.now()),
+            'verified': 'False'}
+    write_result = database.users.update_one(
+        query,
+        {"$setOnInsert": data},
+        upsert=True)
+    if not write_result.upserted_id:
+        abort(409)
+    msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
+        verification_domain+"/verify/"+code)
+    email_status = EmailBot.sendmail(u, "Account Verification", msg)
+    if not email_status:
+        database.errors.insert_one({"error": "Email could not send, error ",
+                                    'time': datetime.utcnow()
+                                    })
+        return abort(400)
+    return 'Register successful'
+
 
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
@@ -414,10 +420,12 @@ def isloggedin():
 
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
+    """ Returns True iff a user is an admin."""
     return str(is_admin_check())
 
 @app.route('/api/initglobalstate', methods=['POST'])
 def initglobalstate():
+    """ Initializes global state for the app."""
     admin_guard()
     with GlobalController(client, database) as globals_api:
         if not globals_api.init_state():
