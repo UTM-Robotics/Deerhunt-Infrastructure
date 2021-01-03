@@ -1,4 +1,7 @@
 '''server/app.py - main api app declaration'''
+
+import shutil
+import os
 import threading
 import schedule
 from datetime import datetime
@@ -15,13 +18,7 @@ from code_generator import CodeGenerator
 from teams import TeamController
 from global_state import GlobalController
 from challenge import ChallengeController
-import code_generator
-import traceback
-import uuid
-import docker
-import time
-import shutil
-import os
+
 # import re
 
 
@@ -39,7 +36,7 @@ if PROD_FLAG:
     database = client.deerhunt_prod
 else:
     database = client.deerhunt_db
-board = Leaderboard(database.leaderboard)
+#board = Leaderboard(database.leaderboard)
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
 

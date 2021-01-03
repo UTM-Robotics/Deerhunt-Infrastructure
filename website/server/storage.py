@@ -5,6 +5,7 @@ import uuid
 import shutil
 from zipfile import ZipFile, BadZipFile
 
+
 class StorageAPI:
     ''' Class for all storage-related actions'''
     PREFIX = '/deerhunt'
@@ -12,7 +13,9 @@ class StorageAPI:
     BUILD_FOLDER = f'{PREFIX}/build'
     TEMPLATE_FOLDER = f'{PREFIX}/template'
     SERVER_FOLDER = f'{PREFIX}/server'
-
+    # Errors
+    P1_ZIP_ERROR = 1
+    P2_ZIP_ERROR = 2
     @staticmethod
     def save(file, team_id):
         ''' Saves the file using the team name'''
@@ -30,17 +33,19 @@ class StorageAPI:
 
         shutil.copytree(StorageAPI.TEMPLATE_FOLDER, f'{build_path}/')
         shutil.copytree(StorageAPI.SERVER_FOLDER, f'{build_path}/server')
-        StorageAPI.copy_zip_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p1_team_id}',\
-             f'{build_path}/p1')
-        StorageAPI.copy_zip_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p2_team_id}',\
-             f'{build_path}/p2')
+        if not StorageAPI.copy_zip_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p2_team_id}',
+                                            f'{build_path}/p2'):
+            return StorageAPI.P2_ZIP_ERROR
+        if not StorageAPI.copy_zip_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p1_team_id}',
+                                            f'{build_path}/p1'):
+            return StorageAPI.P1_ZIP_ERROR
         return build_path
 
     @staticmethod
     def copy_zip_contents(src, dest):
         ''' Copies the contents of a directory into another directory.'''
         try:
-            with ZipFile(f'{src}.zip', 'r') as z:
-                z.extractall(dest)
+            with ZipFile(f'{src}.zip', 'r') as zip_file:
+                zip_file.extractall(dest)
         except BadZipFile:
             return False

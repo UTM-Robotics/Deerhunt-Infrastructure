@@ -18,6 +18,7 @@ class ChallengeController:
     SAME_TEAM_ERROR = 3
     INVALID_TEAM_ERROR = 4
     TIMEOUT_ERROR = 5
+    ILLEGAL_ZIP_FILE_ERROR = 
     def __init__(self, client: MongoClient, database):
         self.client = client
         self.database = database
@@ -126,6 +127,8 @@ class ChallengeController:
         # prep match container
         container_path = StorageAPI.prep_match_container(\
             user_team["_id"],target_team["_id"])
+        if container_path is int:
+            return False
         # run match
         game_result = GameController.run_game(container_path)
         match_data = game_result[0]
