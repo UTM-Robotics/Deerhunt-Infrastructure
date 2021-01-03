@@ -519,11 +519,11 @@ $login-message-font-size: 16px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
+    background-color: $backgroundblack;
     opacity: 1;
     width: 50vw;
     height: 30vw;
-    box-shadow: 5px 10px 18px #888888;
+    box-shadow: 5px 10px 18px $backgroundblack;
 }
 
 .lds-circle {
@@ -572,7 +572,7 @@ $login-message-font-size: 16px;
 
 /* The Close Button */
 .close {
-    color: black;
+    color: white;
     float: right;
     font-size: 28px;
     font-weight: bold;
