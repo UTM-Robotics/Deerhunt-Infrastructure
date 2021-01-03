@@ -97,7 +97,7 @@ class Home extends React.Component {
     addSuccessMessage(type) {
         this.setState({
             errorMessage: "",
-            successMessage: "Success, we are computing your match! Please wait, you may be queued."
+            successMessage: "Success, we are computing your match! Check your team for the results."
         });
     }
 
@@ -154,6 +154,10 @@ class Home extends React.Component {
                 <p className='success-message'>{this.state.successMessage}</p>
 
                 <p>Competing is throttled at once every 5 minutes. Be sure when you click that button!</p>
+                 <p>Please note that a battle takes anywhere from 5-15 seconds to run so the page may look like it
+                        is loading during that time. In addition if other people are challenging you will be queued and
+                         it will take longer for your challenge to go through.
+                    </p> 
                 {this.state.leaderboard.length > 0 && this.state.displayLeaderboard && <table align="center">
                     <thead>
                         <tr>
