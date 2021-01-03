@@ -6,7 +6,7 @@ from pymongo import MongoClient
 from teams import TeamController
 from storage import StorageAPI
 from game_runner import GameController
-from datetime import datetime
+from datetime import datetime, timedelta
 class ChallengeController:
     ''' Performs all Teams-related logic with Database.'''
 
@@ -57,21 +57,18 @@ class ChallengeController:
         timer_string = "scrimmage_time" if is_scrimmage else "challenge_time"
         curr_time = datetime.now()
         if timer_string in user_team:
-            previous_scrimmage_time = datetime.strptime(user_team['time'],\
-                 '%Y-%m-%d %H:%M:%S.%f')
-            time_delta = curr_time-previous_scrimmage_time
-            if time_delta.seconds > 60*5:
+            if curr_time-user_team[timer_string] < timedelta(minutes=5):
                 self.error = self.TIMEOUT_ERROR
                 return None
         
         #Updates the modified time to now
         time_update_query = {"_id": user_team["_id"]}
-        time_update_data = {"$set": {timer_string:str(curr_time)}}
+        time_update_data = {"$set": {timer_string:curr_time}}
         self.database.teams.update_one(time_update_query,\
             time_update_data, session=self.session)
 
         #Gets the current leaderboard from database
-        current_leaderboard = self.database.leaderboards.find_one({"type": "current"},\
+        current_leaderboard = self.database.leaderboard.find_one({"type": "current"},\
              session=self.session)
         if len(current_leaderboard["teams"]) < defender_rank:
             self.error = self.RANK_OUT_OF_BOUNDS_ERROR
@@ -138,6 +135,6 @@ class ChallengeController:
         match_data["defender"] = target_team["name"]
         match_data["submitter"] = username
         match_data["challenger"] = user_team["name"]
-        game_id = self.database.logs.insert_one(game_result).inserted_id
+        game_id = self.database.logs.insert_one({"winner" :game_result[1], "data": game_result[0]}).inserted_id
         self.ret_val = game_id
         return True
