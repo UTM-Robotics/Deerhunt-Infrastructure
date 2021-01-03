@@ -45,3 +45,21 @@ class LeaderboardController:
         leaderboard = self.database.leaderboard.find_one({"type": "current"}, session=self.session)
         self.end_transaction()
         return leaderboard
+    @staticmethod
+    def safe_get_team_rank(leaderboard_document, team_name):
+        """ Returns infinity if the team is not yet ranked, otherwise, returns
+        the first occurence of the team in the leaderboard
+        """
+        teams = leaderboard_document["teams"]
+        if not team_name in teams:
+            return float("inf")
+        return teams.index(team_name)
+
+    def get_team_rank(leaderboard_document, team_name):
+        """ Returns -1 if the team is not yet ranked, otherwise, returns
+        the first occurence of the team in the leaderboard
+        """
+        teams = leaderboard_document["teams"]
+        if not team_name in teams:
+            return -1
+        return teams.index(team_name)

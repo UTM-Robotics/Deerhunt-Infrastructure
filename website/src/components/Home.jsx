@@ -7,6 +7,7 @@ class Home extends React.Component {
         super();
         this.state = {
             loggedIn: false,
+            rank: -1,
             leaderboard: [],
             displayLeaderboard: false
         };
@@ -15,7 +16,21 @@ class Home extends React.Component {
     componentDidMount() {
         this.displayLeaderboard();
         this.getLeaderboard();
+        this.getRank();
+        this.getCanChallenge();
         this.isLoggedIn();
+    }
+
+    getRank(){
+        $.ajax({
+            url: '/api/getRank',
+            type: 'GET',
+            success: (responseData) => {
+                this.setState({
+                    rank: responseData
+                });
+            }
+        });
     }
 
     getLeaderboard() {

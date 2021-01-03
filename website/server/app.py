@@ -93,7 +93,7 @@ def submit():
     print(request.files)
     with TeamController(client, database) as team_api:
         team_document = team_api.get_user_team(session["username"])
-        if team_document == None:
+        if team_document is None:
             abort(400)
     with StorageAPI(client, database) as s:
         if not s.save(request.files['upload'], team_document['_id']):
@@ -106,58 +106,22 @@ def submit():
 
     return "Zip submitted! Thanks"
 
-
-    # request.files['upload'].save(f'{submit_path}.zip')
-
-    # user_file = database.users.find_one({"username": session["username"]}, session=session)
-    # team_name = user_file['team']
-    # team_file = database.teams.find_one({"name": team_name}, session=session)
-    # if "last_submit" in team_file:
-    #     # NEED TO CHECK IF 5 MINUTES HAVE PASSED.
-    #     database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
-    # else:
-    #     last_submitted = team_file["last_submitted"] # this should be a datetime.datetime object
-    #     current_time = datetime.datetime.now()
-    #     if (last_submitted + datetime.timedelta(minutes=5)) > current_time:
-    #         # not enough time has passed
-    #         session.abort_transaction()
-    #         return False
-    #     else:
-    #         database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
-
-    
-    # submit_folder = team_name
-    # submit_path = f'{submissions_folder}/{submit_folder}'
-    # request.files['upload'].save(f'{submit_path}.zip')
-    # try:
-    #     with ZipFile(f'{submit_path}.zip', 'r') as z:
-    #         z.extractall(submit_path)
-    # except BadZipFile:
-    #     abort(400)
-    # os.remove(f'{submit_path}.zip')
-    # session.commit_transaction()
-    # session.end_session()
-    # return "Zip submitted! Thanks"
-
-    # try:
-    #     position = int(request.form['position']) - 1
-    # except Exception:
-    #     abort(400)
-
-    # if position < 0 or position > 9:
-    #     abort(400)
-
-    # try:
-    #     result = run_match(position)
-    # except Exception as e:
-    #     database.errors.insert_one({'message': str(e), 'trace': traceback.format_exc(),'time': datetime.utcnow()})
-
-    #     if board.is_locked(position):
-    #         board.release(position)
-
-    #     abort(500)
-    # finally:
-    #     submitting[session['username']] = False
+@app.route('/api/canchallenge', methods=['GET'])
+def can_challenge():
+    """ Checks if the user is allowed to perform a challenge
+    """
+    login_guard()
+    user = session['username']
+    if not request.is_json:
+        abort(400)
+    data = request.get_json()
+    if "target_rank" not in data or data["target_rank"] is not int or data["target_rank"] <= 0:
+        abort(400)
+    target_rank = data["target_rank"]
+    with ChallengeController(client, database) as challenge_api:
+        if not challenge_api.can_challenge(user, target_rank):
+            abort(400)
+    return 
 
 @app.route('/api/challenge', methods=['POST'])
 def challenge():
@@ -180,7 +144,7 @@ def challenge():
 
 @app.route('/api/scrimmage', methods=['POST'])
 def scrimmage():
-    ''' Runs a match against a player at a given position in the leaderboard without 
+    ''' Runs a match against a player at a given position in the leaderboard without
     changing ranks.
     '''
     login_guard()
@@ -215,30 +179,42 @@ def getmatch():
 
     return jsonify(result['maps'])
 
+@app.route('/api/rank', methods=['GET'])
+def getrank():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        if not team_api.get_user_team(session["username"]):
+            abort(403)
+        team = team_api.ret_val
+    if not team:
+        abort(403)
+    with LeaderboardController(client, database) as leaderboard_api:
+        leaderboard = leaderboard_api.get_current_leaderboard()
+        return LeaderboardController.get_team_rank(leaderboard, team["name"])
+    abort(500)
 
 @app.route('/api/leaderboard', methods=['GET'])
-def get_currrent_leaderboard():
+def get_current_leaderboard():
     ''' Gets the current leaderboard's state'''
     login_guard()
 
     with GlobalController(client, database) as global_api:
         if not global_api.get_leaderboard_state() or not global_api.ret_val:
-            abort(400)
+            abort(403)
 
     with LeaderboardController(client,database) as leaderboard_api:
         leaderboard = leaderboard_api.get_current_leaderboard()
-    print("Leaderboard",leaderboard)
     if leaderboard is None:
-        
-        abort(400)
+        abort(500)
 
     lst = []
     teams = leaderboard["teams"]
-    for team in teams:
-        lst.append({'name': team,
-            'queue':[]
+    for team_name in teams:
+        with TeamController(client,database) as team_api:
+            team_doc = team_api.get_team(team_name)
+        lst.append({'name': team_name,
+            'display_name': team_doc["displayName"]
         })
-
     return jsonify(lst)
 
 # Teams
@@ -251,13 +227,13 @@ def send_invite():
     login_guard()
     username = session["username"]
     if not request.is_json:
-        abort(400)
+        abort(403)
     body = request.get_json()
     if not "recipient" in body:
-        abort(400)
+        abort(403)
     recipient_doc = database.users.find_one({'username': body["recipient"]})
     if not recipient_doc:
-        abort(400)
+        abort(403)
     with TeamController(client, database) as team_api:
         status = team_api.send_invite(username, body["recipient"])
     if not status:

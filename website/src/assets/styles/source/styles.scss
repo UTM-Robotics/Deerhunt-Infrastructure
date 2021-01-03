@@ -107,6 +107,22 @@ body {
     text-align:center;
     margin: auto;
 }
+.leaderboard-button {
+    text-transform: uppercase;
+    outline: 0;
+    background-color:$goldenyellow;
+    border: 0;
+    padding: 4px;
+    color:$almostwhite;
+    font-size: 8px;
+    margin: 4px;
+    color:$backgroundblack;
+    cursor: pointer;
+     transition:0.3s;
+    &:hover, &:active, &:focus {
+        background-color: $brightyellow;
+    }
+ }
 .invite-card {
 
     margin: 4px;
