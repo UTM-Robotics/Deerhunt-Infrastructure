@@ -3,6 +3,7 @@
 import shutil
 import os
 import threading
+import logging
 from datetime import datetime
 from zipfile import ZipFile, BadZipFile
 from flask import Flask, jsonify, send_from_directory, request, abort, session
@@ -62,6 +63,7 @@ submitting = {} # dict looks like: {'some team name': }
 #Creates and runs the consumer thread for tournaments
 consumer = Consumer(client)
 consumer_thread = threading.Thread(target=consumer.run)
+consumer_thread.daemon = True
 consumer_thread.start()
 
 # tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
@@ -584,6 +586,9 @@ def copy_dir_contents(src, dest):
 
 
 if __name__ == '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
     if PROD_FLAG:
         app.run(host='0.0.0.0', port=443) # The cert is included when gunicorn is called.
 
