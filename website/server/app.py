@@ -1,28 +1,27 @@
 '''server/app.py - main api app declaration'''
-from flask import Flask, jsonify, send_from_directory, request, abort, session
-from flask_cors import CORS
-from pymongo import MongoClient
-# from flask_pymongo import PyMongo
-# from db import database
-from bson.objectid import ObjectId
-from passlib.hash import sha512_crypt
-from zipfile import ZipFile, BadZipFile
-from leaderboard import Leaderboard
-from datetime import datetime
-from code_generator import CodeGenerator
-from email_bot import EmailBot
-from teams import TeamController
-from global_state import GlobalController
-import email_bot
-import code_generator
-import traceback
-import uuid
-import docker
-import time
+
 import shutil
 import os
+import threading
+import logging
+from datetime import datetime
+from zipfile import ZipFile, BadZipFile
+from flask import Flask, jsonify, send_from_directory, request, abort, session, make_response
+from flask_cors import CORS
+from pymongo import MongoClient
+from bson.objectid import ObjectId
+from passlib.hash import sha512_crypt
+from leaderboard import LeaderboardController
+from email_bot import EmailBot
+from tournament import TournamentController
+from code_generator import CodeGenerator
+from teams import TeamController
+from global_state import GlobalController
+from storage import StorageAPI
+from challenge import ChallengeController
+from consumer import Consumer
+
 # import re
-import _thread
 
 
 '''
@@ -34,15 +33,12 @@ PROD_FLAG = False
 app = Flask(__name__, static_folder='../build')
 app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
 client = MongoClient(app.config["MONGO_URI"])
-database = None
+PROD_FLAG = False
 if PROD_FLAG:
-    # app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
-    #     '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
     database = client.deerhunt_prod
 else:
-    # app.run(host='0.0.0.0', port=8080, threaded=True)
     database = client.deerhunt_db
-board = Leaderboard(database.leaderboard)
+#board = Leaderboard(database.leaderboard)
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
 
@@ -60,127 +56,207 @@ build_folder = f'{prefix}/build'
 template_folder = f'{prefix}/template'
 server_folder = f'{prefix}/server'
 
-should_display_leaderboards = False
-submitting = {}
+should_display_leaderboards = True
+can_submit = True
+submitting = {} # dict looks like: {'some team name': }
+
+#Creates and runs the consumer thread for tournaments
+consumer = Consumer()
+consumer_thread = threading.Thread(target=consumer.run)
+consumer_thread.daemon = True
+consumer_thread.start()
+
+# tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
+# t1 = TournamentController(client, database)
+# t1.daemon = True
+# t1.start()
+# test = ['jasmine', 'kyrel', 'peter', 'jarvis', 'jack', 'raze', 'bufflin', 'dell', 'edmund', 'sova',
+#         'jasmine2', 'kyrel2', 'peter2', 'jarvis2', 'jack2', 'raze2', 'bufflin2', 'dell2', 'edmund2', 'sova2',
+#         'jasmine3', 'kyrel3', 'peter3', 'jarvis3', 'jack3', 'raze3', 'bufflin3', 'dell3', 'edmund3', 'sova3',
+#         'jasmine4', 'kyrel4', 'peter4', 'jarvis4', 'jack4', 'raze4', 'bufflin4', 'dell4', 'edmund4']
+        # 'jasmine5', 'kyrel5', 'peter5', 'jarvis5', 'jack5', 'raze5', 'bufflin5', 'dell5', 'edmund5', 'sova5',
+        # 'jasmine6', 'kyrel6', 'peter6', 'jarvis6', 'jack6', 'raze6', 'bufflin6', 'dell6', 'edmund6', 'sova6',
+        # 'jasmine7', 'kyrel7', 'peter7', 'jarvis7', 'jack7', 'raze7', 'bufflin7', 'dell7', 'edmund7', 'sova7',
+        # 'jasmine8', 'kyrel8', 'peter8', 'jarvis8', 'jack8', 'raze8', 'bufflin8', 'dell8', 'edmund8', 'sova8']
 
 ##
 # API routes
 ##
 
-# TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use.
+
+## Leaderboard and rank related routes.
 
 
 @app.route('/api/submit', methods=['POST'])
 def submit():
+    '''
+    Instanstly saves a team's submission to /deerhunt/submissions/someTeamname/
+    Also removes zip after extracting.
+    '''
     login_guard()
-
     if not can_submit:
         abort(403)
-
-    # if session['username'] not in submitting:
-    #     submitting[session['username']] = False
-    # elif submitting[session['username']]:
-    #     abort(409)
-
-    # submitting[session['username']] = True
-
     if 'upload' not in request.files:
         abort(400)
-
-    saveSubmission()
+    print(request.files)
+    with TeamController(client, database) as team_api:
+        team_document = team_api.get_user_team(session["username"])
+        if team_document is None:
+            abort(400)
+    with StorageAPI(client, database) as s:
+        if not s.save(request.files['upload'], team_document['_id']):
+            if s.error == s.FAILED_EMPTY_FILE:
+                return 'Cannot submit nothing :/'
+            elif s.error == s.FAILED_NEED_MORE_TIME:
+                return "Cannot submit within 5 minutes of last submission"
+            elif s.error == s.FAILED_UPDATE_SUBMIT_TIME:
+                abort(400)
 
     return "Zip submitted! Thanks"
 
-    # try:
-    #     position = int(request.form['position']) - 1
-    # except Exception:
-    #     abort(400)
 
-    # if position < 0 or position > 9:
-    #     abort(400)
-
-    # try:
-    #     result = run_match(position)
-    # except Exception as e:
-    #     database.errors.insert_one({'message': str(e), 'trace': traceback.format_exc(),'time': datetime.utcnow()})
-
-    #     if board.is_locked(position):
-    #         board.release(position)
-
-    #     abort(500)
-    # finally:
-    #     submitting[session['username']] = False
-
-
-'''
-def saveSubmission():
-    if session['username'] in submitting:
-        shutil.rmtree(submitting[session['username']])
-    submit_folder = f'{session["username"]}-{time.time()}'
-    submit_path = f'{submissions_folder}/{submit_folder}'
-    request.files['upload'].save(f'{submit_path}.zip')
-    submitting[session['username']] = submit_path
-    try:
-        with ZipFile(f'{submit_path}.zip', 'r') as z:
-            z.extractall(submit_path)
-    except BadZipFile:
+@app.route('/api/getqueue', methods=['GET'])
+def get_queue():
+    login_guard()
+    sorted_queue = []
+    result = database.submission_queue.find().sort('modified', 1)
+    if result is None:
         abort(400)
-    os.remove(f'{submit_path}.zip')
+    for match in result:
+        challenger = database.teams.find_one({"_id": match['challenger_id']})
+        defender = database.teams.find_one({"_id": match['defender_id']})
+        temp = {}
+        temp['challenger'] = challenger['displayName']
+        temp['defender'] = defender['displayName']
+        sorted_queue.append(temp)
+    print(sorted_queue)
+    return jsonify(sorted_queue)
+
+@app.route('/api/canchallenge', methods=['GET'])
+def can_challenge():
+    """ Checks if the user is allowed to perform a challenge
+    """
+    login_guard()
+    user = session['username']
+    if not request.is_json:
+        abort(400)
+    data = request.get_json()
+    if "target_rank" not in data or data["target_rank"] is not int or data["target_rank"] <= 0:
+        abort(400)
+    target_rank = data["target_rank"]
+    with ChallengeController(client, database) as challenge_api:
+        if not challenge_api.can_challenge(user, target_rank):
+            abort(400)
+    return 
+
+@app.route('/api/challenge', methods=['POST'])
+def challenge():
+    """ Allows the currently logged in user to challenge another user's rank.
+        Follows the implication that if ranks are [A,B,C], if C beats A, ranks
+        become [C,A,B]. Else, ranks are [A,B,C]
+    """
+    login_guard()
+    user = session['username']
+    if not request.is_json:
+        abort(400)
+    data = request.get_json()
+    if "target_rank" not in data or not isinstance(data["target_rank"], int) or data["target_rank"] < 0:
+        abort(400)
+    target_rank = data["target_rank"]
+    with ChallengeController(client, database) as challenge_api:
+        if not challenge_api.queue_challenge(user, target_rank):
+            abort(400,challenge_api.error)
+    return "OK"
+
+@app.route('/api/scrimmage', methods=['POST'])
+def scrimmage():
+    ''' Runs a match against a player at a given position in the leaderboard without
+    changing ranks.
+    '''
+    login_guard()
+    user = session['username']
+    if not request.is_json:
+        abort(400)
+    data = request.get_json()
+    if "target_rank" not in data or not isinstance(data["target_rank"], int) or data["target_rank"] < 0:
+        abort(400)
+    target_rank = data["target_rank"]
+    with ChallengeController(client, database) as challenge_api:
+        if not challenge_api.do_scrimmage(user, target_rank):
+            abort(400,challenge_api.error)
+    return "OK"
+
+@app.route('/api/getmatch', methods=['GET', 'POST'])
+def getmatch():
+    login_guard()
+
+    if not request.is_json:
+        abort(400)
+
+    body = request.get_json()
+
+    if 'game_id' not in body:
+        abort(400)
+
+    result = database.logs.find_one({'_id': ObjectId(body['game_id'])})
+
+    if result is None:
+        abort(400)
+    return jsonify(result['data']['maps'])
 
 
+@app.route("/api/getteamid")
+def getteamIDs():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team_document = team_api.get_user_team(session["username"])
+        if team_document is None:
+            abort(400)
+    team_id = ObjectId(team_document['_id'])
+    ret = []
+    result = database.logs.find({"team_id": team_id})
+    if result is None:
+        abort(400)
+    for log in result:
+        ret.append(str(log["_id"]))
+    return jsonify(ret)
 
-def run_match(position):
-    leader = board.acquire(position)
-    leader_path = f'{submissions_folder}/{leader}'
 
-    if leader is None:
-        board.replace(position, submit_folder)
-        board.save('default')
-        return 'Victory by default'
+@app.route('/api/rank', methods=['GET'])
+def getrank():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team = team_api.get_user_team(session["username"])
+    if not team:
+        abort(403)
+    with LeaderboardController(client, database) as leaderboard_api:
+        leaderboard = leaderboard_api.get_current_leaderboard()
+        return {"rank":LeaderboardController.get_team_rank(leaderboard, team["name"])}
+    abort(500)
 
-    uid = uuid.uuid4().hex
-    build_path = f'{build_folder}/{uid}'
+@app.route('/api/leaderboard', methods=['GET'])
+def get_current_leaderboard():
+    ''' Gets the current leaderboard's state'''
+    login_guard()
 
-    shutil.copytree(template_folder, f'{build_path}/')
-    copy_dir_contents(leader_path, f'{build_path}/p1')
-    copy_dir_contents(submit_path, f'{build_path}/p2')
-    shutil.copytree(server_folder, f'{build_path}/server')
+    with GlobalController(client, database) as global_api:
+        if not global_api.get_leaderboard_state() or not global_api.ret_val:
+            abort(403)
 
-    img = dock.images.build(path=build_path, tag=uid, rm=True, network_mode=None)
-    container = dock.containers.run(uid, detach=True, auto_remove=True, network_mode=None,
-                                    cpu_count=1, mem_limit='512m')
+    with LeaderboardController(client,database) as leaderboard_api:
+        leaderboard = leaderboard_api.get_current_leaderboard()
+    if leaderboard is None:
+        abort(500)
 
-    lines = []
-    maps = []
-    errors = []
-
-    for line in container.logs(stream=True):
-        l = line.decode().strip()
-        if 'ERROR:' == l[0:6]:
-            errors.append(l[6:])
-        elif 'MAP:' == l[0:4]:
-            maps.append(l[4:])
-        else:
-            lines.append(l)
-
-    lines = lines[3:]
-
-    if 'Winner: p2' == lines[-1]:
-        board.replace(position, submit_folder)
-        board.save(uid)
-
-    board.release(position)
-
-    game_id = database.logs.insert_one({'lines': lines,
-                                        'maps': maps,
-                                        'errors': errors,
-                                        'build_id': uid,
-                                        'defender': leader,
-                                        'challenger': submit_folder,
-                                        'submitter': session['username']}).inserted_id
-
-    return jsonify(game_id=str(game_id), message=lines[-1])
-'''
+    lst = []
+    teams = leaderboard["teams"]
+    for team_name in teams:
+        with TeamController(client,database) as team_api:
+            team_doc = team_api.get_team(team_name)
+        lst.append({'name': team_name,
+            'display_name': team_doc["displayName"]
+        })
+    return jsonify(lst)
 
 # Teams
 # Teams assigning api calls
@@ -192,13 +268,13 @@ def send_invite():
     login_guard()
     username = session["username"]
     if not request.is_json:
-        abort(400)
+        abort(403)
     body = request.get_json()
     if not "recipient" in body:
-        abort(400)
+        abort(403)
     recipient_doc = database.users.find_one({'username': body["recipient"]})
     if not recipient_doc:
-        abort(400)
+        abort(403)
     with TeamController(client, database) as team_api:
         status = team_api.send_invite(username, body["recipient"])
     if not status:
@@ -208,7 +284,7 @@ def send_invite():
 
 @app.route('/api/userinvites', methods=['GET'])
 def user_invites():
-    """Gets the list of team display names and team names that a user 
+    """Gets the list of team display names and team names that a user
         has been invited to.
     """
     login_guard()
@@ -239,6 +315,9 @@ def accept_invite():
 
 @app.route('/api/createteam', methods=['POST'])
 def create_team():
+    '''Creates a team if the team name is not taken, and the current logged-in
+        user is not on a team.
+    '''
     login_guard()
     if not request.is_json:
         abort(400)
@@ -256,6 +335,7 @@ def create_team():
 
 @app.route('/api/leaveteam', methods=['POST'])
 def leave_team():
+    ''' Removes the current user from their team.'''
     login_guard()
     with TeamController(client, database) as team_api:
         status = team_api.leave_team(session["username"])
@@ -267,6 +347,7 @@ def leave_team():
 
 @app.route('/api/getteam', methods=['GET'])
 def get_team():
+    ''' Gets the current user's team'''
     login_guard()
 
     with TeamController(client, database) as team_api:
@@ -284,6 +365,7 @@ def get_team():
 
 @app.route('/api/getteaminvites', methods=['GET'])
 def get_team_invites():
+    ''' Gets the invites sent out by the team.'''
     login_guard()
     with TeamController(client, database) as team_api:
         team = team_api.get_user_team(session["username"])
@@ -291,7 +373,6 @@ def get_team_invites():
         return {"invited_users": []}
     return {"invited_users": team.get("invites", [])}
 
-# Login and Registstration Routes
 
 @app.route('/api/reset', methods=['POST'])
 def reset_password():
@@ -320,27 +401,27 @@ def reset_password():
 
 @app.route('/api/login', methods=['POST'])
 def login():
-    u, p = safe_get_user_and_pass()
-    result = database.users.find_one({'username': u})
+    ''' Checks the users inputs against database to validate for login.'''
+    username, password = safe_get_user_and_pass()
+    result = database.users.find_one({'username': username})
     if result is None or 'password' not in result:
         abort(403)
 
-    if not sha512_crypt.verify(p, result['password']):
+    if not sha512_crypt.verify(password, result['password']):
         abort(403)
     if result['verified'] == 'False':
         abort(403)
 
     session['logged_in'] = True
-    session['username'] = u
-    submitting[session['username']] = False
+    session['username'] = username
+    submitting[session['username']] = ''
 
     return 'Login successful'
 
-# TODO: SYNCUPDATE-Extra work: Proper Variable naming.
-
-
+# TODO: Tech-Debt: Proper Variable naming.
 @app.route('/api/changepassword', methods=['GET', 'POST'])
-def changePassword():
+def change_password():
+    ''' Changes the current user's password.'''
     login_guard()
 
     cup, nep, cop = safe_get_passwords()
@@ -375,6 +456,7 @@ def ForgotPassword(random):
 
 @app.route('/verify/<code>')
 def verify_email(code: str):
+    '''Confirms a user's verification status based on their input.'''
     result = database.users.find_one({'code': code})
     if result is None:
         return "Invalid Verification Link."
@@ -383,6 +465,10 @@ def verify_email(code: str):
     time_delta = curr_time-reg_time
     if time_delta.seconds > 60*30:
         database.users.delete_one({"code": code})
+        database.errors.insert_one({"error": "Deleting user account upon re-verification.",
+                                    'time': datetime.utcnow(),
+                                    "severity": "low"
+                                    })
         return "Verification link has expired, Please recreate the account."
     query = {'code': code}
     newvalues = {'$set': {'verified': 'True'}}
@@ -392,6 +478,7 @@ def verify_email(code: str):
 
 @app.route('/api/register', methods=['POST'])
 def register():
+    ''' Registers a user via their username and password if the inputs are valid.'''
     u, p = safe_get_user_and_pass()
     u = u.lower()
     u = u.strip(" ")
@@ -408,64 +495,23 @@ def register():
             'password': sha512_crypt.encrypt(p),
             'code': code, 'time': str(datetime.now()),
             'verified': 'False'}
-    writeResult = database.users.update_one(
+    write_result = database.users.update_one(
         query,
         {"$setOnInsert": data},
         upsert=True)
-    if not writeResult.upserted_id:
+    if not write_result.upserted_id:
         abort(409)
-    msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
+    msg = '\n\nYour account has been successfully created. Please click the link below \
+        to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
         verification_domain+"/verify/"+code)
     email_status = EmailBot.sendmail(u, "BattleCode:Deerhunt Account Verification", msg)
     if not email_status:
         database.errors.insert_one({"error": "Email could not send, error ",
-                                    'time': datetime.utcnow()
+                                    'time': datetime.utcnow(),
+                                    "severity": "critical"
                                     })
         return abort(400)
     return 'Register successful'
-
-
-
-''' Safe For Upsert!!!
-'''
-
-
-@app.route('/api/getmatch', methods=['GET', 'POST'])
-def getmatch():
-    login_guard()
-
-    if not request.is_json:
-        abort(400)
-
-    body = request.get_json()
-
-    if 'game_id' not in body:
-        abort(400)
-
-    result = database.logs.find_one({'_id': ObjectId(body['game_id'])})
-
-    if result is None:
-        abort(400)
-
-    return jsonify(result['maps'])
-
-
-@app.route('/api/leaderboard', methods=['GET', 'POST'])
-def leaderboard():
-    login_guard()
-
-    if not should_display_leaderboards:
-        abort(403)
-
-    lst = []
-    for i in range(len(board.board)):
-        lst.append({
-            'name': board.board[i].split('-')[0],
-            'queue': board.queue_count[i]
-        })
-
-    return jsonify(lst)
-
 
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
@@ -476,10 +522,12 @@ def isloggedin():
 
 @app.route('/api/isadmin', methods=['GET', 'POST'])
 def isadmin():
+    """ Returns True iff a user is an admin."""
     return str(is_admin_check())
 
 @app.route('/api/initglobalstate', methods=['POST'])
 def initglobalstate():
+    """ Initializes global state for the app."""
     admin_guard()
     with GlobalController(client, database) as globals_api:
         if not globals_api.init_state():
@@ -628,17 +676,16 @@ def copy_dir_contents(src, dest):
 
 
 if __name__ == '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
     if PROD_FLAG:
-        app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
-            '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
-        # database = MongoClient(
-        #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
-        # database = PyMongo(app)
+        app.run(host='0.0.0.0', port=443) # The cert is included when gunicorn is called.
+
+        # app.run(host='0.0.0.0', port=443, ssl_context=(
+            # '/home/deerhuntadmin/letsencrypt/fullchain.pem', '/home/deerhuntadmin/letsencrypt/privkey.pem'))
+        # app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
+        #     '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
     else:
-        app.run(host='0.0.0.0', port=80, threaded=True, debug=True)
-        # database = MongoClient(
-        #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
-        # database = mongo.init_app(app)
-        # database = database.deerhunt_db
-        # print(database)
-    # board = Leaderboard(database.leaderboard)
+        app.run(host='0.0.0.0', port=8080, threaded=True, debug=True)
+        # app.run(host='0.0.0.0', port=8080, threaded=True, debug=True, ssl_context='adhoc')

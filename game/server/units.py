@@ -2,8 +2,8 @@
 MELEE_UNIT = 'melee'
 WORKER_UNIT = 'worker'
 #The cost to duplicate each unit
-MELEE_COST = 100
-WORKER_COST = 150
+MELEE_COST = 150
+WORKER_COST = 50
 #The cost to use stun and how many turns it last for
 STUN_COST = 50
 STUN_LENGTH = 2
