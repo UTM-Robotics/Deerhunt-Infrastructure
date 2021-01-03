@@ -426,6 +426,10 @@ def verify_email(code: str):
     time_delta = curr_time-reg_time
     if time_delta.seconds > 60*30:
         database.users.delete_one({"code": code})
+        database.errors.insert_one({"error": "Deleting user account upon re-verification.",
+                                    'time': datetime.utcnow(),
+                                    "severity": "low"
+                                    })
         return "Verification link has expired, Please recreate the account."
     query = {'code': code}
     newvalues = {'$set': {'verified': 'True'}}
@@ -461,14 +465,14 @@ def register():
     msg = '\n\nYour account has been successfully created. Please click the link below \
         to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
         verification_domain+"/verify/"+code)
-    email_status = EmailBot.sendmail(u, "Account Verification", msg)
+    email_status = EmailBot.sendmail(u, "BattleCode:Deerhunt Account Verification", msg)
     if not email_status:
         database.errors.insert_one({"error": "Email could not send, error ",
-                                    'time': datetime.utcnow()
+                                    'time': datetime.utcnow(),
+                                    "severity": "critical"
                                     })
         return abort(400)
     return 'Register successful'
-
 
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
