@@ -49,7 +49,6 @@ CORS(app)
 
 allowed_emails = ["@mail.utoronto.ca", "@utoronto.ca"]
 codeGenerator = CodeGenerator(64)
-verification_domain = 'localhost'
 
 
 prefix = '/deerhunt'
