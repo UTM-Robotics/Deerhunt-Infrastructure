@@ -140,7 +140,7 @@ def challenge():
     if not request.is_json:
         abort(400)
     data = request.get_json()
-    if "target_rank" not in data or data["target_rank"] is not int or data["target_rank"] <= 0:
+    if "target_rank" not in data or not isinstance(data["target_rank"], int) or data["target_rank"] <= 0:
         abort(400)
     target_rank = data["target_rank"]
     with ChallengeController(client, database) as challenge_api:
