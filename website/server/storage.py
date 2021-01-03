@@ -6,6 +6,7 @@ import shutil
 import traceback
 import datetime
 from pymongo import MongoClient
+from zipfile import ZipFile, BadZipFile
 
 
 class StorageAPI:
