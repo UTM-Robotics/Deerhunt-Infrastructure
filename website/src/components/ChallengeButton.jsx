@@ -10,7 +10,7 @@ class ChallengeButton extends React.Component {
         const requestData = JSON.stringify({
             "target_rank": this.props.rank,
         });
-
+        this.props.loadingCallback();
         $.ajax({
             url: '/api/challenge',
             type: 'POST',
@@ -23,7 +23,8 @@ class ChallengeButton extends React.Component {
             error: (err) => {
                 console.log(err);
                 this.props.errorCallback("fail_challenge");
-            }
+            },
+            timeout: 60000// sets timeout to 3 seconds,
         });
     }
     render() {

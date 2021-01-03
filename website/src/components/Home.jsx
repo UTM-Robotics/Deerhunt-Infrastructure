@@ -19,7 +19,7 @@ class Home extends React.Component {
         this.addCompeteError = this.addCompeteError.bind(this);
         this.reloadAllData = this.reloadAllData.bind(this);
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
-
+        this.addLoadingState = this.addLoadingState.bind(this);
     }
 
     componentDidMount() {
@@ -30,6 +30,12 @@ class Home extends React.Component {
         this.isLoggedIn();
     }
 
+    addLoadingState(){
+        this.setState({
+            errorMessage: "",
+            successMessage: "Your match is computing or in queue. May take 10-15 seconds or longer if ther is a queue."
+        });
+    }
     reloadAllData() {
         this.getLeaderboard();
         this.getRank();
@@ -59,7 +65,7 @@ class Home extends React.Component {
             }
         });*/
     }
-    gethasSubmitted() {
+    getHasSubmitted() {
          $.ajax({
              url: '/api/canchallenge',
              type: 'GET',
@@ -177,6 +183,7 @@ class Home extends React.Component {
                                         key < this.state.rank) && this.state.canCompete) &&
                                         <ChallengeButton
                                             rank={key}
+                                            loadingCallback={this.addLoadingState}
                                             errorCallback={this.addCompeteError}
                                             successCallback={this.addSuccessMessage}
                                             reloadCallback={this.reloadAllData}
@@ -187,6 +194,7 @@ class Home extends React.Component {
                                     {(key != this.state.rank && this.state.canCompete) &&
                                         <ScrimmageButton
                                             rank={key}
+                                            loadingCallback={this.addLoadingState}
                                             errorCallback={this.addCompeteError}
                                             successCallback={this.addSuccessMessage}
                                             reloadCallback={this.reloadAllData}
