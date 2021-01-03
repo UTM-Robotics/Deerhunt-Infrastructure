@@ -112,8 +112,8 @@ class GridFighters():
                 print("ERROR: Unit {} not enough resources to stun".format(k))
                 return False
             if self.get_matching_unit(x, y, v) is None or (v.len() < 0) or (v.len() > 2):
-            print('ERROR: Unit {} cannot stun there'.format(k))
-            return False
+                print('ERROR: Unit {} cannot stun there'.format(k))
+                return False
         elif isinstance(v, StasisMove) and (not player_state[k].can_duplicate(player_resources, v.unit_type)
                                             or not v.free_spot(x, y, self.all_units, self.grid)):
             print('ERROR: Unit {} cannot duplicate now'.format(k))
