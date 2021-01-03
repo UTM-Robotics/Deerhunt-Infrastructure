@@ -27,7 +27,11 @@ from consumer import Consumer
 '''
 Application Run Flags
 '''
+<<<<<<< HEAD
 PROD_FLAG = True
+=======
+PROD_FLAG = False
+>>>>>>> dev
 # PROD_FLAG = False
 
 '''Main wrapper for app creation'''
@@ -36,8 +40,10 @@ app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.nt
 client = MongoClient(app.config["MONGO_URI"])
 if PROD_FLAG:
     database = client.deerhunt_prod
+    verification_domain = 'mcss.utmrobotics.com'
 else:
     database = client.deerhunt_db
+    verification_domain = 'localhost:8080'
 #board = Leaderboard(database.leaderboard)
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
@@ -47,7 +53,6 @@ CORS(app)
 
 allowed_emails = ["@mail.utoronto.ca", "@utoronto.ca"]
 codeGenerator = CodeGenerator(64)
-verification_domain = 'https://mcss.utmrobotics.com'
 
 
 prefix = '/deerhunt'
@@ -374,7 +379,30 @@ def get_team_invites():
     return {"invited_users": team.get("invites", [])}
 
 
-# Login and Registstration Routes
+@app.route('/api/reset', methods=['POST'])
+def reset_password():
+    user = safe_get_only_username()
+    user = user.lower()
+    user = user.strip(" ")
+    result = database.users.find_one({'username': user})
+    if result is None:
+        abort(403)
+    code = codeGenerator.generate()
+    query = {'username': user}
+    newvalues = {'$set': {'code': code, 'time': str(datetime.now())}}
+    database.users.update_one(query, newvalues)
+    msg = '\n\nPlease click on the link below to reset your password.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
+        verification_domain+"/forgotpassword/"+code)
+    email_status = EmailBot.sendmail(user, "BattleCode:Deerhunt Password Reset", msg)
+    if not email_status:
+        database.errors.insert_one({"error": "Email could not send, error ",
+                                    'time': datetime.utcnow()
+                                    })
+        abort(400)
+    return 'Reset link sent!'
+
+
+
 
 @app.route('/api/login', methods=['POST'])
 def login():
@@ -416,6 +444,20 @@ def change_password():
 
     return 'Change successful'
 
+@app.route('/api/forgotpassword/<random>', methods=['GET', 'POST'])
+def ForgotPassword(random):
+    nep, cop, code= safe_get_reset_passwords()
+    result = database.users.find_one({'code' : code})
+    if result is None:
+        abort(403)
+    if nep != cop:
+        abort(400)
+    query = {'code': code}
+    newvalues = {'$set': {'password': sha512_crypt.encrypt(nep)}}
+
+    database.users.update_one(query, newvalues)
+
+    return 'Reset successful'
 
 @app.route('/verify/<code>')
 def verify_email(code: str):
@@ -566,6 +608,11 @@ def index(path):
 # Helpers
 ##
 
+def safe_get_only_username():
+    if not request.is_json:
+        abort(400)
+    body = request.get_json()
+    return body['username']
 
 def safe_get_user_and_pass():
     if not request.is_json:
@@ -574,6 +621,15 @@ def safe_get_user_and_pass():
     body = request.get_json()
 
     return body['username'], body['password']
+
+def safe_get_reset_passwords():
+
+    if not request.is_json:
+        return
+
+    body = request.get_json()
+
+    return body['newPassword'], body['confirmPassword'], body['code']
 
 
 def safe_get_passwords():
