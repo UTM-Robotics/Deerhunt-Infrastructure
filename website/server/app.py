@@ -388,7 +388,7 @@ def reset_password():
     newvalues = {'$set': {'code': code, 'time': str(datetime.now())}}
     database.users.update_one(query, newvalues)
     msg = '\n\nPlease click on the link below to reset your password.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
-        verification_domain+"/forgotpassword/"+code)
+        "https://"+verification_domain+"/forgotpassword/"+code)
     email_status = EmailBot.sendmail(user, "BattleCode:Deerhunt Password Reset", msg)
     if not email_status:
         database.errors.insert_one({"error": "Email could not send, error ",
