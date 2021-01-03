@@ -28,7 +28,7 @@ class Consumer:
                 match_string = self.create_match(match)
                 if match_string is not None and not isinstance(match_string, int):
                     result = GameController.run_game(self.create_match(match))
-                    self.database.logs.insert_one({"winner": result[1], "data": result[0]})
+                    self.database.logs.insert_one({"winner": result[1], "data": result[0], "team_id": self.challenger['_id']})
                     self.update_leaderboard(result)
                 #Removes the match from the submission queue
     
