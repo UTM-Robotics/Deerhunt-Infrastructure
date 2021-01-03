@@ -16,6 +16,8 @@ class Home extends React.Component {
         };
         this.competeError = this.competeError.bind(this);
         this.reloadAllData = this.reloadAllData.bind(this);
+        this.addSuccessMessage = this.addSuccessMessage.bind(this);
+
     }
 
     componentDidMount() {
@@ -66,6 +68,14 @@ class Home extends React.Component {
         }
         this.setState({ errorMessage: message })
     }
+
+    addSuccessMessage(type) {
+        this.setState({
+            errorMessage: "",
+            successMessage: "Success"
+        });
+    }
+
     getLeaderboard() {
         $.ajax({
             url: '/api/leaderboard',
@@ -130,11 +140,27 @@ class Home extends React.Component {
                             <tr key={key}>
                                 <td className="num">{key + 1}</td>
                                 <td className="item">{item.name}</td>
-                                <td className="item">{(this.state.rank != -1 &&
-                                    key < this.state.rank && this.state.canCompete) &&
-                                    <ChallengeButton team={item.name} />}</td>
-                                <td className="item">{(key != this.state.rank && this.state.canCompete) &&
-                                 <ScrimmageButton team={item.name} errorCallback={this.competeError} />}</td>
+                                <td className="item">
+                                    {(this.state.rank != -1 &&
+                                        key < this.state.rank && this.state.canCompete) &&
+                                        <ChallengeButton
+                                            rank={key}
+                                            errorCallback={this.competeError}
+                                            successCallback={this.addSuccessMessage}
+                                            reloadCallback={this.reloadAllData}
+                                        />
+                                    }
+                                </td>
+                                <td className="item">
+                                    {(key != this.state.rank && this.state.canCompete) &&
+                                        <ScrimmageButton
+                                            rank={key}
+                                            errorCallback={this.competeError}
+                                            successCallback={this.addSuccessMessage}
+                                            reloadCallback={this.reloadAllData}
+                                        />
+                                    }
+                                </td>
                             </tr>
                         ))}
                     </tbody>

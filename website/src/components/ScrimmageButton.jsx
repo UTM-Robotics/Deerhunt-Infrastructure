@@ -7,7 +7,7 @@ class ScrimmageButton extends React.Component {
 
     scrimmage() {
         const requestData = JSON.stringify({
-            "target_team": this.props.team,
+            "target_rank": this.props.rank,
         });
 
         $.ajax({
