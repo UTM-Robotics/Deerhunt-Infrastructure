@@ -28,16 +28,18 @@ from consumer import Consumer
 Application Run Flags
 '''
 PROD_FLAG = False
+# PROD_FLAG = False
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
 app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
 client = MongoClient(app.config["MONGO_URI"])
-PROD_FLAG = False
 if PROD_FLAG:
     database = client.deerhunt_prod
+    verification_domain = 'mcss.utmrobotics.com'
 else:
     database = client.deerhunt_db
+    verification_domain = 'localhost:8080'
 #board = Leaderboard(database.leaderboard)
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
 CORS(app)
@@ -47,7 +49,7 @@ CORS(app)
 
 allowed_emails = ["@mail.utoronto.ca", "@utoronto.ca"]
 codeGenerator = CodeGenerator(64)
-verification_domain = 'home.parthjpatel.com'
+verification_domain = 'localhost'
 
 
 prefix = '/deerhunt'
