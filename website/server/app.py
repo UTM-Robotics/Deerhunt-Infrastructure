@@ -115,8 +115,8 @@ def submit():
 
 @app.route('/api/getqueue', methods=['GET'])
 def get_queue():
-    # login_guard()
-    # user = session['username']
+    login_guard()
+    user = session['username']
     sorted_queue = []
     for match in database.submission_queue.find().sort('modified', 1):
         challenger = database.teams.find_one({"_id": match['challenger_id']})
