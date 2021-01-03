@@ -4,7 +4,7 @@ from game_runner import GameController
 from storage import StorageAPI
 
 DATABASE_URL = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
-PROD_FLAG = False
+PROD_FLAG = True
 
 class Consumer:
     '''Consumer retrieves matches from the submission queue, runs them and updates the leaderboard '''
