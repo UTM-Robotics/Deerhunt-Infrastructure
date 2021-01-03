@@ -114,5 +114,6 @@ class StorageAPI:
         try:
             with ZipFile(f'{src}.zip', 'r') as zip_file:
                 zip_file.extractall(dest)
+                return True
         except BadZipFile:
             return False
