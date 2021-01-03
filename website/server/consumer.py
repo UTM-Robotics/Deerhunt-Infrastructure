@@ -32,7 +32,7 @@ class Consumer:
                 #Removes the match from the submission queue
                 self.submission_queue.delete_one({'_id': match['_id']})
     
-    def create_match(self, match: dict):
+    def create_match(self, match: dict) -> str:
         '''create_match creates a new match given the team id's and returns the result '''
         #Gets the 2 players from db object
         self.challenger = self.teams.find_one({"_id": match['challenger_id']})
@@ -60,6 +60,7 @@ class Consumer:
             if v == self.challenger['name']:
                 attacking_rank = k
 
+        #Adds the defender to the bottom of the leaderboard if it is their first submission
         if defending_rank == -1:
             new_leaderboard = current_leaderboard["teams"]
             new_leaderboard.append(self.defender["name"])

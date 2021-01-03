@@ -44,45 +44,76 @@ class ChallengeController:
         ''' Ends the transaction for an object with an activated session'''
         self.session.commit_transaction()
 
-    def can_challenge(self, team, target_rank):
+    def can_challenge(self, username, defender_rank, is_scrimmage=False) -> tuple:
         '''Returns whether or not the challenge can be performed by the user to another team.'''
-        return True
-
-    def queue_challenge(self, username, target_rank):
-        '''Adds the team to the challenge queue against team at the target rank'''
-        # get user team
-        self.start_transaction()
+        #Gets users team from database
         team_api = TeamController(self.client, self.database, input_session=self.session)
         user_team = team_api.get_user_team(username)
         if not user_team:
             self.error = self.NOT_ON_TEAM_ERROR
-            return False
+            return None
+
+        #Confirms user hasnt challenged or scrimmaged within 5 minutes
+        timer_string = "scrimmage_time" if is_scrimmage else "challenge_time"
         curr_time = datetime.now()
-        if "challenge_time" in user_team:
+        if timer_string in user_team:
             previous_scrimmage_time = datetime.strptime(user_team['time'],\
                  '%Y-%m-%d %H:%M:%S.%f')
             time_delta = curr_time-previous_scrimmage_time
             if time_delta.seconds > 60*5:
                 self.error = self.TIMEOUT_ERROR
-                return False
+                return None
+        
+        #Updates the modified time to now
         time_update_query = {"_id": user_team["_id"]}
-        time_update_data = {"$set": {"challenge_time":str(curr_time)}}
+        time_update_data = {"$set": {timer_string:str(curr_time)}}
         self.database.teams.update_one(time_update_query,\
             time_update_data, session=self.session)
-        # get team at target rank
+
+        #Gets the current leaderboard from database
         current_leaderboard = self.database.leaderboards.find_one({"type": "current"},\
              session=self.session)
-        if len(current_leaderboard["teams"]) < target_rank:
+        if len(current_leaderboard["teams"]) < defender_rank:
             self.error = self.RANK_OUT_OF_BOUNDS_ERROR
-            return False
-        if not self.can_challenge(user_team, target_rank):
-            self.error = self.INVALID_TEAM_ERROR
-            return False
-        # Cannot compete
+            return None
 
+        #Gets the defending team
+        defending_team = team_api.get_team(current_leaderboard["teams"][defender_rank])
+        if not defending_team:
+            self.error = self.INVALID_TEAM_ERROR
+            return None
+        if defending_team["_id"] == user_team["_id"]:
+            self.error = self.INVALID_TEAM_ERROR
+            return None
+
+        #If this is a leaderboard battle make sure the attacker is a lower rank than the defender_rank
+        if not is_scrimmage:
+            try:
+                attacking_rank = current_leaderboard["teams"].index(user_team["name"])
+                if attacking_rank > defender_rank:
+                    self.error = self.INVALID_TEAM_ERROR
+                    return None
+            except ValueError:
+                pass
+
+        return (user_team, defending_team)
+
+    def queue_challenge(self, username, target_rank):
+        '''Adds the team to the challenge queue against team at the target rank'''
+        self.start_transaction()
+        #Confirms that the user can face the given team
+        teams = self.can_challenge(username, target_rank)
+        if teams is None:
+            return False
+        #Adds the teams to the submission queue
+        submission = {
+            "challenger_id": teams[0]["_id"],
+            "defender_id": teams[1]["_id"],
+            "modified": datetime.now()
+        }
+        self.database.submission_queue.insert_one(submission, session=self.session)
         self.end_transaction()
 
-        #TODO: add team to challenge queue.
         return True
 
     def do_scrimmage(self, username, target_rank):
@@ -90,46 +121,18 @@ class ChallengeController:
             Returns the game_id of the scrimmage.
         '''
         self.start_transaction()
-        team_api = TeamController(self.client, self.database, input_session=self.session)
-        user_team = team_api.get_user_team(username)
-        if not user_team:
-            self.error = self.NOT_ON_TEAM_ERROR
+        #Confirms that the user can challenge the given team
+        teams = self.can_challenge(username, target_rank, is_scrimmage=True)
+        if teams is None:
             return False
-        # Update scrimmage_time
-        curr_time = datetime.now()
-        if "scrimmage_time" in user_team:
-            previous_scrimmage_time = datetime.strptime(user_team['time'],\
-                 '%Y-%m-%d %H:%M:%S.%f')
-            time_delta = curr_time-previous_scrimmage_time
-            if time_delta.seconds > 60*5:
-                self.error = self.TIMEOUT_ERROR
-                return False
-        time_update_query = {"_id": user_team["_id"]}
-        time_update_data = {"$set": {"scrimmage_time":str(curr_time)}}
-        self.database.teams.update_one(time_update_query,\
-            time_update_data, session=self.session)
-        # get team at target rank
-        current_leaderboard = self.database.leaderboards.find_one({"type": "current"},\
-             session=self.session)
-        if len(current_leaderboard["teams"]) < target_rank:
-            self.error = self.RANK_OUT_OF_BOUNDS_ERROR
-            return False
-        target_team_name = current_leaderboard["team"][target_rank]
-        target_team = team_api.get_team(target_team_name)
-        # Cannot compete
-        if not target_team:
-            self.error = self.INVALID_TEAM_ERROR
-            return False
-        if target_team["name"] == user_team["name"]:
-            self.error = self.SAME_TEAM_ERROR
-            return False
+        user_team, target_team = teams[0], teams[1]
         self.end_transaction()
-        # prep match container
+        #Prepares the files to run the match
         container_path = StorageAPI.prep_match_container(\
             user_team["_id"],target_team["_id"])
         if container_path is int:
             return False
-        # run match
+        #Runs the match and returns the results
         game_result = GameController.run_game(container_path)
         match_data = game_result[0]
         match_data["defender"] = target_team["name"]
