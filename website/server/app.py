@@ -10,7 +10,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from passlib.hash import sha512_crypt
-from leaderboard import Leaderboard
+from leaderboard import LeaderboardController
 from email_bot import EmailBot
 from tournament import TournamentController
 from code_generator import CodeGenerator
@@ -79,7 +79,6 @@ submitting = {} # dict looks like: {'some team name': }
 ## Leaderboard and rank related routes.
 
 
-# TODO: SYNCUPDATE: Complete Reconfiguration of function before prod use.
 @app.route('/api/submit', methods=['POST'])
 def submit():
     '''
@@ -105,9 +104,9 @@ def submit():
             elif s.error == s.FAILED_UPDATE_SUBMIT_TIME:
                 abort(400)
 
-    return "Zip submitted! Thanks"    
-    
-    
+    return "Zip submitted! Thanks"
+
+
     # request.files['upload'].save(f'{submit_path}.zip')
 
     # user_file = database.users.find_one({"username": session["username"]}, session=session)
@@ -167,18 +166,23 @@ def challenge():
         become [C,A,B]. Else, ranks are [A,B,C]
     """
     login_guard()
-    challenger = session['username']
+    user = session['username']
     if not request.is_json:
         abort(400)
-    defender = request.get_json() # defender should be the team name that is being challenged.
-    print(defender)
-    with TournamentController(client, database, challenger) as battle:
-        can_battle = battle.init_challenge(defender)
-        if can_battle:
-            result = battle.run_battle()
+    data = request.get_json()
+    if "target_rank" not in data or data["target_rank"] is not int or data["target_rank"] <= 0:
+        abort(400)
+    target_rank = data["target_rank"]
+    with ChallengeController(client, database) as challenge_api:
+        if not challenge_api.queue_challenge(user, target_rank):
+            abort(400)
+    return str(challenge_api.ret_val)
 
 @app.route('/api/scrimmage', methods=['POST'])
 def scrimmage():
+    ''' Runs a match against a player at a given position in the leaderboard without 
+    changing ranks.
+    '''
     login_guard()
     user = session['username']
     if not request.is_json:
@@ -212,18 +216,27 @@ def getmatch():
     return jsonify(result['maps'])
 
 
-@app.route('/api/leaderboard', methods=['GET', 'POST'])
-def leaderboard():
+@app.route('/api/leaderboard', methods=['GET'])
+def get_currrent_leaderboard():
+    ''' Gets the current leaderboard's state'''
     login_guard()
 
-    if not should_display_leaderboards:
-        abort(403)
+    with GlobalController(client, database) as global_api:
+        if not global_api.get_leaderboard_state() or not global_api.ret_val:
+            abort(400)
+
+    with LeaderboardController(client,database) as leaderboard_api:
+        leaderboard = leaderboard_api.get_current_leaderboard()
+    print("Leaderboard",leaderboard)
+    if leaderboard is None:
+        
+        abort(400)
 
     lst = []
-    for i in range(len(board.board)):
-        lst.append({
-            'name': board.board[i].split('-')[0],
-            'queue': board.queue_count[i]
+    teams = leaderboard["teams"]
+    for team in teams:
+        lst.append({'name': team,
+            'queue':[]
         })
 
     return jsonify(lst)
@@ -389,6 +402,7 @@ def change_password():
 
 @app.route('/verify/<code>')
 def verify_email(code: str):
+    '''Confirms a user's verification status based on their input.'''
     result = database.users.find_one({'code': code})
     if result is None:
         return "Invalid Verification Link."
@@ -429,7 +443,8 @@ def register():
         upsert=True)
     if not write_result.upserted_id:
         abort(409)
-    msg = '\n\nYour account has been successfully created. Please click the link below to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
+    msg = '\n\nYour account has been successfully created. Please click the link below \
+        to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
         verification_domain+"/verify/"+code)
     email_status = EmailBot.sendmail(u, "Account Verification", msg)
     if not email_status:
@@ -467,6 +482,7 @@ def leaderboardtoggle():
         with GlobalController(client, database) as globals_api:
             if not globals_api.get_leaderboard_state():
                 abort(400)
+            print(globals_api.ret_val)
         return str(globals_api.ret_val)
     admin_guard()
 
