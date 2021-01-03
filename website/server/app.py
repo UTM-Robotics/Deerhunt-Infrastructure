@@ -116,9 +116,11 @@ def submit():
 @app.route('/api/getqueue', methods=['GET'])
 def get_queue():
     login_guard()
-    user = session['username']
     sorted_queue = []
-    for match in database.submission_queue.find().sort('modified', 1):
+    result = database.submission_queue.find().sort('modified', 1)
+    if result is None:
+        abort(400)
+    for match in result:
         challenger = database.teams.find_one({"_id": match['challenger_id']})
         defender = database.teams.find_one({"_id": match['defender_id']})
         temp = {}
@@ -199,6 +201,24 @@ def getmatch():
     if result is None:
         abort(400)
     return jsonify(result['data']['maps'])
+
+
+@app.route("/api/getteamid")
+def getteamIDs():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team_document = team_api.get_user_team(session["username"])
+        if team_document is None:
+            abort(400)
+    team_id = ObjectId(team_document['_id'])
+    ret = []
+    result = database.logs.find({"team_id": team_id})
+    if result is None:
+        abort(400)
+    for log in result:
+        ret.append(str(log["_id"]))
+    return jsonify(ret)
+
 
 @app.route('/api/rank', methods=['GET'])
 def getrank():

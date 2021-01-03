@@ -2,7 +2,7 @@ import React from 'react';
 import $ from 'jquery';
 import ReceivedInviteCard from "./ReceivedInviteCard";
 import SentInviteCard from "./SentInviteCard";
-
+import GameIDCard from "./GameIDCard";
 class Teams extends React.Component {
 
     constructor() {
@@ -17,6 +17,7 @@ class Teams extends React.Component {
             canInvite: false,
             invites: {},
             invitedUser: "",
+            team_games: [],
         };
         this.reloadAllData = this.reloadAllData.bind(this);
     }
@@ -29,6 +30,7 @@ class Teams extends React.Component {
     reloadAllData() {
         this.loadTeam();
         this.loadReceivedInvites();
+        this.loadTeamGames();
     }
 
     loadTeam() {
@@ -37,7 +39,6 @@ class Teams extends React.Component {
             type: 'GET',
             dataType: 'JSON',
             success: (responseData) => {
-                console.log("Team Received:", responseData);
                 if (responseData) {
                     this.setState({
                         team: responseData['name'] || "",
@@ -56,14 +57,24 @@ class Teams extends React.Component {
             type: 'GET',
             dataType: 'JSON',
             success: (responseData) => {
-                console.log(responseData);
                 if (responseData) {
                     this.setState({
                         invites: responseData
                     });
                 }
-                else {
-
+            }
+        });
+    }
+    loadTeamGames() {
+        $.ajax({
+            url: '/api/teamgames',
+            type: 'GET',
+            dataType: 'JSON',
+            success: (responseData) => {
+                if (responseData) {
+                    this.setState({
+                        team_games: responseData
+                    });
                 }
             }
         });
@@ -195,7 +206,9 @@ class Teams extends React.Component {
             }
         });
     }
-
+    getGameCard(id){
+        return (<GameIDCard gameID={id}/>);
+    }
     render() {
         var invites = this.state.invites;
         if (this.state.team === "") {
@@ -224,7 +237,6 @@ class Teams extends React.Component {
                     {inviteCards}
                 </div>);
         }
-        console.log(this.state.teammates);
         var usersArray = this.state.teammates.map(
             teammate_name => (<p>{teammate_name}</p>)
         );
@@ -236,6 +248,13 @@ class Teams extends React.Component {
         if (cardsArray.length == 0) {
             cardsArray = (<p> No users invited!</p>);
         }
+        var gameCards = this.state.team_games.map(item=>this.getGameCard(item));
+
+        if (this.state.team_games.length == 0){
+            gameCards = (<p> No games logged!</p>);
+        }
+
+        console.log(this.state.team_games);
         return (
             <div className="on-team-container">
                 <h1>Team name: {this.state.team_display}</h1>
@@ -246,6 +265,8 @@ class Teams extends React.Component {
                     <div className="send-invite-button" onClick={this.sendInvite.bind(this)}>Send Invite</div>
                 </form>
                 {cardsArray}
+                <h3>History</h3>
+                {gameCards}
             </div>);
     }
 }
