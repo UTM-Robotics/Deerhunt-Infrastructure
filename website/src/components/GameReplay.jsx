@@ -54,11 +54,14 @@ class Replay extends React.Component {
             contentType: 'application/json',
             success: (responseData) => {
                 var json_list = responseData.map(x => JSON.parse(x));
+                var moves = json_list.map(x => JSON.parse(x.map))
+                var p1_resources = json_list.map(x => x.p1_resources)
+                var p2_resource = json_list.map(x => x.p2_resources)
                 this.setState({
                     display: true,
-                    moves: json_list.map(x => JSON.parse(x.map)),
-                    p1_resources: json_list.map(x => x.p1_resources),
-                    p2_resources: json_list.map(x => x.p2_resources)
+                    moves: moves,
+                    p1_resources: p1_resources,
+                    p2_resources: p2_resource
                 });
             },
             error: () => {

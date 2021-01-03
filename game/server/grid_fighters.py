@@ -107,7 +107,11 @@ class GridFighters():
         elif isinstance(v, AttackMove) and (self.get_matching_unit(x, y, v) is None or v.len() < 0 or v.len() > 1):
             print('ERROR: Unit {} cannot attack there'.format(k))
             return False
-        elif isinstance(v, StunMove) and (not player_state[k].can_stun(player_resources) or self.get_matching_unit(x, y, v) is None or v.len() < 0 or v.len() > 2):
+        elif isinstance(v, StunMove):
+            if not player_state[k].can_stun(player_resources):
+                print("ERROR: Unit {} not enough resources to stun".format(k))
+                return False
+            if self.get_matching_unit(x, y, v) is None or (v.len() < 0) or (v.len() > 2):
             print('ERROR: Unit {} cannot stun there'.format(k))
             return False
         elif isinstance(v, StasisMove) and (not player_state[k].can_duplicate(player_resources, v.unit_type)
@@ -163,7 +167,7 @@ class GridFighters():
             rx, ry = v.get_relative_moves()
             uid = str(self.get_unit(x+rx, y+ry).id)
             try:
-                opponent_state[uid].stun()
+                self.currently_stunned[k] = (player_name, opponent_state[uid].stun())
                 self.resources[player_name] -= player_state[k].stun_cost
             except:
                 pass
