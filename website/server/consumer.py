@@ -10,8 +10,8 @@ class Consumer:
     '''Consumer retrieves matches from the submission queue, runs them and updates the leaderboard '''
     def __init__(self):
         self.client = MongoClient(DATABASE_URL)
-        self.database = client.deerhunt_db
-        self.session = client.start_session()
+        self.database = self.client.deerhunt_db
+        self.session = self.client.start_session()
         self.submission_queue = self.database['submission_queue']
         self.teams = self.database['teams']
         self.challenger = None
