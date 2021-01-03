@@ -1,10 +1,6 @@
 import traceback
 from datetime import datetime
-
 from pymongo import MongoClient
-
-
-
 
 class GlobalController:
     """

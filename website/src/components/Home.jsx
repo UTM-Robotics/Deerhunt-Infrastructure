@@ -33,7 +33,17 @@ class Home extends React.Component {
         this.getRank();
         this.getCanCompete();
     }
-
+    getCanCompete(){
+       /* $.ajax({
+            url: '/api/canchallenge',
+            type: 'GET',
+            success: (responseData) => {
+                this.setState({
+                    canCompete: responseData
+                });
+            }
+        });*/
+    }
     gethasSubmitted() {
          $.ajax({
              url: '/api/canchallenge',
