@@ -58,7 +58,7 @@ class MeleeUnit(Unit):
 
     def string(self):
         if self.is_stunned():
-            return "s"
+            return '"s"'
         return '"m"'
 
     def __repr__(self):
@@ -96,7 +96,7 @@ class WorkerUnit(Unit):
 
     def string(self):
         if self.is_stunned():
-            return "s"
+            return '"s"'
         return '"w"'
 
     def __repr__(self):
