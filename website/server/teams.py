@@ -59,7 +59,7 @@ class TeamController:
                 return False
             sender_team = self.get_user_team(sender_username)
             if "name" not in sender_team:
-                self.error = INVALID_TEAM_ERROR
+                self.error = self.INVALID_TEAM_ERROR
                 return False
             sender_team_name = sender_team["name"]
             # Add to list of invites on recipient user

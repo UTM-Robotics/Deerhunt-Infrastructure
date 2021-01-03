@@ -9,15 +9,17 @@ class Home extends React.Component {
         super();
         this.state = {
             loggedIn: false,
+            displayLeaderboard: false,
             canCompete: true,
             rank: -1,
             leaderboard: [],
-            displayLeaderboard: false
+            queue: []
+
         };
         this.addCompeteError = this.addCompeteError.bind(this);
         this.reloadAllData = this.reloadAllData.bind(this);
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
-
+        this.addLoadingState = this.addLoadingState.bind(this);
     }
 
     componentDidMount() {
@@ -28,11 +30,30 @@ class Home extends React.Component {
         this.isLoggedIn();
     }
 
+    addLoadingState(){
+        this.setState({
+            errorMessage: "",
+            successMessage: "Your match is computing or in queue. May take 10-15 seconds or longer if ther is a queue."
+        });
+    }
     reloadAllData() {
         this.getLeaderboard();
         this.getRank();
         this.getCanCompete();
     }
+
+    getQueue(){
+        $.ajax({
+             url: '/api/queue',
+             type: 'GET',
+             success: (responseData) => {
+                 this.setState({
+                     queue: responseData
+                 });
+             }
+         });
+     }
+
     getCanCompete(){
        /* $.ajax({
             url: '/api/canchallenge',
@@ -44,7 +65,7 @@ class Home extends React.Component {
             }
         });*/
     }
-    gethasSubmitted() {
+    getHasSubmitted() {
          $.ajax({
              url: '/api/canchallenge',
              type: 'GET',
@@ -79,10 +100,17 @@ class Home extends React.Component {
         this.setState({ errorMessage: message });
     }
 
-    addSuccessMessage(type) {
+    addSuccessMessage(message) {
+        if(message === ""){
+            this.setState({
+                errorMessage: "",
+                successMessage: "Success, we are computing your match! Check your team for the results."
+            });
+            return;
+        }
         this.setState({
             errorMessage: "",
-            successMessage: "Success"
+            successMessage: "Success, we are done computing your crimmage! GameID is: " + message 
         });
     }
 
@@ -139,6 +167,10 @@ class Home extends React.Component {
                 <p className='success-message'>{this.state.successMessage}</p>
 
                 <p>Competing is throttled at once every 5 minutes. Be sure when you click that button!</p>
+                 <p>Please note that a battle takes anywhere from 5-15 seconds to run so the page may look like it
+                        is loading during that time. In addition if other people are challenging you will be queued and
+                         it will take longer for your challenge to go through.
+                    </p> 
                 {this.state.leaderboard.length > 0 && this.state.displayLeaderboard && <table align="center">
                     <thead>
                         <tr>
@@ -158,6 +190,7 @@ class Home extends React.Component {
                                         key < this.state.rank) && this.state.canCompete) &&
                                         <ChallengeButton
                                             rank={key}
+                                            loadingCallback={this.addLoadingState}
                                             errorCallback={this.addCompeteError}
                                             successCallback={this.addSuccessMessage}
                                             reloadCallback={this.reloadAllData}
@@ -168,6 +201,7 @@ class Home extends React.Component {
                                     {(key != this.state.rank && this.state.canCompete) &&
                                         <ScrimmageButton
                                             rank={key}
+                                            loadingCallback={this.addLoadingState}
                                             errorCallback={this.addCompeteError}
                                             successCallback={this.addSuccessMessage}
                                             reloadCallback={this.reloadAllData}

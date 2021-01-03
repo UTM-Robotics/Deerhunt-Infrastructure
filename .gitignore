@@ -7,3 +7,4 @@ __pycache__/
 merge-dev.sh
 .vscode/
 venv/
+.vscode/settings.json

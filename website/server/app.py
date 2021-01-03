@@ -6,7 +6,7 @@ import threading
 import logging
 from datetime import datetime
 from zipfile import ZipFile, BadZipFile
-from flask import Flask, jsonify, send_from_directory, request, abort, session
+from flask import Flask, jsonify, send_from_directory, request, abort, session, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -45,7 +45,7 @@ CORS(app)
 # database = None
 # dock = docker.from_env()
 
-allowed_emails = ["@mail.utoronto.ca"]
+allowed_emails = ["@mail.utoronto.ca", "@utoronto.ca"]
 codeGenerator = CodeGenerator(64)
 verification_domain = 'https://mcss.utmrobotics.com'
 
@@ -61,7 +61,7 @@ can_submit = True
 submitting = {} # dict looks like: {'some team name': }
 
 #Creates and runs the consumer thread for tournaments
-consumer = Consumer(client)
+consumer = Consumer()
 consumer_thread = threading.Thread(target=consumer.run)
 consumer_thread.daemon = True
 consumer_thread.start()
@@ -114,6 +114,24 @@ def submit():
 
     return "Zip submitted! Thanks"
 
+
+@app.route('/api/getqueue', methods=['GET'])
+def get_queue():
+    login_guard()
+    sorted_queue = []
+    result = database.submission_queue.find().sort('modified', 1)
+    if result is None:
+        abort(400)
+    for match in result:
+        challenger = database.teams.find_one({"_id": match['challenger_id']})
+        defender = database.teams.find_one({"_id": match['defender_id']})
+        temp = {}
+        temp['challenger'] = challenger['displayName']
+        temp['defender'] = defender['displayName']
+        sorted_queue.append(temp)
+    print(sorted_queue)
+    return jsonify(sorted_queue)
+
 @app.route('/api/canchallenge', methods=['GET'])
 def can_challenge():
     """ Checks if the user is allowed to perform a challenge
@@ -142,13 +160,13 @@ def challenge():
     if not request.is_json:
         abort(400)
     data = request.get_json()
-    if "target_rank" not in data or data["target_rank"] is not int or data["target_rank"] <= 0:
+    if "target_rank" not in data or not isinstance(data["target_rank"], int) or data["target_rank"] < 0:
         abort(400)
     target_rank = data["target_rank"]
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.queue_challenge(user, target_rank):
             abort(400,challenge_api.error)
-    return str(challenge_api.ret_val)
+    return "OK"
 
 @app.route('/api/scrimmage', methods=['POST'])
 def scrimmage():
@@ -166,7 +184,7 @@ def scrimmage():
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.do_scrimmage(user, target_rank):
             abort(400,challenge_api.error)
-    return str(challenge_api.ret_val)
+    return "OK"
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
@@ -184,8 +202,25 @@ def getmatch():
 
     if result is None:
         abort(400)
+    return jsonify(result['data']['maps'])
 
-    return jsonify(result['maps'])
+
+@app.route("/api/getteamid")
+def getteamIDs():
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team_document = team_api.get_user_team(session["username"])
+        if team_document is None:
+            abort(400)
+    team_id = ObjectId(team_document['_id'])
+    ret = []
+    result = database.logs.find({"team_id": team_id})
+    if result is None:
+        abort(400)
+    for log in result:
+        ret.append(str(log["_id"]))
+    return jsonify(ret)
+
 
 @app.route('/api/rank', methods=['GET'])
 def getrank():
@@ -351,7 +386,7 @@ def login():
 
     if not sha512_crypt.verify(password, result['password']):
         abort(403)
-    if result['verified'] != True:
+    if result['verified'] == 'False':
         abort(403)
 
     session['logged_in'] = True
@@ -393,6 +428,10 @@ def verify_email(code: str):
     time_delta = curr_time-reg_time
     if time_delta.seconds > 60*30:
         database.users.delete_one({"code": code})
+        database.errors.insert_one({"error": "Deleting user account upon re-verification.",
+                                    'time': datetime.utcnow(),
+                                    "severity": "low"
+                                    })
         return "Verification link has expired, Please recreate the account."
     query = {'code': code}
     newvalues = {'$set': {'verified': 'True'}}
@@ -428,14 +467,14 @@ def register():
     msg = '\n\nYour account has been successfully created. Please click the link below \
         to verify your account.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
         verification_domain+"/verify/"+code)
-    email_status = EmailBot.sendmail(u, "Account Verification", msg)
+    email_status = EmailBot.sendmail(u, "BattleCode:Deerhunt Account Verification", msg)
     if not email_status:
         database.errors.insert_one({"error": "Email could not send, error ",
-                                    'time': datetime.utcnow()
+                                    'time': datetime.utcnow(),
+                                    "severity": "critical"
                                     })
         return abort(400)
     return 'Register successful'
-
 
 @app.route('/api/isloggedin', methods=['GET', 'POST'])
 def isloggedin():
