@@ -242,14 +242,14 @@ class GridFighters():
         #Gets the moves from each player and executes.
         self.tick_player(self.p1_conn, self.p1_units,
                          self.p2_units, self.p1_conn.name, turns)
-        #self.print_map(self.p1_conn.name, self.p2_conn.name)
+        self.print_map(self.p1_conn.name, self.p2_conn.name)
 
         if len(self.p2_units) == 0:
             return self.p1_conn.name
 
         self.tick_player(self.p2_conn, self.p2_units,
                          self.p1_units, self.p2_conn.name, turns)
-        #self.print_map(self.p1_conn.name, self.p2_conn.name)
+        self.print_map(self.p1_conn.name, self.p2_conn.name)
 
         if len(self.p1_units) == 0:
             return self.p2_conn.name
