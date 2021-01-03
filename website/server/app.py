@@ -14,6 +14,7 @@ from tournament import TournamentController
 from code_generator import CodeGenerator
 from teams import TeamController
 from global_state import GlobalController
+from challenge import ChallengeController
 import code_generator
 import traceback
 import uuid
@@ -35,11 +36,8 @@ app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.nt
 client = MongoClient(app.config["MONGO_URI"])
 PROD_FLAG = False
 if PROD_FLAG:
-    # app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
-    #     '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
     database = client.deerhunt_prod
 else:
-    # app.run(host='0.0.0.0', port=8080, threaded=True)
     database = client.deerhunt_db
 board = Leaderboard(database.leaderboard)
 app.secret_key = b'a*\xfac\xd4\x940 m\xcf[\x90\x7f*P\xac\xcdk{\x9e3)e\xd7q\xd1n/>\xec\xec\xe0'
@@ -162,6 +160,21 @@ def challenge():
         can_battle = battle.init_challenge(defender)
         if can_battle:
             result = battle.run_battle()
+
+@app.route('/api/scrimmage', methods=['POST'])
+def scrimmage():
+    login_guard()
+    user = session['username']
+    if not request.is_json:
+        abort(400)
+    data = request.get_json()
+    if "target_rank" not in data or data["target_rank"] is not int or data["target_rank"] <= 0:
+        abort(400)
+    target_rank = data["target_rank"]
+    with ChallengeController(client, database) as challenge_api:
+        if not challenge_api.do_scrimmage(user, target_rank):
+            abort(400)
+    return str(challenge_api.ret_val)
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
