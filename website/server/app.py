@@ -182,8 +182,7 @@ def getmatch():
 
     if result is None:
         abort(400)
-
-    return jsonify(result['maps'])
+    return jsonify(result['data']['maps'])
 
 @app.route('/api/rank', methods=['GET'])
 def getrank():
