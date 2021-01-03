@@ -23,7 +23,8 @@
     "test": "npm run build && npm run lint && npm run jest && pytest",
     "sass-watch": "./node_modules/sass/sass.js --watch  src/assets/styles/source/styles.scss src/assets/styles/main.css",
     "sass-prod": "./node_modules/sass/sass.js --no-source-map src/assets/styles/source/styles.scss src/assets/styles/main.css",
-    "sass": "./node_modules/sass/sass.js src/assets/styles/source/styles.scss src/assets/styles/main.css"
+    "sass": "./node_modules/sass/sass.js src/assets/styles/source/styles.scss src/assets/styles/main.css",
+    "build_prod": "npm run sass-prod && npm run build && npm run instructions"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",
