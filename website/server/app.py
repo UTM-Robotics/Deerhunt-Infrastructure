@@ -17,6 +17,7 @@ from tournament import TournamentController
 from code_generator import CodeGenerator
 from teams import TeamController
 from global_state import GlobalController
+from storage import StorageAPI
 from challenge import ChallengeController
 
 # import re
@@ -91,35 +92,54 @@ def submit():
         abort(403)
     if 'upload' not in request.files:
         abort(400)
-    session = client.start_session()
-    session.start_transaction()
-    user_file = database.users.find_one({"username": session["username"]}, session=session)
-    team_name = user_file['team']
-    team_file = database.teams.find_one({"name": team_name}, session=session)
-    if "last_submit" in team_file:
-        # NEED TO CHECK IF 5 MINUTES HAVE PASSED.
-        database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
-    else:
-        last_submitted = team_file["last_submitted"] # this should be a datetime.datetime object
-        current_time = datetime.datetime.now()
-        if (last_submitted + datetime.timedelta(minutes=5)) > current_time:
-            # not enough time has passed
-            session.abort_transaction()
-            return False
-        else:
-            database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
-    submit_folder = team_name
-    submit_path = f'{submissions_folder}/{submit_folder}'
-    request.files['upload'].save(f'{submit_path}.zip')
-    try:
-        with ZipFile(f'{submit_path}.zip', 'r') as z:
-            z.extractall(submit_path)
-    except BadZipFile:
-        abort(400)
-    os.remove(f'{submit_path}.zip')
-    session.commit_transaction()
-    session.end_session()
-    return "Zip submitted! Thanks"
+    print(request.files)
+    with TeamController(client, database) as team_api:
+        team_document = team_api.get_user_team(session["username"])
+        if team_document == None:
+            abort(400)
+    with StorageAPI(client, database) as s:
+        if not s.save(request.files['upload'], team_document['_id']):
+            if s.error == s.FAILED_EMPTY_FILE:
+                return 'Cannot submit nothing :/'
+            elif s.error == s.FAILED_NEED_MORE_TIME:
+                return "Cannot submit within 5 minutes of last submission"
+            elif s.error == s.FAILED_UPDATE_SUBMIT_TIME:
+                abort(400)
+
+    return "Zip submitted! Thanks"    
+    
+    
+    # request.files['upload'].save(f'{submit_path}.zip')
+
+    # user_file = database.users.find_one({"username": session["username"]}, session=session)
+    # team_name = user_file['team']
+    # team_file = database.teams.find_one({"name": team_name}, session=session)
+    # if "last_submit" in team_file:
+    #     # NEED TO CHECK IF 5 MINUTES HAVE PASSED.
+    #     database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
+    # else:
+    #     last_submitted = team_file["last_submitted"] # this should be a datetime.datetime object
+    #     current_time = datetime.datetime.now()
+    #     if (last_submitted + datetime.timedelta(minutes=5)) > current_time:
+    #         # not enough time has passed
+    #         session.abort_transaction()
+    #         return False
+    #     else:
+    #         database.teams.update_one({"name": team_name}, {"$set": {"last_submitted": datetime.datetime.now()}}, session=session)
+
+    
+    # submit_folder = team_name
+    # submit_path = f'{submissions_folder}/{submit_folder}'
+    # request.files['upload'].save(f'{submit_path}.zip')
+    # try:
+    #     with ZipFile(f'{submit_path}.zip', 'r') as z:
+    #         z.extractall(submit_path)
+    # except BadZipFile:
+    #     abort(400)
+    # os.remove(f'{submit_path}.zip')
+    # session.commit_transaction()
+    # session.end_session()
+    # return "Zip submitted! Thanks"
 
     # try:
     #     position = int(request.form['position']) - 1
