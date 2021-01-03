@@ -60,7 +60,7 @@ can_submit = True
 submitting = {} # dict looks like: {'some team name': }
 
 #Creates and runs the consumer thread for tournaments
-consumer = Consumer(client)
+consumer = Consumer()
 consumer_thread = threading.Thread(target=consumer.run)
 consumer_thread.start()
 
