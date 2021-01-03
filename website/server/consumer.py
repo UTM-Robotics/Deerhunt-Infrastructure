@@ -8,9 +8,9 @@ PROD_FLAG = False
 
 class Consumer:
     '''Consumer retrieves matches from the submission queue, runs them and updates the leaderboard '''
-    def __init__(self):
-        self.client = MongoClient(DATABASE_URL)
-        self.database = self.client.deerhunt_db
+    def __init__(self, client: MongoClient):
+        self.client = client
+        self.database = client.deerhunt_db
         self.session = client.start_session()
         self.submission_queue = self.database['submission_queue']
         self.teams = self.database['teams']
@@ -27,7 +27,7 @@ class Consumer:
                 match_string = self.create_match(match)
                 if match_string is not None and not isinstance(match_string, int):
                     result = GameController.run_game(self.create_match(match))
-                    # self.database.logs.insert_one({"winner": result[1], "data": result[0]})
+                    self.database.logs.insert_one({"winner": result[1], "data": result[0]})
                     self.update_leaderboard(result)
                 #Removes the match from the submission queue
                 self.submission_queue.delete_one({'_id': match['_id']})
