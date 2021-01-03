@@ -42,6 +42,6 @@ class LeaderboardController:
     def get_current_leaderboard(self):
         ''' Gets the current active leaderboard, returns none if it's not there.'''
         self.start_transaction()
-        leaderboard = self.database.leaderboards.find_one({"type": "current"}, session=self.session)
+        leaderboard = self.database.leaderboard.find_one({"type": "current"}, session=self.session)
         self.end_transaction()
         return leaderboard
