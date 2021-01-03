@@ -66,9 +66,9 @@ class GameBoard extends React.Component {
         return (
             this.props.display && <div className="board">
                 <h1>Game Board</h1>
-                <h1>{this.state.time}</h1>
-                <h1>P1: {p1} - P2: {p2}</h1>
-                <h1>Turn Count: {this.state.iter + 1}</h1>
+                <h3>{this.state.time}</h3>
+                <h3>P1: {p1} - P2: {p2}</h3>
+                <h3>Turn Count: {this.state.iter + 1}</h3>
                 <table>
                 <tbody id="table-body">
                 {display && move.map((row,ukey) => (

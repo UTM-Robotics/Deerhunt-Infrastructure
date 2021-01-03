@@ -318,11 +318,6 @@ $login-message-font-size: 16px;
     top: 10%;
 }
 
-.boardImage {
-    width: 50px;
-    height: 50px;
-}
-
 .home-container {
     position: fixed;
     left: 50%;
@@ -408,9 +403,10 @@ $login-message-font-size: 16px;
     left: 50%;
     transform: translate(-50%);
     text-align: center;
-    overflow: auto;
+    overflow: scroll;
     width: 100%;
     height: 90%;
+
 
     input {
         outline: 0;
@@ -429,7 +425,19 @@ $login-message-font-size: 16px;
         color:$placeholderdark;
         opacity:1;
     }
-
+    .board {
+        margin-top:0;
+        margin-bottom:3%;
+        h1 {
+            margin-top:20px;
+            margin-bottom:10px;
+        }
+        h3 {
+            margin-top:5px;
+            margin-bottom:5px;
+        }
+        
+    }
 
     .replay-button {
         text-transform: uppercase;
@@ -451,7 +459,27 @@ $login-message-font-size: 16px;
 
     table {
         margin: 0 auto;
+        margin-bottom:30px;
+        border: 5px solid $goldenyellow;
+        background:$bluishblack;
+        // width:25%;
+        // height:25%;
     }
+    $imageScalar:25%;
+    $paddingScalar:0.5;
+
+    td {
+        width:1vw;
+        height:1vw;
+    }
+    img.boardImage {
+        padding:0;
+        margin:0;
+        width:100%;
+        height:100%;
+    }
+
+
 }
 
 
