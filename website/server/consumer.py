@@ -29,8 +29,7 @@ class Consumer:
                 self.database.logs.insert_one(result)
                 self.update_leaderboard(result)
                 #Removes the match from the submission queue
-                # self.submission_queue.delete_one({'_id': match['_id']})
-                break
+                self.submission_queue.delete_one({'_id': match['_id']})
     
     def create_match(self, match: dict):
         '''create_match creates a new match given the team id's and returns the result '''
@@ -50,10 +49,25 @@ class Consumer:
         return StorageAPI.prep_match_container(challenger['_id'], defender['_id'])
 
     def update_leaderboard(self, result: tuple):
+        '''update_leaderboard gets the results from the recent game and updates the leaderboard according to the results'''
+        current_leaderboard = self.database.leaderboards.find_one({'type': 'current'})
+        defending_rank, attacking_rank = 0, 0
+        #Gets the defending and challenging team from the leaderboard
+        for k,v in enumerate(current_leaderboard.teams):
+            if v == result[0]["defender"]:
+                defending_rank = k
+            if v == result[0]["attacker"]:
+                attacking_rank = k
+
+        #If the attacker wins insert them into the defenders spot
         if result[1] == 1:
-            current_leaderboard = self.database.leaderboards.find_one({'type': 'current'})
-            defending_rank = 0
-            for k, v in current_leaderboard.teams:
-                if v['name'] == result[0]["defender"]:
-                    defending_rank = k
-                    
+            new_leaderboard = current_leaderboard.teams
+            new_leaderboard.insert(defending_rank, result[0]["attacker"])
+            attacking_rank = defending_rank
+            self.database.leaderboards.update_one({"_id": current_leaderboard["_id"]}, {"$set": {"teams": new_leaderboard}})
+
+        #Adds attacker to bottom if it is its first submission to the leaderboard
+        if attacking_rank == 0:
+            new_leaderboard = current_leaderboard.teams
+            new_leaderboard.append(result[0]["attacker"])
+            self.database.leaderboards.update_one({"type": "current"}, {"$set" : {"teams": new_leaderboard}})
