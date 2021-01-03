@@ -95,14 +95,17 @@ class StorageAPI:
 
         shutil.copytree(StorageAPI.TEMPLATE_FOLDER, f'{build_path}/')
         shutil.copytree(StorageAPI.SERVER_FOLDER, f'{build_path}/server')
-        StorageAPI.copy_dir_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p1_team_id}',\
+        StorageAPI.copy_zip_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p1_team_id}',\
              f'{build_path}/p1')
-        StorageAPI.copy_dir_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p2_team_id}',\
+        StorageAPI.copy_zip_contents(f'{StorageAPI.SUBMISSIONS_FOLDER}/{p2_team_id}',\
              f'{build_path}/p2')
         return build_path
 
     @staticmethod
-    def copy_dir_contents(src, dest):
+    def copy_zip_contents(src, dest):
         ''' Copies the contents of a directory into another directory.'''
-        for file in os.listdir(src):
-            shutil.copy(f'{src}/{file}', dest)
+        try:
+            with ZipFile(f'{src}.zip', 'r') as z:
+                z.extractall(dest)
+        except BadZipFile:
+            return False
