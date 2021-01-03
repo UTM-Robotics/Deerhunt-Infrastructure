@@ -79,7 +79,3 @@ class Consumer:
             new_leaderboard = current_leaderboard["teams"]
             new_leaderboard.append(self.challenger['name'])
             self.database.leaderboard.update_one({"type": "current"}, {"$set" : {"teams": new_leaderboard}}) 
-
-if __name__ == "__main__":
-    consumer = Consumer()
-    consumer.run()
