@@ -27,11 +27,7 @@ from consumer import Consumer
 '''
 Application Run Flags
 '''
-<<<<<<< HEAD
 PROD_FLAG = True
-=======
-PROD_FLAG = False
->>>>>>> dev
 # PROD_FLAG = False
 
 '''Main wrapper for app creation'''
