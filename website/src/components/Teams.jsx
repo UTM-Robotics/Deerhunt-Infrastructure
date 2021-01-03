@@ -17,7 +17,7 @@ class Teams extends React.Component {
             canInvite: false,
             invites: {},
             invitedUser: "",
-            team_games: ["id1","id2"],
+            team_games: [],
         };
         this.reloadAllData = this.reloadAllData.bind(this);
     }
@@ -206,7 +206,9 @@ class Teams extends React.Component {
             }
         });
     }
-
+    getGameCard(id){
+        return (<GameIDCard gameID={id}/>);
+    }
     render() {
         var invites = this.state.invites;
         if (this.state.team === "") {
@@ -246,6 +248,12 @@ class Teams extends React.Component {
         if (cardsArray.length == 0) {
             cardsArray = (<p> No users invited!</p>);
         }
+        var gameCards = this.state.team_games.map(item=>this.getGameCard(item));
+
+        if (this.state.team_games.length == 0){
+            gameCards = (<p> No games logged!</p>);
+        }
+
         console.log(this.state.team_games);
         return (
             <div className="on-team-container">
@@ -258,12 +266,7 @@ class Teams extends React.Component {
                 </form>
                 {cardsArray}
                 <h3>History</h3>
-                
-                {this.state.team_games.map((item)=>{
-                    (
-                        <GameIDCard gameID={item}/>
-                    )
-                })}
+                {gameCards}
             </div>);
     }
 }

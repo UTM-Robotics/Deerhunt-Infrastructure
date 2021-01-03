@@ -8,8 +8,8 @@ class GameIDCard extends React.Component {
     render() {
         console.log(this.props.gameID);
         return (
-            <div className="invite-card">
-                <h4>GameID: {this.props.gameID}</h4>
+            <div className="gameid-card">
+                <p>GameID: {this.props.gameID}</p>
             </div>
         );
     }
