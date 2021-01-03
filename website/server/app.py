@@ -139,7 +139,7 @@ def challenge():
     target_rank = data["target_rank"]
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.queue_challenge(user, target_rank):
-            abort(400)
+            abort(400,challenge_api.error)
     return str(challenge_api.ret_val)
 
 @app.route('/api/scrimmage', methods=['POST'])
@@ -157,7 +157,7 @@ def scrimmage():
     target_rank = data["target_rank"]
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.do_scrimmage(user, target_rank):
-            abort(400)
+            abort(400,challenge_api.error)
     return str(challenge_api.ret_val)
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
@@ -183,14 +183,12 @@ def getmatch():
 def getrank():
     login_guard()
     with TeamController(client, database) as team_api:
-        if not team_api.get_user_team(session["username"]):
-            abort(403)
-        team = team_api.ret_val
+        team = team_api.get_user_team(session["username"])
     if not team:
         abort(403)
     with LeaderboardController(client, database) as leaderboard_api:
         leaderboard = leaderboard_api.get_current_leaderboard()
-        return LeaderboardController.get_team_rank(leaderboard, team["name"])
+        return {"rank":LeaderboardController.get_team_rank(leaderboard, team["name"])}
     abort(500)
 
 @app.route('/api/leaderboard', methods=['GET'])
@@ -458,7 +456,6 @@ def leaderboardtoggle():
         with GlobalController(client, database) as globals_api:
             if not globals_api.get_leaderboard_state():
                 abort(400)
-            print(globals_api.ret_val)
         return str(globals_api.ret_val)
     admin_guard()
 

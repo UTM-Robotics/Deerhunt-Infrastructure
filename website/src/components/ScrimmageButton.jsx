@@ -1,3 +1,5 @@
+import React from 'react';
+import $ from 'jquery';
 class ScrimmageButton extends React.Component {
     constructor() {
         super();
@@ -19,7 +21,7 @@ class ScrimmageButton extends React.Component {
             },
             error: (err) => {
                 console.log(err);
-                this.props.errorCallback("fail_accept");
+                this.props.errorCallback("fail_scrimmage");
             }
         });
     }
