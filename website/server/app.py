@@ -3,7 +3,6 @@
 import shutil
 import os
 import threading
-import schedule
 from datetime import datetime
 from zipfile import ZipFile, BadZipFile
 from flask import Flask, jsonify, send_from_directory, request, abort, session

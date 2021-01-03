@@ -1,7 +1,6 @@
 import random
 import math
 import time
-import schedule
 import threading
 
 class TournamentController(threading.Thread):
