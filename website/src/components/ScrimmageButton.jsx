@@ -17,7 +17,7 @@ class ScrimmageButton extends React.Component {
             contentType: 'application/json',
             success: (responseData) => {
                 this.props.reloadCallback();
-
+                this.props.successCallback();
             },
             error: (err) => {
                 console.log(err);

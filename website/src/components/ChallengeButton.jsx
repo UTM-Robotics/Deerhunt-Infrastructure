@@ -8,7 +8,7 @@ class ChallengeButton extends React.Component {
 
     challenge() {
         const requestData = JSON.stringify({
-            "target_team": this.props.team,
+            "target_rank": this.props.rank,
         });
 
         $.ajax({
@@ -18,11 +18,11 @@ class ChallengeButton extends React.Component {
             contentType: 'application/json',
             success: (responseData) => {
                 this.props.reloadCallback();
-
+                this.props.successCallback();
             },
             error: (err) => {
                 console.log(err);
-                this.props.errorCallback("fail_accept");
+                this.props.errorCallback("fail_challenge");
             }
         });
     }

@@ -63,3 +63,9 @@ class LeaderboardController:
         if not team_name in teams:
             return -1
         return teams.index(team_name)
+
+    def get_computation_queue(self):
+        """ Returns contests the computation queue"""
+        self.start_transaction()
+        leaderboard = self.database.submission_queue.find_many({"type": "current"}, session=self.session)
+        self.end_transaction()

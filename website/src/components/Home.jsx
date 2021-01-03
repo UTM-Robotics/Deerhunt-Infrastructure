@@ -14,7 +14,7 @@ class Home extends React.Component {
             leaderboard: [],
             displayLeaderboard: false
         };
-        this.competeError = this.competeError.bind(this);
+        this.addCompeteError = this.addCompeteError.bind(this);
         this.reloadAllData = this.reloadAllData.bind(this);
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
 
@@ -34,8 +34,8 @@ class Home extends React.Component {
         this.getCanCompete();
     }
 
-    getCanCompete() {
-        /* $.ajax({
+    gethasSubmitted() {
+         $.ajax({
              url: '/api/canchallenge',
              type: 'GET',
              success: (responseData) => {
@@ -43,7 +43,7 @@ class Home extends React.Component {
                      canCompete: responseData
                  });
              }
-         });*/
+         });
     }
 
     getRank() {
@@ -58,15 +58,15 @@ class Home extends React.Component {
         });
     }
 
-    competeError(type) {
+    addCompeteError(type) {
         var message = "";
-        if (type === 'cup') {
-            message = "Cannot Scrimmage against this player."
+        if (type === 'fail_scrimmage') {
+            message = "Cannot scrimmage against this player. Are you in queue?"
         }
-        else if (type === 'nep') {
-            message = "Please submit before requesting scrimmage";
+        else if (type === 'fail_challenge') {
+            message = "Cannot challenge this player. Are you in queue?"
         }
-        this.setState({ errorMessage: message })
+        this.setState({ errorMessage: message });
     }
 
     addSuccessMessage(type) {
@@ -125,7 +125,10 @@ class Home extends React.Component {
             this.state.loggedIn && <div className="home-container">
                 {(this.state.displayLeaderboard && this.state.leaderboard.length > 0) && <h1>Leaderboard</h1>}
                 {(!this.state.displayLeaderboard || this.state.leaderboard.length === 0) && <h1>Leaderboard Hidden</h1>}
-                <p>{this.state.errorMessage}</p>
+                <p className='error-message'>{this.state.errorMessage}</p>
+                <p className='success-message'>{this.state.successMessage}</p>
+
+                <p>Competing is throttled at once every 5 minutes. Be sure when you click that button!</p>
                 {this.state.leaderboard.length > 0 && this.state.displayLeaderboard && <table align="center">
                     <thead>
                         <tr>
@@ -141,11 +144,11 @@ class Home extends React.Component {
                                 <td className="num">{key + 1}</td>
                                 <td className="item">{item.name}</td>
                                 <td className="item">
-                                    {(this.state.rank != -1 &&
-                                        key < this.state.rank && this.state.canCompete) &&
+                                    {((this.state.rank === -1 ||
+                                        key < this.state.rank) && this.state.canCompete) &&
                                         <ChallengeButton
                                             rank={key}
-                                            errorCallback={this.competeError}
+                                            errorCallback={this.addCompeteError}
                                             successCallback={this.addSuccessMessage}
                                             reloadCallback={this.reloadAllData}
                                         />
@@ -155,7 +158,7 @@ class Home extends React.Component {
                                     {(key != this.state.rank && this.state.canCompete) &&
                                         <ScrimmageButton
                                             rank={key}
-                                            errorCallback={this.competeError}
+                                            errorCallback={this.addCompeteError}
                                             successCallback={this.addSuccessMessage}
                                             reloadCallback={this.reloadAllData}
                                         />
