@@ -100,10 +100,17 @@ class Home extends React.Component {
         this.setState({ errorMessage: message });
     }
 
-    addSuccessMessage(type) {
+    addSuccessMessage(message) {
+        if(message === ""){
+            this.setState({
+                errorMessage: "",
+                successMessage: "Success, we are computing your match! Check your team for the results."
+            });
+            return;
+        }
         this.setState({
             errorMessage: "",
-            successMessage: "Success, we are computing your match! Check your team for the results."
+            successMessage: "Success, we are done computing your crimmage! GameID is: " + message 
         });
     }
 

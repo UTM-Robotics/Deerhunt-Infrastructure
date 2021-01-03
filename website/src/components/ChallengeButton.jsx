@@ -18,13 +18,13 @@ class ChallengeButton extends React.Component {
             contentType: 'application/json',
             success: (responseData) => {
                 this.props.reloadCallback();
-                this.props.successCallback();
+                this.props.successCallback("");
             },
             error: (err) => {
                 console.log(err);
                 this.props.errorCallback("fail_challenge");
             },
-            timeout: 60000// sets timeout to 3 seconds,
+            timeout: 90000// sets timeout to 90 seconds,
         });
     }
     render() {

@@ -17,13 +17,13 @@ class ScrimmageButton extends React.Component {
             contentType: 'application/json',
             success: (responseData) => {
                 this.props.reloadCallback();
-                this.props.successCallback();
+                this.props.successCallback(responseData["game_id"]);
             },
             error: (err) => {
                 console.log(err);
                 this.props.errorCallback("fail_scrimmage");
             },
-            timeout: 60000// sets timeout to 60 seconds,
+            timeout: 90000// sets timeout to 90 seconds,
         });
     }
     render() {
