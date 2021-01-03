@@ -18,7 +18,7 @@ class ChallengeController:
     SAME_TEAM_ERROR = 3
     INVALID_TEAM_ERROR = 4
     TIMEOUT_ERROR = 5
-    ILLEGAL_ZIP_FILE_ERROR = 
+    ILLEGAL_ZIP_FILE_ERROR = 6
     def __init__(self, client: MongoClient, database):
         self.client = client
         self.database = database

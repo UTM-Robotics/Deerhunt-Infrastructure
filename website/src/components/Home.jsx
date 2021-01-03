@@ -65,14 +65,13 @@ class Home extends React.Component {
     render() {
         return (
             this.state.loggedIn && <div className="home-container">
-                {this.state.displayLeaderboard && <h1>Leaderboard</h1>}
-                {!this.state.displayLeaderboard && <h1>Leaderboard Hidden</h1>}
+                {(this.state.displayLeaderboard && this.state.leaderboard.length > 0) && <h1>Leaderboard</h1>}
+                {(!this.state.displayLeaderboard || this.state.leaderboard.length === 0) && <h1>Leaderboard Hidden</h1>}
                 {this.state.leaderboard.length > 0 && this.state.displayLeaderboard && <table align="center">
                     <thead>
                         <tr>
                             <th>Rank</th>
                             <th>Team</th>
-                            <th>Queue</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,7 +79,6 @@ class Home extends React.Component {
                             <tr key={key}>
                                 <td className="num">{key + 1}</td>
                                 <td className="item">{item.name}</td>
-                                <td className="item">{item.queue}</td>
                             </tr>
                         ))}
                     </tbody>

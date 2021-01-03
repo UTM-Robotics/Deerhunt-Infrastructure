@@ -1,62 +1,47 @@
-from threading import Lock
-from datetime import datetime
 
-class Leaderboard:
-    def __init__(self, collection):
-        self.max_len = 10
-        self.lock = [Lock(),
-                     Lock(),
-                     Lock(),
-                     Lock(),
-                     Lock(),
-                     Lock(),
-                     Lock(),
-                     Lock(),
-                     Lock(),
-                     Lock()]
-        try:
-            self.board = collection.find().sort([('time', -1)]).limit(1)[0]['leaderboard']
-            if self.board is None:
-                self.board = []
-        except:
-            self.board = []
+import traceback
+from pymongo import MongoClient
 
-        self.collection = collection
+class LeaderboardController:
+    ''' Performs all Teams-related logic with Database.'''
 
-        self.queue_lock = Lock()
-        self.queue_count = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    SCRIMMAGE_DELAY_MINUTES = 10
+    CHALLENGE_DELAY_MINUTES = 5
+    # ChallengeController Errors
+    NOT_ON_TEAM_ERROR = 1
+    RANK_OUT_OF_BOUNDS_ERROR = 2
+    SAME_TEAM_ERROR = 3
+    INVALID_TEAM_ERROR = 4
+    TIMEOUT_ERROR = 5
+    ILLEGAL_ZIP_FILE_ERROR = 6
+    def __init__(self, client: MongoClient, database):
+        self.client = client
+        self.database = database
+        self.session = self.client.start_session()
+        self.error = None
+        self.ret_val = None
 
-    def acquire(self, position):
-        if position >= len(self.board):
-            return None
+    def __enter__(self):
+        return self
 
-        self.queue_lock.acquire()
-        self.queue_count[position] += 1
-        self.queue_lock.release()
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        self.session.end_session()
+        if exc_type is not None:
+            traceback.print_exception(exc_type, exc_value, exc_traceback)
+            return False
+        return True
 
-        self.lock[position].acquire()
-        return self.board[position]
+    def start_transaction(self):
+        ''' Starts the transaction for an object with an activated session'''
+        self.session.start_transaction()
 
-    def release(self, position):
-        self.lock[position].release()
+    def end_transaction(self):
+        ''' Ends the transaction for an object with an activated session'''
+        self.session.commit_transaction()
 
-        self.queue_lock.acquire()
-        self.queue_count[position] -= 1
-        self.queue_lock.release()
-
-    def is_locked(self, position):
-        return self.lock[position].locked()
-
-    def save(self, match_id):
-        self.collection.insert_one({'leaderboard': self.board, 
-                                    'time': datetime.utcnow(),
-                                    'takeover_match': match_id
-                                    })
-
-    def replace(self, position, id):
-        if position >= len(self.board):
-            self.board.append(id)
-            return
-        
-        self.board.insert(position, id)
-        self.board.pop()
+    def get_current_leaderboard(self):
+        ''' Gets the current active leaderboard, returns none if it's not there.'''
+        self.start_transaction()
+        leaderboard = self.database.leaderboard.find_one({"type": "current"}, session=self.session)
+        self.end_transaction()
+        return leaderboard
