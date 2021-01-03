@@ -579,16 +579,12 @@ def copy_dir_contents(src, dest):
 
 if __name__ == '__main__':
     if PROD_FLAG:
-        app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
-            '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
-        # database = MongoClient(
-        #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_prod
-        # database = PyMongo(app)
+        app.run(host='0.0.0.0', port=443) # The cert is included when gunicorn is called.
+
+        # app.run(host='0.0.0.0', port=443, ssl_context=(
+            # '/home/deerhuntadmin/letsencrypt/fullchain.pem', '/home/deerhuntadmin/letsencrypt/privkey.pem'))
+        # app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
+        #     '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
     else:
         app.run(host='0.0.0.0', port=8080, threaded=True, debug=True)
-        # database = MongoClient(
-        #     "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority").deerhunt_db
-        # database = mongo.init_app(app)
-        # database = database.deerhunt_db
-        # print(database)
-    # board = Leaderboard(database.leaderboard)
+        # app.run(host='0.0.0.0', port=8080, threaded=True, debug=True, ssl_context='adhoc')
