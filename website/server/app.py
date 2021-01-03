@@ -44,7 +44,7 @@ CORS(app)
 # database = None
 # dock = docker.from_env()
 
-allowed_emails = ["@mail.utoronto.ca"]
+allowed_emails = ["@mail.utoronto.ca", "@utoronto.ca"]
 codeGenerator = CodeGenerator(64)
 verification_domain = 'https://mcss.utmrobotics.com'
 
@@ -348,7 +348,7 @@ def login():
 
     if not sha512_crypt.verify(password, result['password']):
         abort(403)
-    if result['verified'] != True:
+    if result['verified'] == 'False':
         abort(403)
 
     session['logged_in'] = True
