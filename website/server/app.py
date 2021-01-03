@@ -28,12 +28,12 @@ from consumer import Consumer
 Application Run Flags
 '''
 PROD_FLAG = True
+# PROD_FLAG = False
 
 '''Main wrapper for app creation'''
 app = Flask(__name__, static_folder='../build')
 app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
 client = MongoClient(app.config["MONGO_URI"])
-PROD_FLAG = False
 if PROD_FLAG:
     database = client.deerhunt_prod
 else:
