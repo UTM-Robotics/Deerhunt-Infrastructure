@@ -1,5 +1,7 @@
 import React from 'react';
 import $ from 'jquery';
+import ChallengeButton from './ChallengeButton';
+import ScrimmageButton from './ScrimmageButton';
 
 class Home extends React.Component {
 
@@ -7,15 +9,109 @@ class Home extends React.Component {
         super();
         this.state = {
             loggedIn: false,
+            displayLeaderboard: false,
+            canCompete: true,
+            rank: -1,
             leaderboard: [],
-            displayLeaderboard: false
+            queue: []
+
         };
+        this.addCompeteError = this.addCompeteError.bind(this);
+        this.reloadAllData = this.reloadAllData.bind(this);
+        this.addSuccessMessage = this.addSuccessMessage.bind(this);
+        this.addLoadingState = this.addLoadingState.bind(this);
     }
 
     componentDidMount() {
         this.displayLeaderboard();
         this.getLeaderboard();
+        this.getRank();
+        this.getCanCompete();
         this.isLoggedIn();
+    }
+
+    addLoadingState(){
+        this.setState({
+            errorMessage: "",
+            successMessage: "Your match is computing or in queue. May take 10-15 seconds or longer if ther is a queue."
+        });
+    }
+    reloadAllData() {
+        this.getLeaderboard();
+        this.getRank();
+        this.getCanCompete();
+    }
+
+    getQueue(){
+        $.ajax({
+             url: '/api/queue',
+             type: 'GET',
+             success: (responseData) => {
+                 this.setState({
+                     queue: responseData
+                 });
+             }
+         });
+     }
+
+    getCanCompete(){
+       /* $.ajax({
+            url: '/api/canchallenge',
+            type: 'GET',
+            success: (responseData) => {
+                this.setState({
+                    canCompete: responseData
+                });
+            }
+        });*/
+    }
+    getHasSubmitted() {
+         $.ajax({
+             url: '/api/canchallenge',
+             type: 'GET',
+             success: (responseData) => {
+                 this.setState({
+                     canCompete: responseData
+                 });
+             }
+         });
+    }
+
+    getRank() {
+        $.ajax({
+            url: '/api/rank',
+            type: 'GET',
+            success: (responseData) => {
+                this.setState({
+                    rank: responseData["rank"]
+                });
+            }
+        });
+    }
+
+    addCompeteError(type) {
+        var message = "";
+        if (type === 'fail_scrimmage') {
+            message = "Cannot scrimmage against this player. Are you in queue?"
+        }
+        else if (type === 'fail_challenge') {
+            message = "Cannot challenge this player. Are you in queue?"
+        }
+        this.setState({ errorMessage: message });
+    }
+
+    addSuccessMessage(message) {
+        if(message === ""){
+            this.setState({
+                errorMessage: "",
+                successMessage: "Success, we are computing your match! Check your team for the results."
+            });
+            return;
+        }
+        this.setState({
+            errorMessage: "",
+            successMessage: "Success, we are done computing your crimmage! GameID is: " + message 
+        });
     }
 
     getLeaderboard() {
@@ -35,21 +131,21 @@ class Home extends React.Component {
             url: '/api/leaderboardtoggle',
             type: 'GET',
             success: (responseData) => {
-                var parsed = responseData == "True" ? true: false;
+                var parsed = responseData == "True" ? true : false;
                 this.setState({
                     displayLeaderboard: parsed
                 });
             }
         });
     }
-                    
+
 
     isLoggedIn() {
         $.ajax({
             url: '/api/isloggedin',
             type: 'GET',
             success: (responseData) => {
-                var parsed = responseData == "True" ? true: false;
+                var parsed = responseData == "True" ? true : false;
                 if (parsed) {
                     this.setState({
                         loggedIn: parsed
@@ -65,14 +161,23 @@ class Home extends React.Component {
     render() {
         return (
             this.state.loggedIn && <div className="home-container">
-                {this.state.displayLeaderboard && <h1>Leaderboard</h1>}
-                {!this.state.displayLeaderboard && <h1>Leaderboard Hidden</h1>}
+                {(this.state.displayLeaderboard && this.state.leaderboard.length > 0) && <h1>Leaderboard</h1>}
+                {(!this.state.displayLeaderboard || this.state.leaderboard.length === 0) && <h1>Leaderboard Hidden</h1>}
+                <p className='error-message'>{this.state.errorMessage}</p>
+                <p className='success-message'>{this.state.successMessage}</p>
+
+                <p>Competing is throttled at once every 5 minutes. Be sure when you click that button!</p>
+                 <p>Please note that a battle takes anywhere from 5-15 seconds to run so the page may look like it
+                        is loading during that time. In addition if other people are challenging you will be queued and
+                         it will take longer for your challenge to go through.
+                    </p> 
                 {this.state.leaderboard.length > 0 && this.state.displayLeaderboard && <table align="center">
                     <thead>
                         <tr>
                             <th>Rank</th>
                             <th>Team</th>
-                            <th>Queue</th>
+                            <th>Challenge</th>
+                            <th>Scrimmage</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,7 +185,29 @@ class Home extends React.Component {
                             <tr key={key}>
                                 <td className="num">{key + 1}</td>
                                 <td className="item">{item.name}</td>
-                                <td className="item">{item.queue}</td>
+                                <td className="item">
+                                    {((this.state.rank === -1 ||
+                                        key < this.state.rank) && this.state.canCompete) &&
+                                        <ChallengeButton
+                                            rank={key}
+                                            loadingCallback={this.addLoadingState}
+                                            errorCallback={this.addCompeteError}
+                                            successCallback={this.addSuccessMessage}
+                                            reloadCallback={this.reloadAllData}
+                                        />
+                                    }
+                                </td>
+                                <td className="item">
+                                    {(key != this.state.rank && this.state.canCompete) &&
+                                        <ScrimmageButton
+                                            rank={key}
+                                            loadingCallback={this.addLoadingState}
+                                            errorCallback={this.addCompeteError}
+                                            successCallback={this.addSuccessMessage}
+                                            reloadCallback={this.reloadAllData}
+                                        />
+                                    }
+                                </td>
                             </tr>
                         ))}
                     </tbody>

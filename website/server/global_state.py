@@ -1,24 +1,19 @@
-from pymongo import MongoClient
-from flask import Flask, jsonify, send_from_directory, request, abort, session
-from flask_cors import CORS
-from datetime import datetime
 import traceback
-
-
-'''
-Performs all global_state logic with Database.
-Enables all instances of the API to act as one instance.
-'''
-
+from datetime import datetime
+from pymongo import MongoClient
 
 class GlobalController:
+    """
+    Performs all global_state logic with Database.
+    Enables all instances of the API to act as one instance.
+    """
     # GlobalController Errors
     FAILED_STATE_CHANGE = 1
 
     # Global Document Query
     STATE_DOCUMENT_QUERY = {"file_type": "global"}
 
-    def __init__(self, client, database):
+    def __init__(self, client: MongoClient, database):
         self.client = client
         self.database = database
         self.error = None
@@ -28,14 +23,15 @@ class GlobalController:
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_value, tb):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         self.session.end_session()
         if exc_type is not None:
-            traceback.print_exception(exc_type, exc_value, tb)
+            traceback.print_exception(exc_type, exc_value, exc_traceback)
             return False
         return True
 
     def end_session(self):
+        ''' Ends an already started session. Does not commit.'''
         self.session.end_session()
 
     def init_state(self):
@@ -79,6 +75,7 @@ class GlobalController:
         return True
 
     def get_submit_state(self):
+        '''Toggles whether the leaderboard is enabled or not'''
         session = self.session
         try:
             session.start_transaction()
@@ -99,6 +96,7 @@ class GlobalController:
         return True
 
     def leaderboard_toggle(self):
+        '''Toggles whether the leaderboard is enabled or not'''
         session = self.session
         try:
             session.start_transaction()
@@ -130,6 +128,9 @@ class GlobalController:
         return True
 
     def submit_toggle(self):
+        '''
+            Negates the global state value for submission enable.
+        '''
         session = self.session
         try:
             session.start_transaction()
@@ -138,7 +139,9 @@ class GlobalController:
                 session=session
             )
             if not "submit_enabled" in state:
-                abort(403)
+                self.session.abort_transaction()
+                self.error = self.FAILED_STATE_CHANGE
+                return False
             state_data = {"$set":{"submit_enabled": not state["submit_enabled"]}}
             state_result = self.database.globals.update_one(
                 self.STATE_DOCUMENT_QUERY,

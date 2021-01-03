@@ -3,6 +3,8 @@ __pycache__/
 *$py.class
 *.css.map
 *.zip
+*.sh
 merge-dev.sh
 .vscode/
+venv/
 .vscode/settings.json

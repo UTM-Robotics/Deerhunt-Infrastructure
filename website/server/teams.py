@@ -17,13 +17,16 @@ class TeamController:
     INVITE_EXISTS_ERROR = 5
     NOT_INVITED_ERROR = 6
 
-    def __init__(self, client, database):
+    def __init__(self, client, database,input_session = None):
         self.client = client
         self.database = database
         self.error = None
+        if input_session:
+            self.session = input_session
+        else:
+            self.session = self.client.start_session()
 
     def __enter__(self):
-        self.session = self.client.start_session()
         return self
 
     def __exit__(self, exc_type, exc_value, tb):
