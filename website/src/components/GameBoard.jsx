@@ -24,7 +24,7 @@ class GameBoard extends React.Component {
             "R": resource,
             "X": wall,
             " ": blank,
-            "s": stun,
+            "S": stun,
         }
             
     }
