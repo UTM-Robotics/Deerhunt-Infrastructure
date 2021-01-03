@@ -6,7 +6,7 @@ import worker2 from './../assets/images/W.gif';
 import wall from './../assets/images/x.gif';
 import resource from './../assets/images/r.gif';
 import blank from './../assets/images/empty.gif';
-
+import stun from './../assets/images/s.gif';
 class GameBoard extends React.Component {
 
     constructor(props) {
@@ -24,6 +24,7 @@ class GameBoard extends React.Component {
             "R": resource,
             "X": wall,
             " ": blank
+            "s": stun,
         }
             
     }
