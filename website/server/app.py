@@ -18,6 +18,7 @@ from teams import TeamController
 from global_state import GlobalController
 from storage import StorageAPI
 from challenge import ChallengeController
+from consumer import Consumer
 
 # import re
 
@@ -57,6 +58,11 @@ server_folder = f'{prefix}/server'
 should_display_leaderboards = True
 can_submit = True
 submitting = {} # dict looks like: {'some team name': }
+
+#Creates and runs the consumer thread for tournaments
+consumer = Consumer(client)
+consumer_thread = threading.Thread(target=consumer.run)
+consumer_thread.start()
 
 # tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
 # t1 = TournamentController(client, database)
