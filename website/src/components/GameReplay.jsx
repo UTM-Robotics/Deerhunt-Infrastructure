@@ -23,7 +23,7 @@ class Replay extends React.Component {
         }
     }
 
-    addError(type: string) {
+    addError(type) {
         $('.error-message').remove();
         var message = "";
         if (type === 'id') {

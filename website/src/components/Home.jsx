@@ -9,10 +9,12 @@ class Home extends React.Component {
         super();
         this.state = {
             loggedIn: false,
+            displayLeaderboard: false,
             canCompete: true,
             rank: -1,
             leaderboard: [],
-            displayLeaderboard: false
+            queue: []
+
         };
         this.addCompeteError = this.addCompeteError.bind(this);
         this.reloadAllData = this.reloadAllData.bind(this);
@@ -33,6 +35,19 @@ class Home extends React.Component {
         this.getRank();
         this.getCanCompete();
     }
+
+    getQueue(){
+        $.ajax({
+             url: '/api/queue',
+             type: 'GET',
+             success: (responseData) => {
+                 this.setState({
+                     queue: responseData
+                 });
+             }
+         });
+     }
+
     getCanCompete(){
        /* $.ajax({
             url: '/api/canchallenge',
@@ -82,7 +97,7 @@ class Home extends React.Component {
     addSuccessMessage(type) {
         this.setState({
             errorMessage: "",
-            successMessage: "Success"
+            successMessage: "Success, we are computing your match! Please wait, you may be queued."
         });
     }
 

@@ -5,7 +5,7 @@ import os
 import threading
 from datetime import datetime
 from zipfile import ZipFile, BadZipFile
-from flask import Flask, jsonify, send_from_directory, request, abort, session
+from flask import Flask, jsonify, send_from_directory, request, abort, session, make_response
 from flask_cors import CORS
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -111,6 +111,22 @@ def submit():
                 abort(400)
 
     return "Zip submitted! Thanks"
+
+
+@app.route('/api/getqueue', methods=['GET'])
+def get_queue():
+    login_guard()
+    user = session['username']
+    sorted_queue = []
+    for match in database.submission_queue.find().sort('modified', 1):
+        challenger = database.teams.find_one({"_id": match['challenger_id']})
+        defender = database.teams.find_one({"_id": match['defender_id']})
+        temp = {}
+        temp['challenger'] = challenger['displayName']
+        temp['defender'] = defender['displayName']
+        sorted_queue.append(temp)
+    print(sorted_queue)
+    return jsonify(sorted_queue)
 
 @app.route('/api/canchallenge', methods=['GET'])
 def can_challenge():
