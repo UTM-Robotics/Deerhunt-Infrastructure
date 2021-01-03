@@ -9,7 +9,7 @@ class ScrimmageButton extends React.Component {
         const requestData = JSON.stringify({
             "target_rank": this.props.rank,
         });
-
+        this.props.loadingCallback();
         $.ajax({
             url: '/api/scrimmage',
             type: 'POST',
@@ -22,7 +22,8 @@ class ScrimmageButton extends React.Component {
             error: (err) => {
                 console.log(err);
                 this.props.errorCallback("fail_scrimmage");
-            }
+            },
+            timeout: 60000// sets timeout to 60 seconds,
         });
     }
     render() {
