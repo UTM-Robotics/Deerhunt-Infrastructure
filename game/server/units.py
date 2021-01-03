@@ -32,6 +32,7 @@ class Unit:
 
     def stun(self):
         self.stun_status = STUN_LENGTH
+        return self
 
     def is_stunned(self):
         return self.stun_status > 0
