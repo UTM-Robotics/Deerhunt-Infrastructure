@@ -60,7 +60,7 @@ can_submit = True
 submitting = {} # dict looks like: {'some team name': }
 
 #Creates and runs the consumer thread for tournaments
-consumer = Consumer(client)
+consumer = Consumer()
 consumer_thread = threading.Thread(target=consumer.run)
 consumer_thread.start()
 
@@ -158,13 +158,13 @@ def challenge():
     if not request.is_json:
         abort(400)
     data = request.get_json()
-    if "target_rank" not in data or not isinstance(data["target_rank"], int) or data["target_rank"] <= 0:
+    if "target_rank" not in data or not isinstance(data["target_rank"], int) or data["target_rank"] < 0:
         abort(400)
     target_rank = data["target_rank"]
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.queue_challenge(user, target_rank):
             abort(400,challenge_api.error)
-    return str(challenge_api.ret_val)
+    return "OK"
 
 @app.route('/api/scrimmage', methods=['POST'])
 def scrimmage():
@@ -182,7 +182,7 @@ def scrimmage():
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.do_scrimmage(user, target_rank):
             abort(400,challenge_api.error)
-    return str(challenge_api.ret_val)
+    return "OK"
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
