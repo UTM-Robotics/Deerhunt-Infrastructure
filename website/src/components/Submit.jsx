@@ -12,12 +12,14 @@ class Submit extends React.Component {
             loading: false,
             resultDisplay: false,
             result: "",
-            displaySubmit: false
+            displaySubmit: false,
+            lastSubmitTime: -1// In minutes 
         }
     }
 
     componentDidMount() {
         this.displaySubmit();
+        this.getlastSubmitTime();
         this.isLoggedIn();
     }
 
@@ -52,6 +54,21 @@ class Submit extends React.Component {
         });
     }
 
+    getlastSubmitTime() {
+        $.ajax({
+            url: '/api/lastsubmittime',
+            type: 'GET',
+            success: (responseData) => {
+                var parsed = responseData["last_submitted"];
+                if (parsed) {
+                    this.setState({
+                        loggedIn: parsed
+                    });
+                }
+            }
+        });
+    }
+
     submitFile() {
         this.setState({
             display: true,
@@ -73,6 +90,7 @@ class Submit extends React.Component {
                     loading: false,
                     resultDisplay: true
                 });
+                this.state.getlastSubmitTime();
             },
             error: (errorData) => {
                 console.log(errorData);
@@ -98,6 +116,8 @@ class Submit extends React.Component {
                 {this.state.displaySubmit && <h1>Submit</h1>}
                 {!this.state.displaySubmit && <h1>Submissions are Closed</h1>}
                 {this.state.displaySubmit && <form id="submit-form"> 
+                {this.state.lastSubmitTime !== -1 &&<p>Last submission time: {this.state.lastSubmitTime}</p>}
+                {this.state.lastSubmitTime === -1 &&<p>No Current Submission</p>}
                     <p>Please select the file you would like to submit. Your file should be zipped</p>
                     <input type="file" name="upload" id="upload"/> 
                     <div className="submit-button" onClick={this.submitFile.bind(this)}>Upload File</div>

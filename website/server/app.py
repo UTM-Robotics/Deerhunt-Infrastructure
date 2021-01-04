@@ -36,7 +36,7 @@ app.config["MONGO_URI"] = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.nt
 client = MongoClient(app.config["MONGO_URI"])
 if PROD_FLAG:
     database = client.deerhunt_prod
-    verification_domain = 'mcss.utmrobotics.com'
+    verification_domain = 'https://mcss.utmrobotics.com'
 else:
     database = client.deerhunt_db
     verification_domain = 'localhost:8080'
@@ -99,7 +99,6 @@ def submit():
         abort(403)
     if 'upload' not in request.files:
         abort(400)
-    print(request.files)
     with TeamController(client, database) as team_api:
         team_document = team_api.get_user_team(session["username"])
         if team_document is None:
@@ -115,6 +114,20 @@ def submit():
 
     return "Zip submitted! Thanks"
 
+@app.route('/api/lastsubmittime', methods=['GET'])
+def get_last_submit():
+    '''
+    Instanstly saves a team's submission to /deerhunt/submissions/someTeamname/
+    Also removes zip after extracting.
+    '''
+    login_guard()
+    with TeamController(client, database) as team_api:
+        team_document = team_api.get_user_team(session["username"])
+        if team_document is None:
+            abort(400)
+    if not "last_submitted" in team_document:
+        abort(403)
+    return {"last_submitted": team_document["last_submitted"]}
 
 @app.route('/api/getqueue', methods=['GET'])
 def get_queue():
@@ -185,7 +198,8 @@ def scrimmage():
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.do_scrimmage(user, target_rank):
             abort(400,challenge_api.error)
-    return challenge_api.ret_val
+    
+    return {"game_id":challenge_api.ret_val}
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
@@ -441,7 +455,7 @@ def change_password():
     return 'Change successful'
 
 @app.route('/api/forgotpassword/<random>', methods=['GET', 'POST'])
-def ForgotPassword(random):
+def forgot_password(random):
     nep, cop, code= safe_get_reset_passwords()
     result = database.users.find_one({'code' : code})
     if result is None:

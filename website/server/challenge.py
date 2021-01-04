@@ -132,6 +132,6 @@ class ChallengeController:
             return False
         #Runs the match and returns the results
         game_result = GameController.run_game(container_path)
-        game_save = self.database.logs.insert_one({"winner": game_result[1], "data": game_result[0], "team_id": user_team["_id"]}).
+        game_save = self.database.logs.insert_one({"winner": game_result[1], "data": game_result[0], "team_id": user_team["_id"]})
         self.ret_val = game_save.inserted_id
         return True
