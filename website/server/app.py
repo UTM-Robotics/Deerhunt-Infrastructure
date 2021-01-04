@@ -185,7 +185,7 @@ def scrimmage():
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.do_scrimmage(user, target_rank):
             abort(400,challenge_api.error)
-    return "OK"
+    return challenge_api.ret_val
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
