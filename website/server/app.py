@@ -206,7 +206,7 @@ def getmatch():
     return jsonify(result['data']['maps'])
 
 
-@app.route("/api/teamgames")
+@app.route("/api/teamgames", methods=['GET'])
 def get_team_games():
     login_guard()
     with TeamController(client, database) as team_api:
