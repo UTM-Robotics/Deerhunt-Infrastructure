@@ -213,9 +213,8 @@ def get_team_games():
         team_document = team_api.get_user_team(session["username"])
         if team_document is None:
             abort(400)
-    team_id = ObjectId(team_document['_id'])
     ret = []
-    result = database.logs.find({"team_id": team_id})
+    result = database.logs.find({"team_id": team_document["_id"]})
     if result is None:
         abort(400)
     for log in result:
