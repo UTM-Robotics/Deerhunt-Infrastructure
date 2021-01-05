@@ -182,7 +182,7 @@ def challenge():
             abort(400,challenge_api.error)
     return "OK"
 
-@app.route('/api/scrimmage', methods=['GET'])
+@app.route('/api/scrimmage', methods=['POST'])
 def scrimmage():
     ''' Runs a match against a player at a given position in the leaderboard without
     changing ranks.
