@@ -9,7 +9,7 @@ from grid_fighters import GridFighters
 from client_connection import ClientConnection
 from tiles import WallTile, GroundTile
 
-MAX_TURNS = 100
+MAX_TURNS = 200
 
 #Retrieves the port and verbose flag from arguments
 parser = argparse.ArgumentParser()

@@ -18,14 +18,15 @@
             <h2 class="mt-5">Overview</h2>
             <p class="lead">The game is turn-based with two players competing against each other.
                 <br>The map is a grid, with a few maps in rotation. Each map is horizontal line symmetrical.
+                <br> Player 1 is always on the top of the map, with Player 2 on the bottom.
                 <br>There is an odd number of resource nodes on the map.
                 <br>There is fog of war which will restrict vision for both players.
-                <br>Each game lasts for 100 rounds or if one player's units are eliminated.
+                <br>Each game lasts for 200 rounds or if one player's units are eliminated.
             </p>
             <h2 class="mt-5">Objectives</h2>
             <p class="lead">There are two ways to win the game.
                 <br>1. Eliminate all of the enemy's units.
-                <br>2. Have more resources than the enemy by 100 turns. If resources are tied, Player 2 wins.
+                <br>2. Have more resources than the enemy by 200 rounds(ticks). If resources are tied, Player 2 wins.
             </p>
             <h2 class="mt-5">Fog of War</h2>
             <p class="lead">Players will only be able to see units 4 tiles away in a square.
@@ -73,8 +74,8 @@
 
             <h2 class="mt-5">Duplicating</h2>
             <p class="lead">Worker units can duplicate itself to create another worker unit or melee unit.
-                <br>Duplication costs 100 and 50 resources for melee and worker and take 4 turns to complete. During this time, the melee is locked
-                in place.
+                <br>Duplication costs 100 and 50 resources for melee and worker and take 4 turns to complete. 
+                <br> During duplication, the worker is locked in place.
                 <br>Use <code>unit.duplicate(direction)</code> to create a unit in the direction indicated.
             </p>
             <h2 class="mt-5">Stunning</h2>

@@ -23,8 +23,7 @@ class ChallengeButton extends React.Component {
             error: (err) => {
                 console.log(err);
                 this.props.errorCallback("fail_challenge");
-            },
-            timeout: 90000// sets timeout to 90 seconds,
+            }
         });
     }
     render() {

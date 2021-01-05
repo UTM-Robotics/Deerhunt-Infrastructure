@@ -30,10 +30,10 @@ class Home extends React.Component {
         this.isLoggedIn();
     }
 
-    addLoadingState(){
+    addLoadingState() {
         this.setState({
             errorMessage: "",
-            successMessage: "Your match is computing or in queue. May take 10-15 seconds or longer if ther is a queue."
+            successMessage: "Your match is computing or in queue. May a while if there is a queue."
         });
     }
     reloadAllData() {
@@ -42,31 +42,20 @@ class Home extends React.Component {
         this.getCanCompete();
     }
 
-    getQueue(){
+    getQueue() {
         $.ajax({
-             url: '/api/queue',
-             type: 'GET',
-             success: (responseData) => {
-                 this.setState({
-                     queue: responseData
-                 });
-             }
-         });
-     }
-
-    getCanCompete(){
-       /* $.ajax({
-            url: '/api/canchallenge',
+            url: '/api/queue',
             type: 'GET',
             success: (responseData) => {
                 this.setState({
-                    canCompete: responseData
+                    queue: responseData
                 });
             }
-        });*/
+        });
     }
-    getHasSubmitted() {
-         $.ajax({
+
+    getCanCompete() {
+        /* $.ajax({
              url: '/api/canchallenge',
              type: 'GET',
              success: (responseData) => {
@@ -74,7 +63,18 @@ class Home extends React.Component {
                      canCompete: responseData
                  });
              }
-         });
+         });*/
+    }
+    getHasSubmitted() {
+        $.ajax({
+            url: '/api/canchallenge',
+            type: 'GET',
+            success: (responseData) => {
+                this.setState({
+                    canCompete: responseData
+                });
+            }
+        });
     }
 
     getRank() {
@@ -92,26 +92,25 @@ class Home extends React.Component {
     addCompeteError(type) {
         var message = "";
         if (type === 'fail_scrimmage') {
-            message = "Cannot scrimmage against this player. Are you in queue?"
+            message = "Cannot scrimmage against this player. you may have scrimmaged\
+             in the last minute. Please wait for cooldown"
         }
         else if (type === 'fail_challenge') {
-            message = "Cannot challenge this player. Are you in queue?"
+            message = "Cannot challenge this player. Are you in queue? Otherwise,\
+             you may have challenged in the last 5 minutes. Please wait for cooldown"
         }
-        this.setState({ errorMessage: message });
+        this.setState({
+            errorMessage: message,
+            successMessage: ""
+        });
     }
 
     addSuccessMessage(message) {
-        if(message === ""){
-            this.setState({
-                errorMessage: "",
-                successMessage: "Success, we are computing your match! Check your team for the results."
-            });
-            return;
-        }
         this.setState({
             errorMessage: "",
-            successMessage: "Success, we are done computing your crimmage! GameID is: " + message 
+            successMessage: "Success, we are computing your match! Check your team for the results."
         });
+        return;
     }
 
     getLeaderboard() {
@@ -166,11 +165,11 @@ class Home extends React.Component {
                 <p className='error-message'>{this.state.errorMessage}</p>
                 <p className='success-message'>{this.state.successMessage}</p>
 
-                <p>Competing is throttled at once every 5 minutes. Be sure when you click that button!</p>
-                 <p>Please note that a battle takes anywhere from 5-15 seconds to run so the page may look like it
-                        is loading during that time. In addition if other people are challenging you will be queued and
-                         it will take longer for your challenge to go through.
-                    </p> 
+                <p>Challenging is throttled at once every 5 minutes, scrimmaging once every minute. Be sure when you click that button!</p>
+                <p>Please note that a battle takes anywhere from 5-15 seconds to run so the page may look like it
+                is loading during that time. In addition if other people are challenging you will be queued and
+                it will take longer for your challenge to go through.
+                    </p>
                 {this.state.leaderboard.length > 0 && this.state.displayLeaderboard && <table align="center">
                     <thead>
                         <tr>
