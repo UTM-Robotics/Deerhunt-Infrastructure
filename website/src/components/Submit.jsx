@@ -62,7 +62,7 @@ class Submit extends React.Component {
                 var parsed = responseData["last_submitted"];
                 if (parsed) {
                     this.setState({
-                        loggedIn: parsed
+                        lastSubmitTime: parsed
                     });
                 }
             }

@@ -67,7 +67,7 @@ class GameBoard extends React.Component {
             this.props.display && <div className="board">
                 <h1>Game Board</h1>
                 <h3>{this.state.time}</h3>
-                <h3>P1: {p1} - P2: {p2}</h3>
+                <h3>P1(Defender): {p1} - P2(Challenger): {p2}</h3>
                 <h3>Turn Count: {this.state.iter + 1}</h3>
                 <table>
                 <tbody id="table-body">

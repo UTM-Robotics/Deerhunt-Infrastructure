@@ -120,7 +120,7 @@ def get_last_submit():
     Instanstly saves a team's submission to /deerhunt/submissions/someTeamname/
     Also removes zip after extracting.
     '''
-    login_guard()
+
     with TeamController(client, database) as team_api:
         team_document = team_api.get_user_team(session["username"])
         if team_document is None:
@@ -182,7 +182,7 @@ def challenge():
             abort(400,challenge_api.error)
     return "OK"
 
-@app.route('/api/scrimmage', methods=['POST'])
+@app.route('/api/scrimmage', methods=['GET'])
 def scrimmage():
     ''' Runs a match against a player at a given position in the leaderboard without
     changing ranks.
@@ -198,8 +198,7 @@ def scrimmage():
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.do_scrimmage(user, target_rank):
             abort(400,challenge_api.error)
-    
-    return {"game_id":challenge_api.ret_val}
+    return {"game_id":str(challenge_api.ret_val)}
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
