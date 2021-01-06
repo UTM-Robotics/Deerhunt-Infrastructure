@@ -231,7 +231,6 @@ def get_team_games():
     result = database.logs.find({"$query":{"team_id": team_id}, "$orderby": {"_id": -1}})
     if result is None:
         return jsonify(ret)
-    result = result.sort('_id',-1) 
     for log in result:
         ret.append(str(log["_id"]))
     return jsonify(ret)
