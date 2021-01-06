@@ -20,6 +20,7 @@ class Home extends React.Component {
         this.reloadAllData = this.reloadAllData.bind(this);
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
         this.addLoadingState = this.addLoadingState.bind(this);
+        this.scrimmageCallback =this.scrimmageCallback.bind(this);
     }
 
     componentDidMount() {
@@ -65,6 +66,7 @@ class Home extends React.Component {
              }
          });*/
     }
+
     getHasSubmitted() {
         $.ajax({
             url: '/api/canchallenge',
@@ -102,6 +104,30 @@ class Home extends React.Component {
         this.setState({
             errorMessage: message,
             successMessage: ""
+        });
+    }
+
+    scrimmageCallback(rank){
+        const requestData = JSON.stringify({
+            "target_rank": rank,
+        });
+        this.addLoadingState();
+
+        $.ajax({
+            url: '/api/scrimmage',
+            type: 'POST',
+            data: requestData,
+            async: true,
+            timeout: 90000,
+            contentType: 'application/json',
+            success: (responseData) => {
+                this.reloadAllData();
+                this.addSuccessMessage("");
+                console.log("We did a thing, response received.");
+            },
+            error: (err) => {
+                console.log(err);
+            },
         });
     }
 
@@ -200,10 +226,7 @@ class Home extends React.Component {
                                     {(key != this.state.rank && this.state.canCompete) &&
                                         <ScrimmageButton
                                             rank={key}
-                                            loadingCallback={this.addLoadingState}
-                                            errorCallback={this.addCompeteError}
-                                            successCallback={this.addSuccessMessage}
-                                            reloadCallback={this.reloadAllData}
+                                            scrimmageCallback={this.scrimmageCallback}
                                         />
                                     }
                                 </td>

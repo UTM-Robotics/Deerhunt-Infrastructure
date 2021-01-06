@@ -198,7 +198,7 @@ def scrimmage():
     with ChallengeController(client, database) as challenge_api:
         if not challenge_api.do_scrimmage(user, target_rank):
             abort(400,challenge_api.error)
-    return {"game_id":str(challenge_api.ret_val)}
+    return "Ok"
 
 @app.route('/api/getmatch', methods=['GET', 'POST'])
 def getmatch():
@@ -227,9 +227,9 @@ def get_team_games():
         if team_document is None:
             abort(400)
     ret = []
-    result = database.logs.find({"team_id": team_document["_id"]})
+    result = database.logs.find({"$query":{"team_id": team_id}, "$orderby": {"_id": -1}})
     if result is None:
-        abort(400)
+        return jsonify(ret)
     for log in result:
         ret.append(str(log["_id"]))
     return jsonify(ret)
