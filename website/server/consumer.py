@@ -2,7 +2,7 @@ from pymongo import MongoClient
 from teams import TeamController
 from game_runner import GameController
 from storage import StorageAPI
-
+from datetime import datetime
 DATABASE_URL = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
 PROD_FLAG = False
 
@@ -31,7 +31,7 @@ class Consumer:
                 match_string = self.create_match(match)
                 if match_string is not None and not isinstance(match_string, int):
                     result = GameController.run_game(self.create_match(match))
-                    self.database.logs.insert_one({"winner": result[1], "data": result[0], "team_id": self.challenger['_id']})
+                    self.database.logs.insert_one({"winner": result[1], "data": result[0], "team_id": self.challenger['_id'], "modified": datetime.now()})
                     self.update_leaderboard(result)
                 #Removes the match from the submission queue
     
