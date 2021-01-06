@@ -60,7 +60,7 @@ class GridFighters():
         unit.id = self.next_id
         player[str(self.next_id)] = unit
         self.next_id += 1
-
+    
         self.all_units['{},{}'.format(unit.x, unit.y)] = unit
 
     def move_unit(self, x, y, unit):
@@ -189,7 +189,7 @@ class GridFighters():
         x = unit.x
         y = unit.y
         x, y = Move.transform(x, y, dir)
-        if isinstance(self.grid[y][x], GroundTile):
+        if isinstance(self.grid[y][x], GroundTile) and not '{},{}'.format(x,y) in self.all_units:
             return True
 
         return False
