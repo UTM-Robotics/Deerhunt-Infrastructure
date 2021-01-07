@@ -57,7 +57,7 @@ class ChallengeController:
         timer_string = "scrimmage_time" if is_scrimmage else "challenge_time"
         curr_time = datetime.now()
         if timer_string in user_team:
-            if curr_time-user_team[timer_string] < timedelta(seconds=5):
+            if curr_time-user_team[timer_string] < timedelta(minutes=5):
                 self.error = self.TIMEOUT_ERROR
                 return None
         
