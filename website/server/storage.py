@@ -59,10 +59,13 @@ class StorageAPI:
             # not first time, check if 5 minute have passed
             last_submitted = team_file["last_submitted"] # this should be a datetime.datetime object
             current_time = datetime.datetime.now()
-            # print("last_submitted: " + str(last_submitted))
-            if (last_submitted + datetime.timedelta(minutes=500) ) < current_time:
+            print("Attempting submission for team: ",team_file["name"])
+            print("last_submitted: " + str(last_submitted))
+            print( "delta: ", last_submitted + datetime.timedelta(minutes=1))
+            print("current_time: " + str(current_time))
+            if (last_submitted + datetime.timedelta(minutes=5) ) < current_time:
                 # not enough time has passed
-                # print("5 MINUTES NOT PASSED YET!")
+                print("5 MINUTES NOT PASSED YET!")
                 self.abort_transaction(self.FAILED_NEED_MORE_TIME)
                 return False
             else:
