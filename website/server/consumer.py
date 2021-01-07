@@ -33,6 +33,16 @@ class Consumer:
                     result = GameController.run_game(self.create_match(match))
                     self.database.logs.insert_one({"winner": result[1], "data": result[0], "team_id": self.challenger['_id'], "modified": datetime.now()})
                     self.update_leaderboard(result)
+                elif match_string is None:
+                    return
+                elif match_string == StorageAPI.P1_ZIP_ERROR: # Handle invalid zip file.
+                    match_result = {'lines': [],
+                        'maps': [],
+                        'errors': [],
+                        'build_id': []
+                        }
+                    result = (match_result,1)
+                    self.update_leaderboard(result)
                 #Removes the match from the submission queue
     
     def create_match(self, match: dict) -> str:
