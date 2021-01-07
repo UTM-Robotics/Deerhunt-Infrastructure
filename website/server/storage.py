@@ -63,7 +63,7 @@ class StorageAPI:
             print("last_submitted: " + str(last_submitted))
             print( "delta: ", last_submitted + datetime.timedelta(minutes=1))
             print("current_time: " + str(current_time))
-            if (last_submitted + datetime.timedelta(minutes=5) ) < current_time:
+            if (last_submitted + datetime.timedelta(minutes=5) ) < current_time and False:
                 # not enough time has passed
                 print("5 MINUTES NOT PASSED YET!")
                 self.abort_transaction(self.FAILED_NEED_MORE_TIME)
