@@ -70,7 +70,7 @@ class Consumer:
             print("Can not challenge own team")
             return
 
-        return StorageAPI.prep_match_container(self.challenger['_id'], self.defender['_id'])
+        return StorageAPI.prep_match_container(self.defender['_id'], self.challenger['_id'])
 
     def update_leaderboard(self, result: tuple):
         '''update_leaderboard gets the results from the recent game and updates the leaderboard according to the results'''
@@ -95,15 +95,17 @@ class Consumer:
             current_leaderboard = self.database.leaderboard.find_one({"type" : "current"})
 
         #If the attacker wins insert them into the defenders spot
-        if result[0]['lines'][-1] == 'Winner: p1':
-            print("Player 1 won")
-            if defending_rank > attacking_rank:
+        if result[0]['lines'][-1] == 'Winner: p2':
+            print("Player 2 won")
+            if defending_rank < attacking_rank:
                 #moves the attacker in front of defender on the leaderboard
+                print("Starting leaderboard {}".format(current_leaderboard["teams"]))
                 new_leaderboard = current_leaderboard["teams"]
                 if attacking_rank != -1:
                     new_leaderboard.remove(self.challenger['name'])
                 new_leaderboard.insert(defending_rank, self.challenger['name'])
                 attacking_rank = defending_rank
+                print("Updated leaderboard to {}".format(new_leaderboard))
                 # self.database.leaderboard.update_one({"_id": current_leaderboard["_id"]}, {"$set": {"teams": []}})
                 self.database.leaderboard.update_one({"_id": current_leaderboard["_id"]}, {"$set": {"teams": new_leaderboard}})
 
@@ -112,7 +114,7 @@ class Consumer:
             print("Attacker not on board and lost add to end")
             new_leaderboard = current_leaderboard["teams"]
             new_leaderboard.append(self.challenger['name'])
-            self.database.leaderboard.update_one({"type": "current"}, {"$set" : {"teams": new_leaderboard}}) 
+            self.database.leaderboard.update_one({"type": "current"}, {"$set" : {"teams": new_leaderboard}})
         self.session.commit_transaction()
 
 if __name__ == "__main__":
