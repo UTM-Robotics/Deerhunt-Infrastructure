@@ -97,13 +97,15 @@ class Consumer:
         #If the attacker wins insert them into the defenders spot
         if result[0]['lines'][-1] == 'Winner: p1':
             print("Player 1 won")
-            new_leaderboard = current_leaderboard["teams"]
-            if attacking_rank != -1: 
-                new_leaderboard.remove(self.challenger['name'])
-            new_leaderboard.insert(defending_rank, self.challenger['name'])
-            attacking_rank = defending_rank
-            # self.database.leaderboard.update_one({"_id": current_leaderboard["_id"]}, {"$set": {"teams": []}})
-            self.database.leaderboard.update_one({"_id": current_leaderboard["_id"]}, {"$set": {"teams": new_leaderboard}})
+            if defending_rank > attacking_rank:
+                #moves the attacker in front of defender on the leaderboard
+                new_leaderboard = current_leaderboard["teams"]
+                if attacking_rank != -1:
+                    new_leaderboard.remove(self.challenger['name'])
+                new_leaderboard.insert(defending_rank, self.challenger['name'])
+                attacking_rank = defending_rank
+                # self.database.leaderboard.update_one({"_id": current_leaderboard["_id"]}, {"$set": {"teams": []}})
+                self.database.leaderboard.update_one({"_id": current_leaderboard["_id"]}, {"$set": {"teams": new_leaderboard}})
 
         #Adds attacker to bottom if it is its first submission to the leaderboard
         if attacking_rank == -1:
