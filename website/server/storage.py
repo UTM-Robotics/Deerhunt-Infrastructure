@@ -59,10 +59,10 @@ class StorageAPI:
             # not first time, check if 5 minute have passed
             last_submitted = team_file["last_submitted"] # this should be a datetime.datetime object
             current_time = datetime.datetime.now()
-            print("last_submitted: " + str(last_submitted))
-            if (last_submitted + datetime.timedelta(minutes=5) ) > current_time:
+            # print("last_submitted: " + str(last_submitted))
+            if (last_submitted + datetime.timedelta(minutes=500) ) < current_time:
                 # not enough time has passed
-                print("5 MINUTES NOT PASSED YET!")
+                # print("5 MINUTES NOT PASSED YET!")
                 self.abort_transaction(self.FAILED_NEED_MORE_TIME)
                 return False
             else:
@@ -107,6 +107,15 @@ class StorageAPI:
                                             f'{build_path}/p1'):
             return StorageAPI.P1_ZIP_ERROR
         return build_path
+
+    '''
+    @staticmethod
+    def is_zip(file_path):
+        try: 
+            return ZipFile.is_zipfile(f'{file_path}.zip')
+        except Exception as e:
+            return False
+    '''
 
     @staticmethod
     def copy_zip_contents(src, dest):

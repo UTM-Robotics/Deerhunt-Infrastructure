@@ -128,7 +128,8 @@ class ChallengeController:
         #Prepares the files to run the match
         container_path = StorageAPI.prep_match_container(\
             user_team["_id"],target_team["_id"])
-        if container_path is int:
+        print("Path:",container_path)
+        if isinstance(container_path,int):
             return False
         #Runs the match and returns the results
         game_result = GameController.run_game(container_path)
