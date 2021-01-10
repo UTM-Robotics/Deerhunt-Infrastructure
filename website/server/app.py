@@ -27,7 +27,7 @@ from consumer import Consumer
 '''
 Application Run Flags
 '''
-PROD_FLAG = True
+PROD_FLAG = False
 # PROD_FLAG = False
 
 '''Main wrapper for app creation'''
@@ -226,7 +226,6 @@ def get_team_games():
         team_document = team_api.get_user_team(session["username"])
         if team_document is None:
             abort(400)
-    team_id = ObjectId(team_document['_id'])
     ret = []
     result = database.logs.find({"$query":{"team_id": team_id}, "$orderby": {"_id": -1}})
     if result is None:
@@ -401,7 +400,7 @@ def reset_password():
     newvalues = {'$set': {'code': code, 'time': str(datetime.now())}}
     database.users.update_one(query, newvalues)
     msg = '\n\nPlease click on the link below to reset your password.\n\n{0}\n\nTechnical Team\nUTM Robotics'.format(
-        verification_domain+"/forgotpassword/"+code)
+        "https://"+verification_domain+"/forgotpassword/"+code)
     email_status = EmailBot.sendmail(user, "BattleCode:Deerhunt Password Reset", msg)
     if not email_status:
         database.errors.insert_one({"error": "Email could not send, error ",
@@ -694,12 +693,7 @@ if __name__ == '__main__':
     app.logger.handlers = gunicorn_logger.handlers
     app.logger.setLevel(gunicorn_logger.level)
     if PROD_FLAG:
-        app.run(host='0.0.0.0', port=443) # The cert is included when gunicorn is called.
 
-        # app.run(host='0.0.0.0', port=443, ssl_context=(
-            # '/home/deerhuntadmin/letsencrypt/fullchain.pem', '/home/deerhuntadmin/letsencrypt/privkey.pem'))
-        # app.run(host='0.0.0.0', port=80, threaded=True, ssl_context=(
-        #     '/etc/letsencrypt/live/mcss.utmrobotics.com/fullchain.pem', '/etc/letsencrypt/live/mcss.utmrobotics.com/privkey.pem'))
+        app.run(host='0.0.0.0', port=443) # The cert is included when gunicorn is called.
     else:
         app.run(host='0.0.0.0', port=8080, threaded=True, debug=True)
-        # app.run(host='0.0.0.0', port=8080, threaded=True, debug=True, ssl_context='adhoc')
