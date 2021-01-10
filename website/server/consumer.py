@@ -5,7 +5,7 @@ from storage import StorageAPI
 from datetime import datetime
 from time import sleep
 DATABASE_URL = "mongodb+srv://utmrobotics:1d3erhunted3089@deerhunt.ntpnz.mongodb.net/<dbname>?retryWrites=true&w=majority"
-PROD_FLAG = True
+PROD_FLAG = False
 
 class Consumer:
     '''Consumer retrieves matches from the submission queue, runs them and updates the leaderboard '''
