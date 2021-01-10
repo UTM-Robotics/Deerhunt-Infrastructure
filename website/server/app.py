@@ -62,10 +62,10 @@ can_submit = True
 submitting = {} # dict looks like: {'some team name': }
 
 #Creates and runs the consumer thread for tournaments
-consumer = Consumer()
-consumer_thread = threading.Thread(target=consumer.run)
-consumer_thread.daemon = True
-consumer_thread.start()
+#consumer = Consumer()
+#consumer_thread = threading.Thread(target=consumer.run)
+#consumer_thread.daemon = True
+#consumer_thread.start()
 
 # tournament_timer = threading.Thread(target=TournamentController.start_scheduler, args=(client, database, 3))
 # t1 = TournamentController(client, database)
