@@ -47,6 +47,10 @@ class GameController:
                         }
         if lines[-1] == 'Winner: p2':
             winner = 2
-        else:
+        elif lines[-1] == 'Winner: p1':
+            winner = 2
+        elif "Waiting for client 2..." in lines:
             winner = 1
+        else: 
+            winner = 2
         return (match_result, winner)

@@ -17,6 +17,7 @@ class Home extends React.Component {
 
         };
         this.addCompeteError = this.addCompeteError.bind(this);
+        this.onScrimmageError = this.onScrimmageError(this);
         this.reloadAllData = this.reloadAllData.bind(this);
         this.addSuccessMessage = this.addSuccessMessage.bind(this);
         this.addLoadingState = this.addLoadingState.bind(this);
@@ -34,7 +35,7 @@ class Home extends React.Component {
     addLoadingState() {
         this.setState({
             errorMessage: "",
-            successMessage: "Your match is computing or in queue. May a while if there is a queue."
+            successMessage: "Your match is computing or in queue. If your game computes, it will appear in Team History."
         });
     }
     reloadAllData() {
@@ -91,6 +92,11 @@ class Home extends React.Component {
         });
     }
 
+    onScrimmageError(){
+        console.log("OnScrimmageError");
+        this.addCompeteError('fail_scrimmage');
+    }
+
     addCompeteError(type) {
         var message = "";
         if (type === 'fail_scrimmage') {
@@ -125,9 +131,9 @@ class Home extends React.Component {
                 this.addSuccessMessage("");
                 console.log("We did a thing, response received.");
             },
-            error: (err) => {
-                console.log(err);
-            },
+            statusCode:{
+                400:this.onScrimmageError
+            }
         });
     }
 

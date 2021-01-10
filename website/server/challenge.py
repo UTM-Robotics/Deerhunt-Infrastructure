@@ -57,7 +57,7 @@ class ChallengeController:
         timer_string = "scrimmage_time" if is_scrimmage else "challenge_time"
         curr_time = datetime.now()
         if timer_string in user_team:
-            if curr_time-user_team[timer_string] < timedelta(seconds=5):
+            if curr_time-user_team[timer_string] < timedelta(minutes=5):
                 self.error = self.TIMEOUT_ERROR
                 return None
         
@@ -128,7 +128,8 @@ class ChallengeController:
         #Prepares the files to run the match
         container_path = StorageAPI.prep_match_container(\
             user_team["_id"],target_team["_id"])
-        if container_path is int:
+        print("Path:",container_path)
+        if isinstance(container_path,int):
             return False
         #Runs the match and returns the results
         game_result = GameController.run_game(container_path)

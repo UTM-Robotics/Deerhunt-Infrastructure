@@ -265,7 +265,7 @@ class Teams extends React.Component {
                     <div className="send-invite-button" onClick={this.sendInvite.bind(this)}>Send Invite</div>
                 </form>
                 {cardsArray}
-                <h3>History</h3>
+                <h3>History (Recent First)</h3>
                 {gameCards}
             </div>);
     }
