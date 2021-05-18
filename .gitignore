@@ -7,4 +7,14 @@ __pycache__/
 merge-dev.sh
 .vscode/
 venv/
-.vscode/settings.json
+*.swp
+*.pem
+*.pyc
+*.DS_Store
+.cache
+snickers_env/*
+snickers-env/*
+node_modules
+build
+__pycache__
+src/assets/styles/main.css
