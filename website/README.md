@@ -1,14 +1,13 @@
-* Submission Website
-  To setup the server for use run the following commands:
-  
-  #+BEGIN_SRC bash
-    sudo pip3 install -r requirements.txt
-    npm install
-    ./website-setup.sh 
-  #+END_SRC
+# Submission Website
 
-  To run the server run:
+To setup the server for use run the following commands:
+<pre>
+sudo pip3 install -r requirements.txt
+npm install
+./website-setup.sh 
+</pre>
 
-  #+BEGIN_SRC bash
-    npm run production
-  #+END_SRC
+To run the server run:
+<pre>
+npm run production
+</pre>
