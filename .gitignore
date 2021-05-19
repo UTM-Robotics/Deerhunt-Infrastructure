@@ -13,8 +13,6 @@ venv/
 *.DS_Store
 .cache
 snickers_env/*
-snickers-env/*
-node_modules
-build
-__pycache__
+node_modules/
+build/
 src/assets/styles/main.css
