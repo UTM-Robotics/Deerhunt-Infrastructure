@@ -1,0 +1,7 @@
+Flask
+Flask-Cors
+flask-restful
+pymongo
+dnspython
+passlib
+pytest
