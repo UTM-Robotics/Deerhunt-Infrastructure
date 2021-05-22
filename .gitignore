@@ -5,3 +5,4 @@ venv/
 *.pyc
 node_modules/
 build/
+pydocs/
