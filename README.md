@@ -73,5 +73,3 @@ $ ssh linalex7@dh2026pc01.utm.utoronto.ca
 
 ##  Production Instructions
 To be complete when infrastructure is ready for production.
-
-Sam
