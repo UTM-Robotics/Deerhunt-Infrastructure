@@ -13,18 +13,20 @@ This README will be update accordingly as the project moves forward.
 │   ├── public/
 │   ├── README.md
 │   └── src/
+├── tests/
+│   ├── ref
+│   └── test_auth.py
+├── server/
+│   ├── app.py
+│   └── requirements.txt
 ├── install.sh
-├── pytest/
-├── README.md
-└── server/
-    ├── app.py
-    └── requirements.txt
+└── README.md
 ```
 **deerhunt/**: Everything to do with the frontend lives here. You will find npm related files here as well as the frontend source files.
 
 **server/**: All backend source files live in this folder.
 
-**pytest/**: All unittests at least for the backend will live here. Currently empty but will be populated soon. Make sure you are familiar with  [Pytest Framework](https://docs.pytest.org/en/6.2.x/#).
+**tests/**: All unittests at least for the backend will live here. Currently empty but will be populated soon. Make sure you are familiar with  [Pytest Framework](https://docs.pytest.org/en/6.2.x/#).
 
 ## Requirements
 ```
@@ -75,4 +77,3 @@ $ ssh linalex7@dh2026pc01.utm.utoronto.ca
 
 ##  Production Instructions
 To be complete when infrastructure is ready for production.
-
