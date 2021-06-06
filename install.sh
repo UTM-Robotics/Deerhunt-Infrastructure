@@ -20,5 +20,5 @@ pip3 install --upgrade -r ./server/requirements.txt
 
 # Installs npm node_modules
 pushd deerhunt
-npm up
+npm install
 popd
