@@ -11,7 +11,7 @@ api = Api(app)
 
 class Auth(Resource):
 	def post(self):
-		return make_response("Post workss\n", HTTPStatus.OK)
+		return make_response("Post works\n", HTTPStatus.OK)
 
 api.add_resource(Auth, '/register')
 
