@@ -1,26 +1,32 @@
-
 #  Official Deerhunt Infrastructure
 
 This is the official repo of the Deerhunt Website developed and run by UTM Robotics Club. This is an open source project maintained by our students.
 
 This README will be update accordingly as the project moves forward.
 
-##  Folder Structure
-The tree view of the root of the repository. 
+## Folder Structure
 ```
 .
-├── game/
-├── .git/
-├── .gitignore
-├── infrastructure/
-├── old_files/
+├── deerhunt/
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── public/
+│   ├── README.md
+│   └── src/
+├── tests/
+│   ├── ref
+│   └── test_auth.py
+├── server/
+│   ├── app.py
+│   └── requirements.txt
+├── install.sh
 └── README.md
 ```
-**game/**: Source files for original Battle Bots game which was run in past events. Once the new infrastructure is built, the game will need to be ported over. 
+**deerhunt/**: Everything to do with the frontend lives here. You will find npm related files here as well as the frontend source files.
 
-**infrastructure/**: Source files and development environment for the new infrastructure. See the README.md inside for more details.
+**server/**: All backend source files live in this folder.
 
-**old_files/**: Contains all files from the previous iteration of 
+**tests/**: All unittests at least for the backend will live here. Currently empty but will be populated soon. Make sure you are familiar with  [Pytest Framework](https://docs.pytest.org/en/6.2.x/#).
 
 ## Requirements
 ```
@@ -44,7 +50,6 @@ It is important that you have a Linux installation such as Ubuntu / Debian which
 ```
 $ sudo apt update
 $ sudo apt upgrade -y
-$ cd infrastructure
 $ source ./install.sh
 ```
 
@@ -53,7 +58,6 @@ Make sure you have [Homebrew](https://brew.sh/) installed and updated before run
 ```
 $ brew update
 $ brew doctor
-$ cd infrastructure
 $ source ./install.sh
 ```
 
@@ -73,5 +77,3 @@ $ ssh linalex7@dh2026pc01.utm.utoronto.ca
 
 ##  Production Instructions
 To be complete when infrastructure is ready for production.
-
-Sam
