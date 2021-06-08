@@ -37,7 +37,7 @@ npm
 ```
  
 ##  Development Setup Instructions
-I encourage you to go through the install script to understand what it is doing before running it. Once it runs you should have a folder called **venv/** created and your terminal should look something like this:
+I encourage you to go through the install script to understand what it is doing before running it. Once it runs you should have a folder called **venv/** created. After running the install script you have to source your venv folder and your terminal should look something like this:
 ```
 $ (venv) adl@Cronos ~/git/deerhunt2020/infrastructure
 ``` 
@@ -50,7 +50,9 @@ It is important that you have a Linux installation such as Ubuntu / Debian which
 ```
 $ sudo apt update
 $ sudo apt upgrade -y
-$ source ./install.sh
+$ cd Deerhunt-Infrastructure
+$ ./install.sh
+$ source venv/bin/activate
 ```
 
 ### Mac OSX
@@ -58,7 +60,9 @@ Make sure you have [Homebrew](https://brew.sh/) installed and updated before run
 ```
 $ brew update
 $ brew doctor
-$ source ./install.sh
+$ cd Deerhunt-Infrastructure
+$ ./install.sh
+$ source venv/bin/activate
 ```
 
 
