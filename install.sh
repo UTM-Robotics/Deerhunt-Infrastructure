@@ -75,3 +75,4 @@ fi
 
 printf "\n\n\nInstallation finished. Don't forget to activate venv by doing:\n"
 printf "   $ source venv/bin/activate\n\n"
+
