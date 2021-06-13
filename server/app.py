@@ -11,7 +11,8 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
-# Mongo = MongoClient(Configuration.MONGODB_URI)
+# Mongo = MongoClient(Configuration.MONGODB_URI).deerhunt_prod
+# Mongo = MongoClient(Configuration.MONGODB_URI).deerhunt_db
 
 
 api.add_resource(RegisterRoute, '/register')
