@@ -3,6 +3,7 @@ from email.message import EmailMessage
 import os
 from ..config import Configuration
 
+
 Email_Titles = {'registration': 'Welcome to Deerhunt!'}
 
 
@@ -22,7 +23,6 @@ class EmailBot:
         pass
 
     def build_message(self):
-        print(os.getcwd())
         with open('EmailBot/{}.html'.format(self.purpose)) as file:
             self.msg = EmailMessage()
             self.msg.set_content(file.read(), subtype='html')
@@ -32,6 +32,5 @@ class EmailBot:
     def send(self, receiver):
         with smtplib.SMTP_SSL("smtp.gmail.com", self.port, context=self.context) as email:
             email.login(self.sender, self.password)
-            # email.sendmail(self.sender, '{}@mail.utoronto.ca'.format(receiver), self.message)
             self.msg['To'] = '{}@mail.utoronto.ca'.format(receiver)
             email.send_message(self.msg)
