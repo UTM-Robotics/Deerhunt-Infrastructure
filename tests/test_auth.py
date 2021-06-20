@@ -1,54 +1,30 @@
 import pytest
 import requests
 import os
+import imaplib
 
-test_creds = {'email': 'testemail@mail.utoronto.ca', 'password': 'tester'}
+from .testbase import BaseTester
 
-class BaseTester:
-    '''
-    Parent class for all diff based testing.
-    '''
-
-    def __init__(self):
-        self.basedir = os.getcwd()
-        self.outdir = self.basedir+'/out'
-        self.refdir = self.basedir+'/ref'
-
-    def __enter__(self):
-        self.create_dirs()
-        return self
-        
-
-    def __exit__(self, type, value, tb):
-        pass
-
-
-    def create_dirs(self):
-        if not os.path.isdir(self.outdir):
-            os.mkdir(self.outdir)
-
-
-    def run(self, testname, result):
-        with open('{}/{}.out'.format(self.outdir, testname), 'w') as f:
-            f.write(result)
-        self.diff_check(testname)
-        
-
-    def diff_check(self, testname):
-        with open('{}/{}.ref'.format(self.refdir, testname), 'r') as ref, \
-            open('{}/{}.out'.format(self.outdir, testname), 'r') as out:
-            ref_text = ref.read()
-            out_text = out.read()
-            if (ref_text == out_text):
-                assert True
-                os.remove('{}/{}.out'.format(self.outdir, testname))
-            else:
-                assert ref_text == out_text
-                
+TEST_EMAIL   = 'UTMRoboticsTestingRecv@gmail.com'
+TEST_PASSWD    = 'ptPXDCVRcMh3Gif'
+IMAP_SERVER = 'imap.gmail.com'
+IMAP_PORT   = 993
 
 
 def test_register(request):
     testname = request.node.name
-    r = requests.post('http://127.0.0.1:5000/register', data = test_creds)
+    r = requests.post('http://127.0.0.1:5000/register', json = {'email': 'UTMRoboticsTestingRecv@gmail.com', 'password': 'ptPXDCVRcMh3Gif'})
     with BaseTester() as test:
         test.run(testname, r.text)
+
+
+def test_register_email(request):
+    testname = request.node.name
+    mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+    mail.login(TEST_EMAIL, TEST_PASSWD)
+    mail.select('inbox')
+    # result, data = mail.search(None, '(FROM utmroboticstesting SUBJECT "Welcome to Deerhunt!")')
+    result, data = mail.fetch('1', '(BODY.PEEK[TEXT])')
+    # result, data = mail.fetch('1', '(RFC2822)')
+    # Get email contents and match against ref.
+    
