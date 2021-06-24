@@ -1,5 +1,5 @@
 import pytest
-
+import getpass
 
 
 def pytest_addoption(parser):
@@ -14,4 +14,6 @@ def flaskaddr(request):
 
 @pytest.fixture
 def recvemail(request):
-    return request.config.getoption('--recvemail')
+    p = getpass.getpass("\nEmail Password: ")
+    email = request.config.getoption('--recvemail')
+    return f'{email}:{p}'

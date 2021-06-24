@@ -1,4 +1,14 @@
 import os
+import re
+
+
+
+EMAIL_CODE_REGEX = re.compile(r'<p>Your registration code is <strong>(?P<code>[0-9a-zA-Z]{8})</strong></p>')
+
+
+def filter_code(data):
+    return re.sub(EMAIL_CODE_REGEX, '<CODE>', data)
+
 
 class BaseTester:
     '''
