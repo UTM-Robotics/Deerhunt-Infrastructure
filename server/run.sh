@@ -19,8 +19,8 @@ export SECRET_KEY=
 # Non Flask environment variables defined here.
 # Included in through config.py
 export MONGODB_URI=
-export FROM_EMAIL_ADDR=UTMRoboticsTesting@gmail.com
-export FROM_EMAIL_PASS=ZhCxeCnufQ6Tn46
+export FROM_EMAIL_ADDR=
+export FROM_EMAIL_PASS=
 
 # Running app.py
 flask run
