@@ -24,7 +24,7 @@ class EmailBot:
     def build_message_registration(self, code):
         with open('EmailBot/{}.html'.format('registration')) as file:
             self.msg = EmailMessage()
-            self.msg.set_content(file.read().replace('{{}}', code), subtype='html')
+            self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'https://{Configuration.FLASK_ADDR}/verify/{code}'), subtype='html')
         self.msg['Subject'] = Email_Titles['registration']
         self.msg['From'] = self.sender
 
@@ -32,5 +32,6 @@ class EmailBot:
         with smtplib.SMTP_SSL("smtp.gmail.com", self.port, context=self.context) as email:
             email.login(self.sender, self.password)
             # self.msg['To'] = '{}@mail.utoronto.ca'.format(receiver)
+            # assumption that user inputs their entire uoft email.
             self.msg['To'] = receiver
             email.send_message(self.msg)

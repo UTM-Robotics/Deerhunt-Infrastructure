@@ -1,6 +1,6 @@
-from flask_restful import Api, Resource
-from flask import make_response, request
 from http import HTTPStatus
+from flask import make_response, request
+from flask_restful import Api, Resource
 
 from ..EmailBot.emailbot import EmailBot
 from .codegenerator import CodeGenerator

@@ -7,10 +7,6 @@ class CodeGenerator:
     Attributes:
     """
 
-    # def __init__(self, email):
-    #     self.email = email
-
-    # def __enter__(self, )
 
     def generate(code_length) -> str:
         """

@@ -16,11 +16,7 @@ export TESTING=
 export SECRET_KEY=
 
 
-# Non Flask environment variables defined here.
-# Included in through config.py
-export MONGODB_URI=
-export FROM_EMAIL_ADDR=
-export FROM_EMAIL_PASS=
+# Non Flask environment variables included through python-dotenv
 
 # Running app.py
 flask run
