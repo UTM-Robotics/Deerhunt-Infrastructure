@@ -6,3 +6,4 @@ dnspython
 passlib
 pytest
 requests
+python-dotenv

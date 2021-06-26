@@ -1,54 +1,42 @@
 import pytest
 import requests
 import os
+import imaplib
 
-test_creds = {'email': 'testemail@mail.utoronto.ca', 'password': 'tester'}
-
-class BaseTester:
-    '''
-    Parent class for all diff based testing.
-    '''
-
-    def __init__(self):
-        self.basedir = os.getcwd()
-        self.outdir = self.basedir+'/out'
-        self.refdir = self.basedir+'/ref'
-
-    def __enter__(self):
-        self.create_dirs()
-        return self
-        
-
-    def __exit__(self, type, value, tb):
-        pass
+from .testbase import BaseTester, filter_code
 
 
-    def create_dirs(self):
-        if not os.path.isdir(self.outdir):
-            os.mkdir(self.outdir)
+
+FILTERS = [filter_code]
+
+IMAP_SERVER = 'imap.gmail.com'
+IMAP_PORT   = 993
 
 
-    def run(self, testname, result):
-        with open('{}/{}.out'.format(self.outdir, testname), 'w') as f:
-            f.write(result)
-        self.diff_check(testname)
-        
 
-    def diff_check(self, testname):
-        with open('{}/{}.ref'.format(self.refdir, testname), 'r') as ref, \
-            open('{}/{}.out'.format(self.outdir, testname), 'r') as out:
-            ref_text = ref.read()
-            out_text = out.read()
-            if (ref_text == out_text):
-                assert True
-                os.remove('{}/{}.out'.format(self.outdir, testname))
-            else:
-                assert ref_text == out_text
-                
-
-
-def test_register(request):
-    testname = request.node.name
-    r = requests.post('http://127.0.0.1:5000/register', data = test_creds)
+# The initial postrequest to server to register.
+def test_register(request, flaskaddr, recvemail):
+    temp = recvemail.split(':')
+    email = temp[0]
+    r = requests.post(f'http://{flaskaddr}/register', json={'email': email})
     with BaseTester() as test:
-        test.run(testname, r.text)
+        test.run(request.node.name, r.text)
+
+
+# Opening test gmail acount and downloading 
+# new email that should havbe been received.
+def test_register_email(request, recvemail):
+    temp = recvemail.split(':')
+    email = temp[0]
+    passwd = temp[1]
+    mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+    mail.login(email, passwd)
+    mail.select('inbox')
+    _, data = mail.search(None, '(FROM utmroboticstesting SUBJECT "Welcome to Deerhunt!")')
+    msg = data[0].decode('utf-8').split(' ')[-1]
+    _, data = mail.fetch(msg, '(BODY.PEEK[TEXT])')
+    body = data[0][1].decode('utf-8')
+    with BaseTester() as test:
+        for filter in FILTERS:
+            output = filter(body)
+        test.run(request.node.name, output)
