@@ -1,6 +1,5 @@
-import smtplib, ssl
+import os, smtplib, ssl
 from email.message import EmailMessage
-import os
 from ..config import Configuration
 
 
@@ -9,7 +8,6 @@ Email_Titles = {'registration': 'Welcome to Deerhunt!'}
 
 class EmailBot:
     def __init__(self):
-        # self.purpose = purpose
         self.port = 465
 
     def __enter__(self):
