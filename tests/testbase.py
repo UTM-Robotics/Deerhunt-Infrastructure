@@ -3,11 +3,13 @@ import re
 
 
 
-EMAIL_CODE_REGEX = re.compile(r'<p>Your registration code is <strong>(?P<code>[0-9a-zA-Z]{8})</strong></p>')
+EMAIL_URL_REGEX = re.compile(r'(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}| \
+                                www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?! \
+                                www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
 
 
 def filter_code(data):
-    return re.sub(EMAIL_CODE_REGEX, '<CODE>', data)
+    return re.sub(EMAIL_URL_REGEX, '<CODE>', data)
 
 
 class BaseTester:

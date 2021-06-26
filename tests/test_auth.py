@@ -15,8 +15,10 @@ IMAP_PORT   = 993
 
 
 # The initial postrequest to server to register.
-def test_register(request, flaskaddr):
-    r = requests.post(f'http://{flaskaddr}/register', json={'email': 'utmroboticstestingrecv@gmail.com'})
+def test_register(request, flaskaddr, recvemail):
+    temp = recvemail.split(':')
+    email = temp[0]
+    r = requests.post(f'http://{flaskaddr}/register', json={'email': email})
     with BaseTester() as test:
         test.run(request.node.name, r.text)
 
