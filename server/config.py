@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+from .Database.mongodb import DatabaseCtrl
 
 load_dotenv()
 
@@ -8,3 +9,5 @@ class Configuration:
     FLASK_ADDR = os.getenv('FLASK_ADDR')
     FROM_EMAIL_ADDR = os.getenv('FROM_EMAIL_ADDR')
     FROM_EMAIL_PASS = os.getenv('FROM_EMAIL_PASS')
+    MAIL_DOMAINS = os.getenv("MAIL_DOMAINS").split()
+    Mongo = DatabaseCtrl.init_database(MONGODB_URI)

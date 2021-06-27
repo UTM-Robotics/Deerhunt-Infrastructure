@@ -2,15 +2,11 @@ import random, string
 
 
 class CodeGenerator:
-    """
-    CodeGenerator class to generate random alpha-numeric codes
-    Attributes:
-    """
 
-
+    @staticmethod
     def generate(code_length) -> str:
         """
-        generates a random unique alpha-numeric code of code_length.
+        Generates a random unique alpha-numeric code of code_length.
         :return: returns a string of the unique code.
         """ 
         code = ''.join(random.choice(string.ascii_uppercase + 
