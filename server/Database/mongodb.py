@@ -37,10 +37,8 @@ class DatabaseCtrl:
         '''
         Finds account with new code.
         '''
-        print(code)
         query = {'code': code}
         result = self.db.users.find_one(query)
-        print(result)
         if result is None:
             return False
         newvalues = {'$set': {'code': '',
