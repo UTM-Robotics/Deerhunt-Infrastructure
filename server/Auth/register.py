@@ -1,5 +1,5 @@
 from http import HTTPStatus
-from logging import fatal
+import http
 from flask import make_response, request, abort
 from flask_restful import Resource
 
@@ -28,9 +28,9 @@ class RegisterRoute(Resource):
         passwd = request.json['password']
         result = Configuration.Mongo.find_user(email)
         if result is not None:
-            abort(409, 'User already exists')
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'User already exists')
         if not is_allowed(email):
-            abort(409, 'Email domain not allowed')
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Email domain not allowed')
         newCode = CodeGenerator.generate(8)
         Configuration.Mongo.insert_user(email, passwd, newCode)
         with EmailBot() as emailbot:

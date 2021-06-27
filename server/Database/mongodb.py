@@ -45,3 +45,12 @@ class DatabaseCtrl:
                      'verified': 'True'}}
         self.db.users.update_one(query, newvalues)
         return True
+
+    def login(self, email: str, passwd: str) -> bool:
+        result = self.db.users.find_one({'email': email})
+        if result is None or result['verified'] == False:
+            return False
+        print(sha512_crypt.verify(passwd, result['password']))
+        if not sha512_crypt.verify(passwd, result['password']):
+            return False
+        return True
