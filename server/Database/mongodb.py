@@ -2,7 +2,7 @@ from datetime import datetime
 from passlib.hash import sha512_crypt
 from pymongo import MongoClient
 
-class DatabaseCtrl:
+class DatabaseManager:
     def __init__(self, uri) -> None:
         cluster = MongoClient(uri)
         self.db = cluster['testing']
@@ -13,7 +13,7 @@ class DatabaseCtrl:
         Returns single instance of DatabseCtrl for the entire app to use.
         The single instance is saved in Configuration class.
         '''
-        return DatabaseCtrl(MongoURI)
+        return DatabaseManager(MongoURI)
 
     def find_user(self, email):
         '''

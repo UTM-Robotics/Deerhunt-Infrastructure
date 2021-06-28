@@ -12,11 +12,11 @@ from .codegenerator import CodeGenerator
 class LoginRoute(Resource):
     def post(self):
         '''
-        Handles post request for /register        
+        Handles post request for /register   
         '''
         email = request.json['email']
-        passwd = request.json['password']
-        result = Configuration.Mongo.login(email, passwd)
+        password = request.json['password']
+        result = Configuration.Mongo.login(email, password)
         if not result:
             abort(HTTPStatus.NOT_FOUND, 'User does not exist or password is wrong')
         return make_response('Login successful.\n', HTTPStatus.OK)

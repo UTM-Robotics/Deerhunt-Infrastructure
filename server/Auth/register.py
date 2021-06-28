@@ -25,14 +25,14 @@ class RegisterRoute(Resource):
         Handles post request for /register        
         '''
         email = request.json['email']
-        passwd = request.json['password']
+        password = request.json['password']
         result = Configuration.Mongo.find_user(email)
         if result is not None:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'User already exists')
         if not is_allowed(email):
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Email domain not allowed')
         newCode = CodeGenerator.generate(8)
-        Configuration.Mongo.insert_user(email, passwd, newCode)
+        Configuration.Mongo.insert_user(email, password, newCode)
         with EmailBot() as emailbot:
             emailbot.build_message_registration(newCode)
             emailbot.send(email)
