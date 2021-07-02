@@ -7,6 +7,8 @@ from ..config import Configuration
 from ..EmailBot.emailbot import EmailBot
 from .codegenerator import CodeGenerator
 
+from ..Models import User
+
 
 
 def is_allowed(email: str) -> bool:
@@ -24,16 +26,16 @@ class RegisterRoute(Resource):
         '''
         Handles post request for /register        
         '''
-        email = request.json['email']
-        password = request.json['password']
-        result = Configuration.Mongo.find_user(email)
+        new_user = User(request.json['email'], request.json['password'])
+        result = new_user.find_user_by_email()
         if result is not None:
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'User already exists')
         if not is_allowed(email):
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Email domain not allowed')
-        newCode = CodeGenerator.generate(8)
-        Configuration.Mongo.insert_user(email, password, newCode)
-        with EmailBot() as emailbot:
-            emailbot.build_message_registration(newCode)
-            emailbot.send(email)
+        new_user.verify()
+        # newCode = CodeGenerator.generate(8)
+        # Configuration.Mongo.insert_user(email, password, newCode)
+        # with EmailBot() as emailbot:
+            # emailbot.build_message_registration(newCode)
+            # emailbot.send(email)
         return make_response('Account partially created. Verification email sent\n', HTTPStatus.OK)
