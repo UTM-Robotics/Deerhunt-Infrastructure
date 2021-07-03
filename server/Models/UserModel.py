@@ -23,7 +23,7 @@ class UserModel:
         return self.password
     
     def verify_password(self, password):
-        return sha512_crypt.verify(self.password, password)
+        return sha512_crypt.verify(password, self.password)
 
     def set_code(self, code):
         self.code = code

@@ -47,9 +47,8 @@ class UserManager:
 
     def login(self, password):
         if self.user.verify_password(password):
-            pass
             # make jwt token
-            return
+            return True
         else:
             return False
     
