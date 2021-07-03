@@ -26,7 +26,7 @@ class EmailBot:
         Opens registration.html, reads contents and builds
         email message with unique verification link.
         '''
-        with open('EmailBot/{}.html'.format('registration')) as file:
+        with open('Managers/EmailBot/{}.html'.format('registration')) as file:
             self.msg = EmailMessage()
             self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'http://{Configuration.FLASK_ADDR}/verify/{code}'), subtype='html')
         self.msg['Subject'] = Email_Titles['registration']

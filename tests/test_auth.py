@@ -25,7 +25,7 @@ def test_register(request, flaskaddr, recvemail):
 # Opening test gmail acount and downloading 
 # new email that should havbe been received.
 def test_register_email(request, recvemail):
-    time.sleep(5)
+    time.sleep(3)
     temp = recvemail.split(':')
     email = temp[0]
     passwd = temp[1]
@@ -47,5 +47,5 @@ def test_register_email(request, recvemail):
 def test_verify_link(request):
     with BaseTester() as test:
         link = test.get_var('VERIFY_LINK')
-        r = requests.post(link)
+        r = requests.get(link)
         test.run(request.node.name, r.text)

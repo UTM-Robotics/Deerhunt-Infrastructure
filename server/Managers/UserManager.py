@@ -5,7 +5,7 @@ from datetime import datetime
 
 from server.Database import Mongo
 from server.Models.UserModel import UserModel
-from server.Managers.EmailBot import EmailBot
+from server.Managers.EmailBot.EmailBot import EmailBot
 
 from server.config import Configuration
 
@@ -31,7 +31,7 @@ class UserManager:
 
     def __enter__(self):
         result = self.find_user()
-        if not result:
+        if result:
             # self.user.set_id(result['_id'])
             self.user.set_email(result['email'])
             self.user.set_password(result['password'])
@@ -55,19 +55,21 @@ class UserManager:
     
     
     def register(self, password):
-        self.user.set_password(sha512_crypt(password))
-        self.user.set_created_timestamp(str(datetime.now()))
-        self.generate_code(CODE_LENGTH)
-        self.commit()
-        self.send_email('registration')
+        try:
+            self.user.set_password(sha512_crypt.hash(password))
+            self.user.set_created_timestamp(str(datetime.now()))
+            self.generate_code(CODE_LENGTH)
+            self.commit()
+            self.send_email('registration')
+            return True
+        except Exception:
+            return False
 
 
     def verify_code(self):
-        if self.found:
-            self.user.set_verified(True)
-            # Generate jwt and send to new user.
-            return True
-        return False
+        self.user.set_verified(True)
+        self.commit()
+        return True
 
 
     def generate_code(self, code_length) -> None:
@@ -90,11 +92,15 @@ class UserManager:
         if self.user.get_email():
             return self.db.find_one({'email': self.user.get_email()})
         if self.user.get_code():
-            return self.db.find_one({'code': self.user.get_code()})
+            x = self.db.find_one({'code': self.user.get_code()})
+            return x
         return None
 
 
     def commit(self):
         query = {'email': self.user.get_email()}
         data = self.user.covert_to_dict()
-        self.db.users.update_one(query, {"$setOnInsert": data}, upsert=True)
+        if self.found:
+            self.db.update_one(query, {'$set': data })
+        else:
+            self.db.update_one(query, {"$setOnInsert": data}, upsert=True)
