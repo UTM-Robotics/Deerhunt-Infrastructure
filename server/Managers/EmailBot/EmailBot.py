@@ -1,7 +1,7 @@
 import os, smtplib, ssl
-
 from email.message import EmailMessage
-from ..config import Configuration
+
+from server.config import Configuration
 
 
 Email_Titles = {'registration': 'Welcome to Deerhunt!'}
@@ -20,6 +20,7 @@ class EmailBot:
     def __exit__(self, type, value, tb):
         pass
 
+
     def build_message_registration(self, code) -> None:
         '''
         Opens registration.html, reads contents and builds
@@ -30,6 +31,7 @@ class EmailBot:
             self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'http://{Configuration.FLASK_ADDR}/verify/{code}'), subtype='html')
         self.msg['Subject'] = Email_Titles['registration']
         self.msg['From'] = self.sender
+
 
     def send(self, receiver) -> None:
         '''
