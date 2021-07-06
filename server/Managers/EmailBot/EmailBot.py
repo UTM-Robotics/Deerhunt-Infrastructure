@@ -1,7 +1,7 @@
-import smtplib, ssl
+import os, smtplib, ssl
 from email.message import EmailMessage
-import os
-from ..config import Configuration
+
+from server.config import Configuration
 
 
 Email_Titles = {'registration': 'Welcome to Deerhunt!'}
@@ -9,7 +9,6 @@ Email_Titles = {'registration': 'Welcome to Deerhunt!'}
 
 class EmailBot:
     def __init__(self):
-        # self.purpose = purpose
         self.port = 465
 
     def __enter__(self):
@@ -21,17 +20,24 @@ class EmailBot:
     def __exit__(self, type, value, tb):
         pass
 
-    def build_message_registration(self, code):
-        with open('EmailBot/{}.html'.format('registration')) as file:
+
+    def build_message_registration(self, code) -> None:
+        '''
+        Opens registration.html, reads contents and builds
+        email message with unique verification link.
+        '''
+        with open('Managers/EmailBot/{}.html'.format('registration')) as file:
             self.msg = EmailMessage()
-            self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'https://{Configuration.FLASK_ADDR}/verify/{code}'), subtype='html')
+            self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'http://{Configuration.FLASK_ADDR}/verify/{code}'), subtype='html')
         self.msg['Subject'] = Email_Titles['registration']
         self.msg['From'] = self.sender
 
-    def send(self, receiver):
+
+    def send(self, receiver) -> None:
+        '''
+        Sends email message.
+        '''
         with smtplib.SMTP_SSL("smtp.gmail.com", self.port, context=self.context) as email:
             email.login(self.sender, self.password)
-            # self.msg['To'] = '{}@mail.utoronto.ca'.format(receiver)
-            # assumption that user inputs their entire uoft email.
             self.msg['To'] = receiver
             email.send_message(self.msg)

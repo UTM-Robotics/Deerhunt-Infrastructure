@@ -1,7 +1,6 @@
 import os
 import pytest
 from dotenv import load_dotenv
-import requests
 
 load_dotenv()
 
@@ -12,12 +11,13 @@ def pytest_addoption(parser):
     parser.addoption('--passwd', action='store', default=os.getenv('TEST_PASSWD'), help='Password for email.')
 
 
+
 @pytest.fixture
 def flaskaddr(request):
     return request.config.getoption('--flaskaddr')
 
 @pytest.fixture
-def recvemail(request):
+def receive_email(request):
     p = request.config.getoption('--passwd')
     email = request.config.getoption('--recvemail')
     return f'{email}:{p}'
