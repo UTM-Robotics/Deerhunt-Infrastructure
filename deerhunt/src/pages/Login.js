@@ -10,6 +10,8 @@ class Login extends React.Component {
         super(props)
         this.state = { username: '', password: '' }
 
+        console.log(props)
+
         this.handleInputChange = this.handleInputChange.bind(this)
         this.Login = this.Login.bind(this)
         this.CreateUser = this.CreateUser.bind(this)
@@ -24,6 +26,7 @@ class Login extends React.Component {
         console.log("Logging in user" + this.state)
         axios.post('http://localhost:5000/login', { username: this.state.username, password: this.state.password }).then(resp => {
             console.log(resp)
+            this.props.onLogin(this.state.username)
         }).catch(err => {
             console.log(err)
         })
@@ -33,6 +36,7 @@ class Login extends React.Component {
     CreateUser() {
         axios.post('http://localhost:5000/register', { username: this.state.username, password: this.state.password }).then(resp => {
             console.log(resp)
+            this.props.onLogin(this.state.username)
         }).catch(err => {
             console.log(err)
         })
