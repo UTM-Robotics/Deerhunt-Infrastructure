@@ -14,8 +14,8 @@ IMAP_SERVER = 'imap.gmail.com'
 
 
 # The initial postrequest to server to register.
-def test_register(request, flaskaddr, recvemail):
-    temp = recvemail.split(':')
+def test_register(request, flaskaddr, receive_email):
+    temp = receive_email.split(':')
     email = temp[0]
     r = requests.post(f'http://{flaskaddr}/register', json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
@@ -24,9 +24,9 @@ def test_register(request, flaskaddr, recvemail):
 
 # Opening test gmail acount and downloading 
 # new email that should havbe been received.
-def test_register_email(request, recvemail):
+def test_register_email(request, receive_email):
     time.sleep(3)
-    temp = recvemail.split(':')
+    temp = receive_email.split(':')
     email = temp[0]
     passwd = temp[1]
     mail = imaplib.IMAP4_SSL(IMAP_SERVER)
