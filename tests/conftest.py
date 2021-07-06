@@ -17,7 +17,7 @@ def flaskaddr(request):
     return request.config.getoption('--flaskaddr')
 
 @pytest.fixture
-def recvemail(request):
+def receive_email(request):
     p = request.config.getoption('--passwd')
     email = request.config.getoption('--recvemail')
     return f'{email}:{p}'
