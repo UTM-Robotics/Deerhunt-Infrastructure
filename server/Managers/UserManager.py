@@ -57,10 +57,7 @@ class UserManager:
             'exp': now + timedelta(minutes=60),
             'email': self.user.get_email()
             }
-            print(payload)
             newToken = jwt.encode(payload, Configuration.SECRET_KEY, algorithm='HS256')
-            print()
-            print(newToken)
             self.user.set_jwt_token(newToken)
             self.commit()
             return newToken
