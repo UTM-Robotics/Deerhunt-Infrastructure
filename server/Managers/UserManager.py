@@ -1,7 +1,7 @@
-import random, string
+import random, string, jwt
 
 from passlib.hash import sha512_crypt
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from server.Database import Mongo
 from server.Models.UserModel import UserModel
@@ -37,6 +37,8 @@ class UserManager:
             self.user.set_password(result['password'])
             self.user.set_created_timestamp(result['created_timestamp'])
             self.user.set_code(result['code'])
+            self.user.set_verified(result['verified'])
+            self.user.set_jwt_token(result['jwt_token'])
             self.found = True
         else:
             self.found = False
@@ -47,8 +49,21 @@ class UserManager:
 
     def login(self, password):
         if self.user.verify_password(password):
-            # make jwt token
-            return True
+            if not self.user.get_verified():
+                return False
+            now = datetime.utcnow()
+            payload = {
+            'iat': now,
+            'exp': now + timedelta(minutes=60),
+            'email': self.user.get_email()
+            }
+            print(payload)
+            newToken = jwt.encode(payload, Configuration.SECRET_KEY, algorithm='HS256')
+            print()
+            print(newToken)
+            self.user.set_jwt_token(newToken)
+            self.commit()
+            return newToken
         else:
             return False
     

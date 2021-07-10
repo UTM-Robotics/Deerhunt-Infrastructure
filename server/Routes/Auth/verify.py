@@ -1,5 +1,5 @@
 from flask_restful import Resource
-from flask import make_response, abort
+from flask import make_response, abort, jsonify
 from http import HTTPStatus
 
 from server.Managers.UserManager import UserManager

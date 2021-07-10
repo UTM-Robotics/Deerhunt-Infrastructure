@@ -36,13 +36,12 @@ def test_register_email(request, receive_email):
     msg = data[0].decode('utf-8').split(' ')[-1]
     _, data = mail.fetch(msg, '(BODY.PEEK[TEXT])')
     body = data[0][1].decode('utf-8')
-    # VERIFY_LINK = re.search(EMAIL_URL_REGEX, body).group(1)
-    # read_link(body)
     with BaseTester() as test:
         test.save_var('VERIFY_LINK', read_link(body))
         for filter in FILTERS:
             output = filter(body)
         test.run(request.node.name, output)
+
 
 def test_verify_link(request):
     with BaseTester() as test:

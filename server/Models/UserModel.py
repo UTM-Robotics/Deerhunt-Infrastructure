@@ -54,6 +54,7 @@ class UserModel:
                 'password': self.get_password(),
                 'code': self.get_code(),
                 'created_timestamp': self.get_created_timestamp(),
-                'verified': self.get_verified()
+                'verified': self.get_verified(),
+                'jwt_token': self.get_jwt_token()
                 }
     

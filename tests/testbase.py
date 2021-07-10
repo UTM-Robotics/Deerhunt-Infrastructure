@@ -5,9 +5,12 @@ import re
 EMAIL_URL_REGEX = re.compile(r'(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}| \
                                 www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?! \
                                 www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})')
-
 def filter_link(data):
     return re.sub(EMAIL_URL_REGEX, '<CODE>', data)
+
+JWT_TOKEN_REGEX = re.compile(r'(?:"e.{10,})')
+def filter_jwt_token(data):
+    return re.sub(JWT_TOKEN_REGEX, '<JWT_TOKEN>', data)
 
 def read_link(data):
     return re.search(EMAIL_URL_REGEX, data).group(1)
