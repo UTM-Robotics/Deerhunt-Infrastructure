@@ -16,12 +16,12 @@ class App extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = { username: '', token: '' }
+        this.state = { email: '', token: '' }
         this.handleLogin = this.handleLogin.bind(this)
     }
 
     handleLogin(user) {
-        this.setState({ username: user })
+        this.setState({ email: user })
         history.push('/')
     }
 
@@ -29,7 +29,7 @@ class App extends React.Component {
     render() {
         if (this.state.username !== '') {
             return <Switch>
-                <Route path="/" component={() => <HomeLoggedIn username={this.state.username} />} exact />
+                <Route path="/" component={() => <HomeLoggedIn email={this.state.email} />} exact />
                 <Route path="/events" component={Events} />
                 <Route path="/teams" component={Teams} />
                 <Route path="/admin" component={Admin} />
