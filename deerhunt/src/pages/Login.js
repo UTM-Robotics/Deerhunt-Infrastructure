@@ -8,7 +8,7 @@ class Login extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = { username: '', password: '' }
+        this.state = { email: '', password: '' }
 
         console.log(props)
 
@@ -24,9 +24,9 @@ class Login extends React.Component {
 
     Login(event) {
         console.log("Logging in user" + this.state)
-        axios.post('http://localhost:5000/login', { username: this.state.username, password: this.state.password }).then(resp => {
+        axios.post('http://localhost:5000/login', { email: this.state.email, password: this.state.password }).then(resp => {
             console.log(resp)
-            this.props.onLogin(this.state.username)
+            this.props.onLogin(this.state.email)
         }).catch(err => {
             console.log(err)
         })
@@ -34,9 +34,9 @@ class Login extends React.Component {
     }
 
     CreateUser() {
-        axios.post('http://localhost:5000/register', { username: this.state.username, password: this.state.password }).then(resp => {
+        axios.post('http://localhost:5000/register', { email: this.state.email, password: this.state.password }).then(resp => {
             console.log(resp)
-            this.props.onLogin(this.state.username)
+            this.props.onLogin(this.state.email)
         }).catch(err => {
             console.log(err)
         })
@@ -46,11 +46,11 @@ class Login extends React.Component {
 
     render() {
         return <div>
-            <h1>Enter username and password</h1>
+            <h1>Enter email and password</h1>
             <div id='form'>
-                <div id='username' className='textinput'>
-                    <p>Username</p>
-                    <input type='text' name='username' onChange={this.handleInputChange}></input>
+                <div id='email' className='textinput'>
+                    <p>Email</p>
+                    <input type='text' name='email' onChange={this.handleInputChange}></input>
                 </div>
                 <div id='password' className='textinput'>
                     <p>Password</p>
