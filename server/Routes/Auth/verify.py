@@ -9,5 +9,5 @@ class VerifyRoute(Resource):
         with UserManager(None, code.strip('\n')) as usermanager:
             result = usermanager.verify_code()
         if result:
-            return make_response('Account verified!\n', HTTPStatus.CREATED) # need to add jwt token
+            return make_response(jsonify({'token': result}), 201)
         abort(HTTPStatus.GONE, 'Verification link expired or did not work for other reasons')

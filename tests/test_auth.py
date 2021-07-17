@@ -2,12 +2,16 @@ import pytest
 import requests
 import imaplib
 import time
+import json
 
-from .testbase import BaseTester, filter_link, read_link
+from .testbase import   BaseTester,  \
+                        filter_link, \
+                        read_link,   \
+                        filter_jwt_token
 
 
 
-FILTERS = [filter_link]
+# FILTERS = [filter_link, filter_jwt_token]
 
 IMAP_SERVER = 'imap.gmail.com'
 # IMAP_PORT   = 993
@@ -38,8 +42,7 @@ def test_register_email(request, receive_email):
     body = data[0][1].decode('utf-8')
     with BaseTester() as test:
         test.save_var('VERIFY_LINK', read_link(body))
-        for filter in FILTERS:
-            output = filter(body)
+        output = filter_link(body)
         test.run(request.node.name, output)
 
 
@@ -47,4 +50,6 @@ def test_verify_link(request):
     with BaseTester() as test:
         link = test.get_var('VERIFY_LINK')
         r = requests.get(link)
-        test.run(request.node.name, r.text)
+        test.save_var('JWT_TOKEN', json.loads(r.text)['token'])
+        output = filter_jwt_token(r.text)
+        test.run(request.node.name, output)

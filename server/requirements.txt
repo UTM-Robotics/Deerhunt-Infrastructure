@@ -1,6 +1,7 @@
 Flask
 Flask-Cors
 flask-restful
+Flask-HTTPAuth
 pymongo
 dnspython
 passlib

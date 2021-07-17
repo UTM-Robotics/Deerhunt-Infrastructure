@@ -1,5 +1,7 @@
 import random, string, jwt
 
+from flask_httpauth import HTTPTokenAuth
+
 from passlib.hash import sha512_crypt
 from datetime import datetime, timedelta
 
@@ -22,6 +24,12 @@ def is_allowed(email: str) -> bool:
             return True
     return False
 
+
+# auth = HTTPTokenAuth(scheme='Bearer')
+
+# @auth.verify_token
+# def verify_token(token):
+    
 
 class UserManager:
 
@@ -46,6 +54,7 @@ class UserManager:
 
     def __exit__(self, type, value, tb):
         pass
+
 
     def login(self, password):
         if self.user.verify_password(password):
@@ -78,9 +87,32 @@ class UserManager:
 
 
     def verify_code(self):
-        self.user.set_verified(True)
-        self.commit()
-        return True
+        '''
+        Checks if user link is expired.
+        Expiration time is 30 minutes.
+        Deletes user account entry if link expired.
+        User has to register again if link expired.
+        :return: bool
+        '''
+        created_time = datetime.strptime(
+                        self.user.get_created_timestamp(),
+                        '%Y-%m-%d %H:%M:%S.%f')
+        curr_time = datetime.now()
+        time_delta = curr_time - created_time
+        if time_delta.seconds < 1800:
+            payload = {
+            'iat': curr_time,
+            'exp': curr_time + timedelta(minutes=60),
+            'email': self.user.get_email()
+            }
+            newToken = jwt.encode(payload, Configuration.SECRET_KEY, algorithm='HS256')
+            self.user.set_jwt_token(newToken)
+            self.user.set_verified(True)
+            self.commit()
+            return newToken
+        else:
+            self.db.delete_one({'code': self.user.get_code()})
+            return False
 
 
     def generate_code(self, code_length) -> None:
