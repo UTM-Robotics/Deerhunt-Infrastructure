@@ -1,4 +1,5 @@
 import React from 'react'
+import './Home.css'
 
 class Home extends React.Component {
 
@@ -11,7 +12,10 @@ class Home extends React.Component {
     render() {
         return <div>
         <h1>Home Page</h1>
-        <p>hello {this.state.email}</p>
+        {/* TODO: Add a conditional statement for when user not logged in */}
+        <h3>Welcome {this.state.email}</h3>
+        <div>
+        </div>
         </div>
     }
 }
