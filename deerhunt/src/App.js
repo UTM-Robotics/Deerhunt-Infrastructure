@@ -27,7 +27,7 @@ class App extends React.Component {
 
 
     render() {
-        if (this.state.username !== '') {
+        if (this.state.email !== '') {
             return <Switch>
                 <Route path="/" component={() => <HomeLoggedIn email={this.state.email} />} exact />
                 <Route path="/events" component={Events} />
