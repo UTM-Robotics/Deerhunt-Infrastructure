@@ -1,1 +1,3 @@
-Login successful.
+{
+  "token": <JWT_TOKEN>
+}

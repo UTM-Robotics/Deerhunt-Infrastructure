@@ -13,7 +13,6 @@ fi
 # Read flask configuration doc at: https://flask.palletsprojects.com/en/2.0.x/config/
 export FLASK_ENV=development
 export TESTING=
-export SECRET_KEY=
 
 
 # Non Flask environment variables included through python-dotenv

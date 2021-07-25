@@ -1,9 +1,11 @@
 Flask
 Flask-Cors
 flask-restful
+Flask-HTTPAuth
 pymongo
 dnspython
 passlib
 pytest
 requests
 python-dotenv
+pyjwt

@@ -1,7 +1,9 @@
-import random, string
+import random, string, jwt
+
+from flask_httpauth import HTTPTokenAuth
 
 from passlib.hash import sha512_crypt
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from server.Database import Mongo
 from server.Models.UserModel import UserModel
@@ -23,6 +25,20 @@ def is_allowed(email: str) -> bool:
     return False
 
 
+auth = HTTPTokenAuth(scheme='Bearer')
+
+@auth.verify_token
+def verify_token(token):
+    entry = Mongo.users.find_one({'jwt_token': token})
+    if entry:
+        try:
+            jwt.decode(token, Configuration.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            return False
+        return entry['email']
+    return False
+
+
 class UserManager:
 
     def __init__(self, email=None, code=None):
@@ -37,6 +53,8 @@ class UserManager:
             self.user.set_password(result['password'])
             self.user.set_created_timestamp(result['created_timestamp'])
             self.user.set_code(result['code'])
+            self.user.set_verified(result['verified'])
+            self.user.set_jwt_token(result['jwt_token'])
             self.found = True
         else:
             self.found = False
@@ -45,10 +63,21 @@ class UserManager:
     def __exit__(self, type, value, tb):
         pass
 
+
     def login(self, password):
         if self.user.verify_password(password):
-            # make jwt token
-            return True
+            if not self.user.get_verified():
+                return False
+            now = datetime.utcnow()
+            payload = {
+            'iat': now,
+            'exp': now + timedelta(minutes=60),
+            'email': self.user.get_email()
+            }
+            newToken = jwt.encode(payload, Configuration.SECRET_KEY, algorithm='HS256')
+            self.user.set_jwt_token(newToken)
+            self.commit()
+            return newToken
         else:
             return False
     
@@ -56,7 +85,7 @@ class UserManager:
     def register(self, password):
         try:
             self.user.set_password(sha512_crypt.hash(password))
-            self.user.set_created_timestamp(str(datetime.now()))
+            self.user.set_created_timestamp(str(datetime.utcnow()))
             self.generate_code(CODE_LENGTH)
             self.commit()
             self.send_email('registration')
@@ -66,9 +95,32 @@ class UserManager:
 
 
     def verify_code(self):
-        self.user.set_verified(True)
-        self.commit()
-        return True
+        '''
+        Checks if user link is expired.
+        Expiration time is 30 minutes.
+        Deletes user account entry if link expired.
+        User has to register again if link expired.
+        :return: bool
+        '''
+        created_time = datetime.strptime(
+                        self.user.get_created_timestamp(),
+                        '%Y-%m-%d %H:%M:%S.%f')
+        curr_time = datetime.utcnow()
+        time_delta = curr_time - created_time
+        if time_delta.seconds < 1800:
+            payload = {
+            'iat': curr_time,
+            'exp': curr_time + timedelta(minutes=60),
+            'email': self.user.get_email()
+            }
+            newToken = jwt.encode(payload, Configuration.SECRET_KEY, algorithm='HS256')
+            self.user.set_jwt_token(newToken)
+            self.user.set_verified(True)
+            self.commit()
+            return newToken
+        else:
+            self.db.delete_one({'code': self.user.get_code()})
+            return False
 
 
     def generate_code(self, code_length) -> None:

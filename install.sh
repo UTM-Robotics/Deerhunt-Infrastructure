@@ -51,7 +51,7 @@ done
 OS=$(uname)
 
 if [[ ${OS} == 'Linux' ]]; then
-   sudo apt install npm
+   sudo apt install npm python3-pip python3-venv
 elif [[ ${OS} == 'Darwin' ]]; then
    brew install npm
 else
