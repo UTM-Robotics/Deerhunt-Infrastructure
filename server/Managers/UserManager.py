@@ -25,11 +25,19 @@ def is_allowed(email: str) -> bool:
     return False
 
 
-# auth = HTTPTokenAuth(scheme='Bearer')
+auth = HTTPTokenAuth(scheme='Bearer')
 
-# @auth.verify_token
-# def verify_token(token):
-    
+@auth.verify_token
+def verify_token(token):
+    entry = Mongo.users.find_one({'jwt_token': token})
+    if entry:
+        try:
+            jwt.decode(token, Configuration.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            return False
+        return entry['email']
+    return False
+
 
 class UserManager:
 
@@ -77,7 +85,7 @@ class UserManager:
     def register(self, password):
         try:
             self.user.set_password(sha512_crypt.hash(password))
-            self.user.set_created_timestamp(str(datetime.now()))
+            self.user.set_created_timestamp(str(datetime.utcnow()))
             self.generate_code(CODE_LENGTH)
             self.commit()
             self.send_email('registration')
@@ -97,7 +105,7 @@ class UserManager:
         created_time = datetime.strptime(
                         self.user.get_created_timestamp(),
                         '%Y-%m-%d %H:%M:%S.%f')
-        curr_time = datetime.now()
+        curr_time = datetime.utcnow()
         time_delta = curr_time - created_time
         if time_delta.seconds < 1800:
             payload = {
