@@ -43,7 +43,6 @@ $ (venv) adl@Cronos ~/git/deerhunt2020/infrastructure
 ``` 
 If you need to read up on python virtual environments you can do so [here](https://docs.python.org/3/tutorial/venv.html).
 
-**It is important that you source the install.sh instead of just running it the traditional way.**
 
 ### Ubuntu / Debian
 It is important that you have a Linux installation such as Ubuntu / Debian which uses [apt](https://linux.die.net/man/8/aptitude) as its package manager since the script uses it. Also make sure you keep your system packages up to date.
