@@ -64,9 +64,22 @@ $ ./install.sh
 $ source venv/bin/activate
 ```
 
+### Windows (2 methods)
+There are two options for windows users to run the environment
+- WSL (Recommended)
+- SSH/Remote
+#### WSL (Windows Subsystem for Linux)
+##### What is WSL 2:
+https://docs.microsoft.com/en-us/windows/wsl/about
 
-### Windows 
-~~It is highly recommended to setup your development environment on a Linux machine. If you are on Windows and don't have access to a local Ubuntu / Debian computer, you can ssh into the UTM Deerfield CS lab which hosts Ubuntu by doing the following:~~
+
+##### Enable WSL 2:
+https://docs.microsoft.com/en-us/windows/wsl/install-win10
+
+Using WSL 2, users should be able to open a Linux Shell in linux, and follow the steps from "Ubuntu/Debian".
+
+#### Ubuntu SSH at Deerfield Hall - Not recommended
+~~It is highly recommended to setup your development environment on a unix environment. If you are on Windows and don't have access to a local Ubuntu / Debian computer, you can ssh into the UTM Deerfield CS lab which hosts Ubuntu by doing the following:~~
 ```
 $ ssh <UTORid>@dh<XXXX>pc<YY>.utm.utoronto.ca
 Where:
