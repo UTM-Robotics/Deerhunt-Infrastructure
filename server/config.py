@@ -10,3 +10,5 @@ class Configuration:
     FROM_EMAIL_ADDR = os.getenv('FROM_EMAIL_ADDR')
     FROM_EMAIL_PASS = os.getenv('FROM_EMAIL_PASS')
     MAIL_DOMAINS = os.getenv("MAIL_DOMAINS").split()
+    ADMIN_USERNAME=os.getenv("ADMIN_USERNAME")
+    ADMIN_PASSWORD=os.getenv("ADMIN_PASSWORD")
