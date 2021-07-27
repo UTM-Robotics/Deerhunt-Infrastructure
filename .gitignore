@@ -7,3 +7,6 @@ venv/
 node_modules/
 build/
 pydocs/
+out/
+.env
+var/

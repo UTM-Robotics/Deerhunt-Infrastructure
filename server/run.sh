@@ -13,12 +13,9 @@ fi
 # Read flask configuration doc at: https://flask.palletsprojects.com/en/2.0.x/config/
 export FLASK_ENV=development
 export TESTING=
-export SECRET_KEY=
 
 
-# Non Flask environment variables defined here.
-# Included in through config.py
-export MONGODB_URI=
+# Non Flask environment variables included through python-dotenv
 
 # Running app.py
 flask run
