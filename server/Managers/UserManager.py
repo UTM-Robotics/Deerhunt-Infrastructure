@@ -6,7 +6,7 @@ from passlib.hash import sha512_crypt
 from datetime import datetime, timedelta
 
 from server.Database import Mongo
-from server.Models.UserModel import UserModel
+from server.Models.GeneralUser import GeneralUserModel
 from server.Managers.EmailBot.EmailBot import EmailBot
 
 from server.config import Configuration
@@ -43,12 +43,11 @@ class UserManager:
 
     def __init__(self, email=None, code=None):
         self.db = Mongo.users
-        self.user = UserModel(email, code)
+        self.user = GeneralUserModel(email, code)
 
     def __enter__(self):
         result = self.find_user()
         if result:
-            # self.user.set_id(result['_id'])
             self.user.set_email(result['email'])
             self.user.set_password(result['password'])
             self.user.set_created_timestamp(result['created_timestamp'])

@@ -2,15 +2,18 @@ from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
 from flask_restful import Resource
 
-from server.Managers.UserManager import UserManager
+from server.Managers.AdminManager import AdminManager
 
-class LoginRoute(Resource):
+from server.Managers.UserManager import auth
+
+
+class AdminRoute(Resource):
     def post(self):
         '''
-        Handles post request for /login
+        Handles post request for admin login
         '''
-        with UserManager(request.json['email']) as usermanager:
-            result = usermanager.login(request.json['password'])
+        with AdminManager(request.json['username']) as adminmanager:
+            result = adminmanager.login(request.json['password'])
         if result:
             return make_response(jsonify({'token': result}), HTTPStatus.OK)
         abort(HTTPStatus.NOT_FOUND, 'User does not exist or password is wrong')
