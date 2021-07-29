@@ -21,7 +21,8 @@ IMAP_SERVER = 'imap.gmail.com'
 def test_register(request, flaskaddr, receive_email):
     temp = receive_email.split(':')
     email = temp[0]
-    r = requests.post(f'http://{flaskaddr}/register', json={'email': email, 'password': 'tester1234'})
+    r = requests.post(f'http://{flaskaddr}/api/register', 
+                    json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
         test.run(request.node.name, r.text)
 

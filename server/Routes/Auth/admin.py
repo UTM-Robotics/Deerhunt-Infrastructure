@@ -12,7 +12,7 @@ class AdminRoute(Resource):
         '''
         Handles post request for admin login
         '''
-        with AdminManager(request.json['email']) as adminmanager:
+        with AdminManager(request.json['username']) as adminmanager:
             result = adminmanager.login(request.json['password'])
         if result:
             return make_response(jsonify({'token': result}), HTTPStatus.OK)

@@ -1,17 +1,10 @@
 from passlib.hash import sha512_crypt
 
-class AdminModel:
-    def __init__(self, username):
-        self.username = username
+class UserModel:
+    def __init__(self):
         self.password = None
         self.jwt_token = None
         self.created_timestamp = None
-
-    def set_username(self, username):
-        self.username = username
-    
-    def get_username(self):
-        return self.username
 
     def set_password(self, password):
         self.password = password
@@ -33,11 +26,3 @@ class AdminModel:
 
     def get_created_timestamp(self):
         return self.created_timestamp
-
-    def covert_to_dict(self) -> dict:
-        return {'username': self.get_username(),
-                'password': self.get_password(),
-                'created_timestamp': self.get_created_timestamp(),
-                'jwt_token': self.get_jwt_token()
-                }
-    
