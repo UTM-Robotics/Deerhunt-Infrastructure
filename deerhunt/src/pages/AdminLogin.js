@@ -4,17 +4,16 @@ import axios from 'axios'
 
 import './Login.css'
 
-class Login extends React.Component {
+class AdminLogin extends React.Component {
 
     constructor(props) {
         super(props)
-        this.state = { email: '', password: '' }
+        this.state = { username: '', password: '' }
 
         console.log(props)
 
         this.handleInputChange = this.handleInputChange.bind(this)
         this.Login = this.Login.bind(this)
-        this.CreateUser = this.CreateUser.bind(this)
     }
 
     handleInputChange(event) {
@@ -24,33 +23,23 @@ class Login extends React.Component {
 
     Login(event) {
         console.log("Logging in user" + this.state)
-        axios.post('http://localhost:5000/api/login', { email: this.state.email, password: this.state.password }).then(resp => {
+        axios.post('http://localhost:5000/api/admin', { username: this.state.username, password: this.state.password }).then(resp => {
             console.log(resp)
-            this.props.onLogin(this.state.email)
+            this.props.onLogin(this.state.username)
         }).catch(err => {
             console.log(err)
         })
         event.preventDefault();
     }
 
-    CreateUser() {
-        axios.post('http://localhost:5000/api/register', { email: this.state.email, password: this.state.password }).then(resp => {
-            console.log(resp)
-            this.props.onLogin(this.state.email)
-        }).catch(err => {
-            console.log(err)
-        })
-        console.log("Creating user")
-    }
-
 
     render() {
         return <div>
-            <h1>Enter email and password</h1>
+            <h1>Admin Login</h1>
             <div id='form'>
-                <div id='email' className='textinput'>
-                    <p>Email</p>
-                    <input type='text' name='email' onChange={this.handleInputChange}></input>
+                <div id='username' className='textinput'>
+                    <p>username</p>
+                    <input type='text' name='username' onChange={this.handleInputChange}></input>
                 </div>
                 <div id='password' className='textinput'>
                     <p>Password</p>
@@ -58,11 +47,10 @@ class Login extends React.Component {
                 </div>
                 <div id='buttons'>
                     <button onClick={this.Login}>Login</button>
-                    <button onClick={this.CreateUser}>Create User</button>
                 </div>
             </div>
         </div>
     }
 }
 
-export default Login
+export default AdminLogin

@@ -33,7 +33,7 @@ class AdminManager:
         pass
 
     def login(self, password):
-        if self.user.verify_password(password):
+        if self.found and self.user.verify_password(password):
             now = datetime.utcnow()
             payload = {
             'iat': now,

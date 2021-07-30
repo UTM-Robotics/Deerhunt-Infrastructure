@@ -64,7 +64,7 @@ class UserManager:
 
 
     def login(self, password):
-        if self.user.verify_password(password):
+        if self.found and self.user.verify_password(password):
             if not self.user.get_verified():
                 return False
             now = datetime.utcnow()
