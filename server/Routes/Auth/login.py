@@ -13,4 +13,4 @@ class LoginRoute(Resource):
             result = usermanager.login(request.json['password'])
         if result:
             return make_response(jsonify({'token': result}), HTTPStatus.OK)
-        abort(HTTPStatus.NOT_FOUND, 'User does not exist or password is wrong')
+        return make_response("Username or Password is wrong", HTTPStatus.UNAUTHORIZED)
