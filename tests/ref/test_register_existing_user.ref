@@ -1,0 +1,4 @@
+{
+    "message": "User already exists"
+}
+HTTP_Status: 422

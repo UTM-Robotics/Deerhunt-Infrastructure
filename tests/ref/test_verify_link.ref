@@ -1,3 +1,4 @@
 {
   "token": <JWT_TOKEN>
 }
+HTTP_Status: 201

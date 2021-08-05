@@ -32,12 +32,14 @@ $ pytest -v test_auth.py
 ```
 
 ### Arguements
-You can pass optional arguements which will override what is in .env file.
+You can pass optional arguements which will override what is in .env file. These options are all defined and conftest.py
 Existing options are:
 ```
 $ pytest --flaskaddr <address:port>
 $ pytest --recvemail <email_addr>
 $ pytest --passwd <email_passwd>
+$ pytest --adminusername <default_admin_username>
+$ pytest --adminpasswd <default_admin_password>
 
 eg: 
 $ pytest --flaskaddr 192.168.0.1:5000 --recvemail testing@gmail.com  --passwd 1234

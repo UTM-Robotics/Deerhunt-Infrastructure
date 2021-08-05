@@ -82,14 +82,17 @@ class UserManager:
     
     
     def register(self, password):
-        try:
-            self.user.set_password(sha512_crypt.hash(password))
-            self.user.set_created_timestamp(str(datetime.utcnow()))
-            self.generate_code(CODE_LENGTH)
-            self.commit()
-            self.send_email('registration')
-            return True
-        except Exception:
+        if not self.found:
+            try:
+                self.user.set_password(sha512_crypt.hash(password))
+                self.user.set_created_timestamp(str(datetime.utcnow()))
+                self.generate_code(CODE_LENGTH)
+                self.commit()
+                self.send_email('registration')
+                return True
+            except Exception:
+                return False
+        else:
             return False
 
 

@@ -13,4 +13,4 @@ class LoginRoute(Resource):
             result = usermanager.login(request.json['password'])
         if result:
             return make_response(jsonify({'token': result}), HTTPStatus.OK)
-        return make_response("Username or Password is wrong", HTTPStatus.UNAUTHORIZED)
+        abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Username or Password is wrong')

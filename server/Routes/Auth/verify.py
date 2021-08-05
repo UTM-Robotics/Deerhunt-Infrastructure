@@ -4,6 +4,7 @@ from flask_restful import Resource
 
 from server.Managers.UserManager import UserManager
 
+
 class VerifyRoute(Resource):
     def get(self, code):
         with UserManager(None, code.strip('\n')) as usermanager:
