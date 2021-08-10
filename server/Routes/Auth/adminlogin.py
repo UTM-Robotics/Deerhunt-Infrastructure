@@ -2,12 +2,12 @@ from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
 from flask_restful import Resource
 
-from server.Managers.AdminManager import AdminManager
+from server.Managers.Auth.AdminManager import AdminManager
 
-from server.Managers.UserManager import auth
+# from server.Managers.Auth.UserManager import auth
 
 
-class AdminRoute(Resource):
+class AdminLoginRoute(Resource):
     def post(self):
         '''
         Handles post request for admin login

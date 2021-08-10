@@ -2,7 +2,7 @@ from http import HTTPStatus
 from flask import make_response, abort, jsonify
 from flask_restful import Resource
 
-from server.Managers.UserManager import UserManager
+from server.Managers.Auth.UserManager import UserManager
 
 
 class VerifyRoute(Resource):

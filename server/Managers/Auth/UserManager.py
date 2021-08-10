@@ -36,7 +36,15 @@ def verify_token(token):
         except jwt.ExpiredSignatureError:
             return False
         return entry['email']
-    return False
+    else:
+        admin = Mongo.admins.find_one({'jwt_token': token})
+        if admin:
+            try:
+                jwt.decode(token, Configuration.SECRET_KEY, algorithms=['HS256'])
+            except jwt.ExpiredSignatureError:
+                return False
+            return admin['username']
+        return False
 
 
 class UserManager:
