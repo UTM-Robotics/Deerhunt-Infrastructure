@@ -83,7 +83,15 @@ def test_general_login(request, flaskaddr, receive_email):
     email = temp[0]
     r = requests.post(f'http://{flaskaddr}/api/login', json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
-        # test.save_var('JWT_TOKEN', json.loads(r.text)['token'])
+        test.save_var('JWT_TOKEN_USER', json.loads(r.text)['token'])
+        output = filter_jwt_token(r.text)
+        test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
+
+
+# Testing admin login with incorrect password
+def test_admin_login_error(request, flaskaddr):
+    r = requests.post(f'http://{flaskaddr}/api/adminlogin', json={'username': 'nonexistent', 'password': 'tester1234'})
+    with BaseTester() as test:
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
 
@@ -93,11 +101,18 @@ def test_admin_login(request, flaskaddr, admin_default_creds):
     temp = admin_default_creds.split(':')
     username = temp[0]
     password = temp[1]
-    r = requests.post(f'http://{flaskaddr}/api/admin', json={'username': username, 'password': password})
+    r = requests.post(f'http://{flaskaddr}/api/adminlogin', json={'username': username, 'password': password})
     with BaseTester() as test:
         # test.save_var('JWT_TOKEN_ADMIN', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
 
-
-# def test_teardown(flaskaddr, )
+def test_teardown(request, flaskaddr, receive_email):
+    temp = receive_email.split(':')
+    email = temp[0]
+    with BaseTester() as test:
+        token = test.get_var('JWT_TOKEN_USER').rstrip()
+        r = requests.delete(f'http://{flaskaddr}/api/login', 
+                            json={'email': email},
+                            headers={'Authorization': f'Bearer {token}'})
+        test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')

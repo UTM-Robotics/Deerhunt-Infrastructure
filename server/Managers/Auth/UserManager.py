@@ -88,6 +88,16 @@ class UserManager:
         else:
             return False
     
+    def delete(self):
+        if self.found:
+            if self.db.delete_one({'email': self.user.get_email()}):
+                return True
+            else:
+                return False
+        return False
+            
+                
+    
     
     def register(self, password):
         if not self.found:
