@@ -60,7 +60,7 @@ def test_verify_link(request):
     with BaseTester() as test:
         link = test.get_var('VERIFY_LINK')
         r = requests.get(link)
-        test.save_var('JWT_TOKEN', json.loads(r.text)['token'])
+        # test.save_var('JWT_TOKEN', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
 
@@ -83,7 +83,7 @@ def test_general_login(request, flaskaddr, receive_email):
     email = temp[0]
     r = requests.post(f'http://{flaskaddr}/api/login', json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
-        test.save_var('JWT_TOKEN', json.loads(r.text)['token'])
+        # test.save_var('JWT_TOKEN', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
 
@@ -95,6 +95,9 @@ def test_admin_login(request, flaskaddr, admin_default_creds):
     password = temp[1]
     r = requests.post(f'http://{flaskaddr}/api/admin', json={'username': username, 'password': password})
     with BaseTester() as test:
-        test.save_var('JWT_TOKEN', json.loads(r.text)['token'])
+        # test.save_var('JWT_TOKEN_ADMIN', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
+
+
+# def test_teardown(flaskaddr, )
