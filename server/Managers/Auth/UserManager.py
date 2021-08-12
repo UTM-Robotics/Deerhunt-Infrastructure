@@ -36,7 +36,15 @@ def verify_token(token):
         except jwt.ExpiredSignatureError:
             return False
         return entry['email']
-    return False
+    else:
+        admin = Mongo.admins.find_one({'jwt_token': token})
+        if admin:
+            try:
+                jwt.decode(token, Configuration.SECRET_KEY, algorithms=['HS256'])
+            except jwt.ExpiredSignatureError:
+                return False
+            return admin['username']
+        return False
 
 
 class UserManager:
@@ -80,16 +88,29 @@ class UserManager:
         else:
             return False
     
+    def delete(self):
+        if self.found:
+            if self.db.delete_one({'email': self.user.get_email()}):
+                return True
+            else:
+                return False
+        return False
+            
+                
+    
     
     def register(self, password):
-        try:
-            self.user.set_password(sha512_crypt.hash(password))
-            self.user.set_created_timestamp(str(datetime.utcnow()))
-            self.generate_code(CODE_LENGTH)
-            self.commit()
-            self.send_email('registration')
-            return True
-        except Exception:
+        if not self.found:
+            try:
+                self.user.set_password(sha512_crypt.hash(password))
+                self.user.set_created_timestamp(str(datetime.utcnow()))
+                self.generate_code(CODE_LENGTH)
+                self.commit()
+                self.send_email('registration')
+                return True
+            except Exception:
+                return False
+        else:
             return False
 
 

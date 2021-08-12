@@ -17,8 +17,6 @@ class AdminManager:
 
     def __enter__(self):
         result = self.find_user()
-        print(result)
-        print()
         if result:
             self.user.set_username(result['username'])
             self.user.set_password(result['password'])
