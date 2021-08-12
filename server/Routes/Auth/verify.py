@@ -6,6 +6,8 @@ from server.Managers.Auth.UserManager import UserManager
 
 
 class VerifyRoute(Resource):
+
+    # get request when user clicks on verification link.
     def get(self, code):
         with UserManager(None, code.strip('\n')) as usermanager:
             result = usermanager.verify_code()
