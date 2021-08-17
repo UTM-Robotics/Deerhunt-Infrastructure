@@ -2,14 +2,18 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import reportWebVitals from './reportWebVitals';
 import { Router } from 'react-router-dom'
+import { ChakraProvider } from "@chakra-ui/react"
+import theme from './theme'
 
 import history from "./history";
 import App from './App.js'
 
 ReactDOM.render(
-  <Router history={history}>
-    <App />
-  </Router>,
+      <ChakraProvider theme={theme}>
+        <Router history={history}>
+          <App />
+        </Router>
+      </ChakraProvider>,
   document.getElementById('root')
 );
 
