@@ -1,1 +1,4 @@
-Account partially created. Verification email sent
+{
+  "message": "Account partially created. Verification email sent\n"
+}
+HTTP_Status: 200

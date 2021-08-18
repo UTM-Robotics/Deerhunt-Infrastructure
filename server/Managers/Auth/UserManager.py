@@ -6,7 +6,7 @@ from passlib.hash import sha512_crypt
 from datetime import datetime, timedelta
 
 from server.Database import Mongo
-from server.Models.UserModel import UserModel
+from server.Models.GeneralUser import GeneralUserModel
 from server.Managers.EmailBot.EmailBot import EmailBot
 
 from server.config import Configuration
@@ -36,19 +36,26 @@ def verify_token(token):
         except jwt.ExpiredSignatureError:
             return False
         return entry['email']
-    return False
+    else:
+        admin = Mongo.admins.find_one({'jwt_token': token})
+        if admin:
+            try:
+                jwt.decode(token, Configuration.SECRET_KEY, algorithms=['HS256'])
+            except jwt.ExpiredSignatureError:
+                return False
+            return admin['username']
+        return False
 
 
 class UserManager:
 
     def __init__(self, email=None, code=None):
         self.db = Mongo.users
-        self.user = UserModel(email, code)
+        self.user = GeneralUserModel(email, code)
 
     def __enter__(self):
         result = self.find_user()
         if result:
-            # self.user.set_id(result['_id'])
             self.user.set_email(result['email'])
             self.user.set_password(result['password'])
             self.user.set_created_timestamp(result['created_timestamp'])
@@ -65,7 +72,7 @@ class UserManager:
 
 
     def login(self, password):
-        if self.user.verify_password(password):
+        if self.found and self.user.verify_password(password):
             if not self.user.get_verified():
                 return False
             now = datetime.utcnow()
@@ -81,16 +88,29 @@ class UserManager:
         else:
             return False
     
+    def delete(self):
+        if self.found:
+            if self.db.delete_one({'email': self.user.get_email()}):
+                return True
+            else:
+                return False
+        return False
+            
+                
+    
     
     def register(self, password):
-        try:
-            self.user.set_password(sha512_crypt.hash(password))
-            self.user.set_created_timestamp(str(datetime.utcnow()))
-            self.generate_code(CODE_LENGTH)
-            self.commit()
-            self.send_email('registration')
-            return True
-        except Exception:
+        if not self.found:
+            try:
+                self.user.set_password(sha512_crypt.hash(password))
+                self.user.set_created_timestamp(str(datetime.utcnow()))
+                self.generate_code(CODE_LENGTH)
+                self.commit()
+                self.send_email('registration')
+                return True
+            except Exception:
+                return False
+        else:
             return False
 
 

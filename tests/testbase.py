@@ -44,18 +44,32 @@ class BaseTester:
         if not os.path.isdir(self.vardir):
             os.mkdir(self.vardir)
 
+    
+    '''
+    Saves variable to vars.txt file with
+    equal sign as seperator.
+
+    eg: TOKEN=eyJhbGciOiJIUzI1NiIsI
+    '''
     def save_var(self, new_var: str, data):
-        with open(f'{self.vardir}/vars.txt', 'w+') as file:
+        with open(f'{self.vardir}/vars.txt', 'a') as file:
             file.write(f'{new_var}={data}\n')
 
+
+    '''
+    Gets variable and removes entry from vars.txt
+    '''
     def get_var(self, var: str):
         with open(f'{self.vardir}/vars.txt', 'r') as file:
             lines = file.readlines()
+        with open(f'{self.vardir}/vars.txt', 'w') as file:
             for i in lines:
                 temp = i.split('=')
                 if var == temp[0]:
-                    return temp[1]
-
+                    ret = temp[1]
+                else:
+                    file.write(i)
+        return ret
 
     def run(self, testname, result) -> None:
         '''

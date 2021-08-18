@@ -1,8 +1,10 @@
 #  Official Deerhunt Infrastructure
 
-This is the official repo of the Deerhunt Website developed and run by UTM Robotics Club. This is an open source project maintained by our students.
+This is the official repo of the Deerhunt Website developed and run by the UTM Robotics Club. This is an open source project maintained by our students.
 
-This README will be update accordingly as the project moves forward.
+The Deerhunt Infrastructure project is a full stack application built for the purpose of hosting and running AI competitions.
+
+For more on the project structure, check out the [use-case diagram](https://docs.google.com/drawings/d/1g27NYuGy7EOh-BjOJ5ivY8iGT_Yk4H1zTYuXLu_msW8/edit?usp=sharing) and [storyboard](https://docs.google.com/drawings/d/1T8kFRi2JBQRj8-ogstJT3UTrvXxLSBnhUbPJa4i5ucg/edit?usp=sharing).
 
 ## Folder Structure
 ```
@@ -28,13 +30,12 @@ This README will be update accordingly as the project moves forward.
 
 **tests/**: All unittests at least for the backend will live here. Currently empty but will be populated soon. Make sure you are familiar with  [Pytest Framework](https://docs.pytest.org/en/6.2.x/#).
 
-## Requirements
-```
-A unix based computer
-git
-python3+
-npm
-```
+## Dependencies
+- A unix based computer
+- git
+- python3+
+- npm
+
  
 ##  Development Setup Instructions
 I encourage you to go through the install script to understand what it is doing before running it. Once it runs you should have a folder called **venv/** created. After running the install script you have to source your venv folder and your terminal should look something like this:
@@ -90,6 +91,13 @@ Where:
 Example:
 $ ssh linalex7@dh2026pc01.utm.utoronto.ca
 ```
+## Running Tests
+Read about testing [here](tests/README.md).
 
-##  Production Instructions
-To be complete when infrastructure is ready for production.
+## Contributing
+Pull requests are welcomed. Check out our [Deerhunt Infrastructure Trello board](https://trello.com/b/hRKytFnG/deerhunt-infra-board) for outlined changes that the team is looking to work on. 
+
+A timeline for project tasks is outlined [here](https://docs.google.com/spreadsheets/d/1Sa-3uzRZ_Iij_ZZ43PbxutlVTsftbJ5iLF-hyRE50l0/edit?usp=sharing).
+
+##  Production
+To be completed when infrastructure is ready for production.
