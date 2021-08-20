@@ -9,3 +9,4 @@ pytest
 requests
 python-dotenv
 pyjwt
+azure-storage-blob
