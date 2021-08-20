@@ -17,4 +17,5 @@ class Configuration:
     MAIL_DOMAINS = os.getenv("MAIL_DOMAINS").split()
     ADMIN_USERNAME=os.getenv("ADMIN_USERNAME")
     ADMIN_PASSWORD=os.getenv("ADMIN_PASSWORD")
+    AZURE_KEY = os.getenv("AZURE_KEY")
     
