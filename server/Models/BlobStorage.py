@@ -6,7 +6,8 @@ https://docs.microsoft.com/en-ca/azure/storage/blobs/media/storage-blobs-introdu
 '''
 import os
 from server.config import Configuration
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, BlobClient
+from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 # A local directory to hold blob data
 LOCAL_PATH = "./data"
@@ -18,11 +19,19 @@ class BlobStorageModel:
         self.service_client = BlobServiceClient.from_connection_string(self.key)
 
     def create_container(self, container_name):
-        return self.service_client.create_container(container_name)
+        try:
+            container = self.service_client.create_container(container_name)
+            print("Container created.")
+            return container
+        except ResourceExistsError:
+            print('Specified container already exists.')
+            pass
 
     def delete_container(self, container_name):
-        container_client = self.service_client.get_container_client(container_name)
+        container_client = self.service_client.get_container_client(
+            container_name)
         container_client.delete_container()
+        print('Container deleted.')
 
     # Return all the blobs in the container with the given name
     def list_blobs_in_container(self, container_name):
@@ -37,22 +46,31 @@ class BlobStorageModel:
         try:
             self.is_zip(blob_name)
         except FileExtensionError as e:
-            print('Please upload a zip file')
+            print('Please upload a zip file.')
+            return
         # Check if local directory exists
-        if not os.is_dir(LOCAL_PATH):
+        if not os.path.isdir(LOCAL_PATH):
             os.mkdir(LOCAL_PATH)
         upload_file_path = os.path.join(LOCAL_PATH, blob_name)
-        # Create a blob client using the file name as the name for the blob
-        blob_client = self.service_client.get_blob_client(container=container_name, blob=blob_name)
-        # Upload the created file
-        with open(upload_file_path, "rb") as data:
+        blob_client = self.service_client.get_blob_client(
+            container=container_name, blob=blob_name)
+        try:
+            data = open(upload_file_path, "rb")
             blob_client.upload_blob(data)
-        # Remove fle from local directory
-        os.remove(upload_file_path)
+            print('Blob uploaded to container.')
+            # Remove fle from local directory
+            os.remove(upload_file_path)
+            print('Blob deleted from local directory.')
+        except FileNotFoundError: 
+            print('File does not exist.')
         
     def delete_blob(self, container_name, blob_name):
-        blob = self.get_blob(container_name, blob_name)
-        blob.delete_blob()
+        try:
+            blob = self.get_blob(container_name, blob_name)
+            blob.delete_blob()
+            print('Blob deleted.')
+        except ResourceNotFoundError as e:
+            print('Specified blob doesn\'t exist')
 
     def get_blob(self, container_name, blob_name):
         container = self.get_container(container_name)
