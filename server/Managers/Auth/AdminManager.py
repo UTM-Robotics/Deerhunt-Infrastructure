@@ -3,7 +3,7 @@ import jwt
 from datetime import datetime, timedelta
 
 from server.Database import Mongo
-from server.Models.AdminUser import AdminUserModel
+from server.Models.User.AdminUser import AdminUserModel
 
 from server.config import Configuration
 

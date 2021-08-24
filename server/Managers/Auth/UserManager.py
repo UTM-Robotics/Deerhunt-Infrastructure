@@ -6,7 +6,7 @@ from passlib.hash import sha512_crypt
 from datetime import datetime, timedelta
 
 from server.Database import Mongo
-from server.Models.GeneralUser import GeneralUserModel
+from server.Models.User.GeneralUser import GeneralUserModel
 from server.Managers.EmailBot.EmailBot import EmailBot
 
 from server.config import Configuration
