@@ -5,12 +5,10 @@ For Azure Blob Storage Object Model refer to:
 https://docs.microsoft.com/en-ca/azure/storage/blobs/media/storage-blobs-introduction/blob1.png
 '''
 import os
+import zipfile
 from server.config import Configuration
 from azure.storage.blob import BlobServiceClient, BlobClient
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
-
-# A local directory to hold blob data
-LOCAL_PATH = "./data"
 
 class BlobStorageModel:
     def __init__(self):
@@ -43,26 +41,17 @@ class BlobStorageModel:
 
     def upload_blob(self, container_name, blob_name):
         # check if the file is a zip file
-        try:
-            self.is_zip(blob_name)
-        except FileExtensionError as e:
-            print('Please upload a zip file.')
-            return
-        # Check if local directory exists
-        if not os.path.isdir(LOCAL_PATH):
-            os.mkdir(LOCAL_PATH)
-        upload_file_path = os.path.join(LOCAL_PATH, blob_name)
-        blob_client = self.service_client.get_blob_client(
-            container=container_name, blob=blob_name)
-        try:
-            data = open(upload_file_path, "rb")
-            blob_client.upload_blob(data)
-            print('Blob uploaded to container.')
-            # Remove fle from local directory
-            os.remove(upload_file_path)
-            print('Blob deleted from local directory.')
-        except FileNotFoundError: 
-            print('File does not exist.')
+        if self.is_zip(blob_name):
+            blob_client = self.service_client.get_blob_client(
+                container=container_name, blob=blob_name)
+            try:
+                with open(blob_name,'rb') as b:
+                    blob_client.upload_blob(b)
+                print('Blob uploaded to container.')
+            except FileNotFoundError: 
+                print('File does not exist.')
+        else:
+            raise FileExtensionError
         
     def delete_blob(self, container_name, blob_name):
         try:
@@ -77,10 +66,10 @@ class BlobStorageModel:
         return container.get_blob_client(blob_name)
 
     def is_zip(self, blob_file_name):
-        split_tup = os.path.splitext(blob_file_name)
-        if not split_tup[1] == ".zip":
-            raise FileExtensionError("Not a zip file")
-        return
+        try:
+            return zipfile.is_zipfile(blob_file_name)
+        except Exception as e:
+            return False
 
 
 class FileExtensionError(Exception):
