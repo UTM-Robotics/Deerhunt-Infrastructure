@@ -10,3 +10,4 @@ pydocs/
 out/
 .env
 var/
+todo.txt

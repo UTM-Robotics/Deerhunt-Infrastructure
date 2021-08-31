@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
 from flask_restful import Resource
 
-from server.Managers.Auth.UserManager import UserManager, auth
+from server.Managers.Auth.UserManager import UserManager, User_auth
 
 class UserRoute(Resource):
 
@@ -17,9 +17,9 @@ class UserRoute(Resource):
 
 
     # Deletes user from db
-    @auth.login_required
+    @User_auth.login_required
     def delete(self):
-        with UserManager(auth.current_user()) as usermanager:
+        with UserManager(User_auth.current_user()) as usermanager:
             result = usermanager.delete()
         if result:
             return make_response(jsonify({'message': 'Account deleted'}), HTTPStatus.OK)
@@ -29,7 +29,7 @@ class UserRoute(Resource):
 class UserResetRoute(Resource):
 
     # Handles User password reset
-    @auth.login_required
+    @User_auth.login_required
     def post(self):
         pass
         # with UserManager(auth.current_user()) as usermanager:

@@ -4,12 +4,13 @@ from flask_restful import Resource
 
 from server.Managers.Events.AdminEvents import EventsManager
 
-from server.Managers.Auth.UserManager import auth
+from server.Managers.Auth.UserManager import User_auth
+from server.Managers.Auth.AdminManager import Admin_auth
 
 
 class EventRoute(Resource):
 
-    @auth.login_required
+    @Admin_auth.login_required
     def post(self):
         with EventsManager(request.json['name']) as admineventmanager:
             result = admineventmanager.create_event(request.json['game'],
@@ -20,7 +21,6 @@ class EventRoute(Resource):
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
 
 
-    # @auth.login_required
     def get(self):
         with EventsManager() as admineventmanager:
             result = admineventmanager.get_events()

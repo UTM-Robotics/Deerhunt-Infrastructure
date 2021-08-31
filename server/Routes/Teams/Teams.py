@@ -4,12 +4,12 @@ from flask_restful import Resource
 
 from server.Managers.Teams.TeamsManager import TeamsManager
 
-from server.Managers.Auth.UserManager import auth
+from server.Managers.Auth.UserManager import User_auth
 
 
 class TeamsRoute(Resource):
 
-    @auth.login_required
+    @User_auth.login_required
     def post(self):
         email = auth.current_user()
         with UserManager(auth.current_user()) as usermanager:
