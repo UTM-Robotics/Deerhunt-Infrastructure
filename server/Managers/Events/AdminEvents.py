@@ -58,6 +58,14 @@ class EventsManager:
             return True
         return False
 
+    def delete(self):
+        if self.found:
+            if self.db.delete_one({'name': self.user.get_name()}):
+                return True
+            else:
+                return False
+        return False
+
     def commit(self):
         query = {'name': self.event.get_name()}
         data = self.event.covert_to_dict()
