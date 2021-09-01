@@ -8,12 +8,6 @@ export default function Navbar(props) {
         <Button>
           Home
         </Button>
-        <Button>
-          Teams
-        </Button>
-        <Button>
-          Settings
-        </Button>
       </HStack>
     </Box>
   )
