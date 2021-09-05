@@ -5,10 +5,19 @@ For Azure Blob Storage Object Model refer to:
 https://docs.microsoft.com/en-ca/azure/storage/blobs/media/storage-blobs-introduction/blob1.png
 '''
 import os
+import re
 import zipfile
 from server.config import Configuration
 from azure.storage.blob import BlobServiceClient, BlobClient
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
+
+'''
+- Container names must start or end with a letter or number, and can contain only letters, numbers, and the dash (-) character.
+- Every dash (-) character must be immediately preceded and followed by a letter or number; consecutive dashes are not permitted in container names.
+- All letters in a container name must be lowercase.
+- Container names must be from 3 through 63 characters long.
+'''
+CONTAINER_NAME_REGEX = re.compile(r'^(([a-z\d]((-(?=[a-z\d]))|([a-z\d])){2,62}))$')
 
 class BlobStorageModel:
     def __init__(self):
@@ -17,6 +26,8 @@ class BlobStorageModel:
         self.service_client = BlobServiceClient.from_connection_string(self.key)
 
     def create_container(self, container_name):
+        if not self.container_name_checker(container_name):
+            return 
         try:
             container = self.service_client.create_container(container_name)
             print("Container created.")
@@ -26,20 +37,41 @@ class BlobStorageModel:
             pass
 
     def delete_container(self, container_name):
-        container_client = self.service_client.get_container_client(
-            container_name)
-        container_client.delete_container()
-        print('Container deleted.')
+        if not self.container_name_checker(container_name):
+            return
+        try:
+            container_client = self.service_client.get_container_client(container_name)
+            container_client.delete_container()
+            print('Container deleted.')
+        except ResourceNotFoundError:
+            print("No containers with given name")
+            pass
 
     # Return all the blobs in the container with the given name
     def list_blobs_in_container(self, container_name):
+        if not self.container_name_checker(container_name):
+            return
         container = self.get_container(container_name)
+        if not container:
+            return
         return container.list_blobs()
 
     def get_container(self, container_name):
+        if not self.container_name_checker(container_name):
+            print("No containers with given name")
+            return
         return self.service_client.get_container_client(container_name)
 
+    def container_name_checker(self, container_name):
+        if re.search(CONTAINER_NAME_REGEX, container_name):
+            return True
+        else: 
+            print('Invalid container name')
+            return False
+
     def upload_blob(self, container_name, blob_name):
+        if not self.container_name_checker(container_name):
+            return
         # check if the file is a zip file
         if self.is_zip(blob_name):
             blob_client = self.service_client.get_blob_client(
