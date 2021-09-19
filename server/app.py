@@ -8,7 +8,7 @@ from server.Routes.Auth.UserRoute import UserRoute
 from server.Routes.Auth.verify import VerifyRoute
 from server.Routes.Auth.AdminUserRoute import AdminUserRoute
 
-from server.Routes.Events.adminevent import AdminEventRoute
+from server.Routes.Events.Events import EventRoute
 from server.Routes.Teams.Teams import TeamsRoute
 
 
@@ -23,7 +23,7 @@ api.add_resource(UserRoute, '/api/login')
 api.add_resource(AdminUserRoute, '/api/adminlogin')
 
 # Initializing other routes
-api.add_resource(AdminEventRoute, '/api/adminevent')
+api.add_resource(EventRoute, '/api/events')
 api.add_resource(TeamsRoute, '/api/teams')
 
 if __name__ == '__main__':
