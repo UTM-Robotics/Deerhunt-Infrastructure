@@ -8,7 +8,7 @@ import {
   } from "@chakra-ui/react"
 
 
-class Login extends React.Component {
+class Signup extends React.Component {
 
     constructor(props) {
         super(props)
@@ -17,24 +17,12 @@ class Login extends React.Component {
         console.log(props)
 
         this.handleInputChange = this.handleInputChange.bind(this)
-        this.Login = this.Login.bind(this)
         this.CreateUser = this.CreateUser.bind(this)
     }
 
     handleInputChange(event) {
         const name = event.target.name
         this.setState({ [name]: event.target.value })
-    }
-
-    Login(event) {
-        console.log("Logging in user" + this.state.email)
-        axios.post('http://localhost:5000/api/login', { email: this.state.email, password: this.state.password }).then(resp => {
-            console.log(resp)
-            this.props.onLogin(this.state.email)
-        }).catch(err => {
-            console.log(err)
-        })
-        event.preventDefault();
     }
 
     CreateUser() {
@@ -54,7 +42,7 @@ class Login extends React.Component {
                 <Navbar/>
                 <Box p={2}>
                 <Box textAlign="center">
-                    <Heading>Sign in to Deerhunt</Heading>
+                    <Heading>Sign up for Deerhunt</Heading>
                 </Box>
                 <Box my={4} textAlign="left">
                     <form>
@@ -67,7 +55,7 @@ class Login extends React.Component {
                             <Input type="password" placeholder="*******" />
                         </FormControl>
                     <Button colorScheme="blue" width="full" mt={4} type="submit">
-                    Sign In
+                    Sign up
                     </Button>
                 </form>
                 </Box>
@@ -77,4 +65,4 @@ class Login extends React.Component {
     }
 }
 
-export default Login
+export default Signup
