@@ -1,0 +1,8 @@
+SECRET_KEY=""
+MONGODB_URI="mongodb+srv://<USER>:<PASSWORD>@cluster0.kt5nk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+FLASK_ADDR="127.0.0.1:5000"
+FROM_EMAIL_ADDR=""
+FROM_EMAIL_PASS=""
+MAIL_DOMAINS="@mail.utoronto.ca @utoronto.ca @gmail.com"
+ADMIN_USERNAME=""
+ADMIN_PASSWORD=""

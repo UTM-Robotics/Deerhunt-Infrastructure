@@ -1,5 +1,7 @@
 import jwt
 
+from flask_httpauth import HTTPTokenAuth
+
 from datetime import datetime, timedelta
 
 from server.Database import Mongo
@@ -7,6 +9,25 @@ from server.Models.User.AdminUser import AdminUserModel
 
 from server.config import Configuration
 
+
+'''
+Creates decorator function for checking Admin account Bearer token.
+Routes which have
+                    @Admin_auth.login_required
+
+Call the verify_token() function below.
+'''
+Admin_auth = HTTPTokenAuth(scheme='Bearer')
+@Admin_auth.verify_token
+def verify_token(token):
+    admin = Mongo.admins.find_one({'jwt_token': token})
+    if admin:
+        try:
+            jwt.decode(token, Configuration.SECRET_KEY, algorithms=['HS256'])
+        except jwt.ExpiredSignatureError:
+            return False
+        return admin['username']
+    return False
 
 
 

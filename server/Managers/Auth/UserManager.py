@@ -25,10 +25,16 @@ def is_allowed(email: str) -> bool:
     return False
 
 
-auth = HTTPTokenAuth(scheme='Bearer')
-
-@auth.verify_token
+User_auth = HTTPTokenAuth(scheme='Bearer')
+@User_auth.verify_token
 def verify_token(token):
+    '''
+    Creates decorator function for checking General User Bearer token.
+    Routes which have
+                        @User_auth.login_required
+
+    Call the verify_token() function below.
+    '''
     entry = Mongo.users.find_one({'jwt_token': token})
     if entry:
         try:
@@ -36,15 +42,7 @@ def verify_token(token):
         except jwt.ExpiredSignatureError:
             return False
         return entry['email']
-    else:
-        admin = Mongo.admins.find_one({'jwt_token': token})
-        if admin:
-            try:
-                jwt.decode(token, Configuration.SECRET_KEY, algorithms=['HS256'])
-            except jwt.ExpiredSignatureError:
-                return False
-            return admin['username']
-        return False
+    return False
 
 
 class UserManager:

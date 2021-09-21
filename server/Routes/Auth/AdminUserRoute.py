@@ -3,8 +3,7 @@ from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
 from flask_restful import Resource
 
-from server.Managers.Auth.AdminManager import AdminManager
-from server.Managers.Auth.UserManager import auth
+from server.Managers.Auth.AdminManager import AdminManager, Admin_auth
 
 
 class AdminUserRoute(Resource):
