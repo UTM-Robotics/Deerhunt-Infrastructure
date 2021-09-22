@@ -16,9 +16,7 @@ from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 - All letters in a container name must be lowercase.
 - Container names must be from 3 through 63 characters long.
 '''
-CONTAINER_NAME_REGEX = re.compile(
-    r'^(([a-z\d]((-(?=[a-z\d]))|([a-z\d])){2,62}))$')
-
+CONTAINER_NAME_REGEX = re.compile(r'^(([a-z\d]((-(?=[a-z\d]))|([a-z\d])){2,62}))$')
 
 class BlobStorageModel:
     def __init__(self):
