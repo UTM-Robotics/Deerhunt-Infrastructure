@@ -8,8 +8,6 @@ from server.Models.Teams.Teams import TeamsModel
 from server.config import Configuration
 
 
-
-
 class TeamsManager:
     def __init__(self, name=None):
         self.db = Mongo.teams
@@ -34,7 +32,21 @@ class TeamsManager:
         pass
 
     def find_team(self):
-        pass
+        return self.db.find_one({'name': self.team.get_name()})
+    
+    def create_team(self, creator):
+        if not self.found:
+            self.team.set_created_timestamp(str(datetime.utcnow()))
+            self.team.add_member(creator)
+            # create azure container here
+            self.commit()
+            return True
+        return False
 
     def commit(self):
-        pass
+        query = {'name': self.team.get_name()}
+        data = self.team.covert_to_dict()
+        if self.found:
+            self.db.update_one(query, {'$set': data })
+        else:
+            self.db.update_one(query, {"$setOnInsert": data}, upsert=True)

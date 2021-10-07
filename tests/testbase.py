@@ -12,6 +12,9 @@ JWT_TOKEN_REGEX = re.compile(r'(?:"e.{10,})')
 def filter_jwt_token(data):
     return re.sub(JWT_TOKEN_REGEX, '<JWT_TOKEN>', data)
 
+def read_jwt_token(data):
+    return re.search(JWT_TOKEN_REGEX, data).group(0)
+
 def read_link(data):
     return re.search(EMAIL_URL_REGEX, data).group(1)
 
