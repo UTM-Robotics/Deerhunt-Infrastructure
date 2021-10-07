@@ -1,6 +1,7 @@
 import pytest
 import requests
 import time
+import json
 
 from .testbase import   BaseTester,  \
                         filter_link, \
@@ -40,16 +41,20 @@ def test_verify_link(request):
     with BaseTester() as test:
         link = test.get_var('VERIFY_LINK')
         r = requests.get(link)
-        print(r.text)
-        output = read_jwt_token(r.text)
-        print(output)
-        test.save_var('JWT_TOKEN', output)
-        # test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
+
+# Testing normal login now with the user in the database.
+def test_general_login(request, flaskaddr, receive_email):
+    email = str(receive_email)
+    r = requests.post(f'http://{flaskaddr}/api/login', json={'email': email, 'password': 'tester1234'})
+    with BaseTester() as test:
+        test.save_var('JWT_TOKEN_USER', json.loads(r.text)['token'])
+        output = filter_jwt_token(r.text)
+        test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
 
 
 def test_create_team(request, flaskaddr):
     with BaseTester() as test:
-        jwt_token = test.get_var('JWT_TOKEN')
+        jwt_token = test.get_var('JWT_TOKEN_USER').rstrip()
         print(repr(jwt_token))
         r = requests.post(f'http://{flaskaddr}/api/teams',
                             json={'name': 'pied piper'},
