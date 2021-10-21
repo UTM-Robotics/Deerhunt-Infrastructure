@@ -1,17 +1,36 @@
 import React from 'react'
 import Navbar from './MenuBar/Navbar'
+import axios from 'axios'
 
 
 class Home extends React.Component {
 
+    constructor(props) {
+        super(props)
+
+        this.all_events = []
+
+        // this.get_all_events = this.get_all_events.bind(this)
+    }
+
+    get_events(){
+        axios.get("http://localhost:5000/api/events")
+        .then(resp => {
+            console.log(resp.data)
+        }).catch(err => {
+            console.log(err)
+        })
+    }
 
     render() {
+        console.log("rendering")
         return (
             <div>
                 <Navbar>         
                 </Navbar>
                 <h1>Home Page</h1>
                 <p>Not signed in</p>
+                {this.get_events()}
             </div>
         )
     }
