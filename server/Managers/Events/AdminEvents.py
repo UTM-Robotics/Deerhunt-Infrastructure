@@ -60,7 +60,7 @@ class EventsManager:
 
     def delete(self):
         if self.found:
-            if self.db.delete_one({'name': self.user.get_name()}):
+            if self.db.delete_one({'name': self.event.get_name()}):
                 return True
             else:
                 return False
