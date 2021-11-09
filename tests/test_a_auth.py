@@ -1,6 +1,5 @@
 import pytest
 import requests
-import imaplib
 import time
 import json
 
@@ -8,8 +7,6 @@ from .testbase import   BaseTester,  \
                         filter_link, \
                         read_link,   \
                         filter_jwt_token
-IMAP_SERVER = 'imap.gmail.com'
-
 
 
 
@@ -92,9 +89,43 @@ def test_admin_login(request, flaskaddr, admin_default_creds):
     password = temp[1]
     r = requests.post(f'http://{flaskaddr}/api/adminlogin', json={'username': username, 'password': password})
     with BaseTester() as test:
+        test.save_var('JWT_TOKEN_ADMIN', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
 
+
+# Testing creating a new event as admin.
+def test_create_event(request, flaskaddr):
+    with BaseTester() as test:
+        token = test.get_var('JWT_TOKEN_ADMIN').rstrip()
+        test.save_var('JWT_TOKEN_ADMIN', token)
+        r = requests.post(f'http://{flaskaddr}/api/events', 
+                            json={'name': 'test_event3', 
+                                'game': 'micromouse',
+                                'starttime': '',
+                                'endtime': '',},
+                            headers={'Authorization': f'Bearer {token}'})
+        test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
+
+
+# Getting a list of all scheduled events
+def test_get_all_events(request, flaskaddr):
+    r = requests.get(f'http://{flaskaddr}/api/events')
+    with BaseTester() as test:
+        test.run(request.node.name, f'HTTP_Status: {r.status_code}')
+
+
+# Deleting an event.
+def test_delete_event(request, flaskaddr):
+    with BaseTester() as test:
+        token = test.get_var('JWT_TOKEN_ADMIN').rstrip()
+        r = requests.delete(f'http://{flaskaddr}/api/events',
+                            json={'name': 'test_event3'},
+                            headers={'Authorization': f'Bearer {token}'})
+        test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
+
+
+# Running delete user.
 def test_teardown(request, flaskaddr, receive_email):
     email = str(receive_email)
     with BaseTester() as test:

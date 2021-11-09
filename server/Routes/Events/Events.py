@@ -29,11 +29,12 @@ class EventRoute(Resource):
                 return make_response(dumps(result), HTTPStatus.OK)
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not get events list')
 
+
     @Admin_auth.login_required
     def delete(self):
         with EventsManager(request.json['name']) as adminmanager:
             result = adminmanager.delete()
             if result:
-                return make_response(jsonify({'message': 'Event deleted'}), HTTPStatus.OK)
+                return make_response(jsonify({'message': 'Event Deleted'}), HTTPStatus.OK)
             abort(HTTPStatus.NOT_ACCEPTABLE, 'Could not delete event')
             
