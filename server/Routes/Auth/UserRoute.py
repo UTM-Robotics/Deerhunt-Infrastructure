@@ -1,16 +1,23 @@
 from http import HTTPStatus
 
 from flask import make_response, request, abort, jsonify
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 from server.Managers.Auth.UserManager import UserManager, User_auth
 
 class UserRoute(Resource):
 
+    # flask parser
+    parser = reqparse.RequestParser()
+    parser.add_argument('email', type=str, required=True, help='This field cannot be left blank')
+    parser.add_argument('password', type=str, required=True, help='This field cannot be left blank')
+
     # Handles users logging in.
     def post(self):
-        with UserManager(request.json['email']) as usermanager:
-            result = usermanager.login(request.json['password'])
+        data = UserRoute.parser.parse_args()
+        print(data['email'])
+        with UserManager(data['email']) as usermanager:
+            result = usermanager.login(data['password'])
         if result:
             return make_response(jsonify({'token': result}), HTTPStatus.OK)
         abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Username or Password is wrong')
