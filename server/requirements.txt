@@ -9,5 +9,4 @@ pytest
 requests
 python-dotenv
 pyjwt
-python-10minutemail
 azure-storage-blob
