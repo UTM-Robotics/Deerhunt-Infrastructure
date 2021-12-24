@@ -2,18 +2,26 @@ import pytest
 import requests
 import time
 import json
+import imaplib
 
 from .testbase import   BaseTester,  \
                         filter_link, \
                         read_link,   \
                         filter_jwt_token
+IMAP_SERVER = 'imap.gmail.com'
 
+# Just a function to be used by a lot of tests
+def split(string):
+    temp = string.split(':')
+    username = temp[0] 
+    password = temp[1]
+    return username, password
 
 
 # This function assumes the user doesn't exist in mongodb.
 # Error checking to make sure login error handles correctly.
 def test_general_login_non_existing(request, flaskaddr, receive_email):
-    email = str(receive_email)
+    email, _ = split(receive_email)
     r = requests.post(f'http://{flaskaddr}/api/login', json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
         test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
@@ -22,7 +30,7 @@ def test_general_login_non_existing(request, flaskaddr, receive_email):
 # The initial post request to server to register.
 # This function assumes the user doesn't exist in mongodb.
 def test_register(request, flaskaddr, receive_email):
-    email = str(receive_email)
+    email, _ = split(receive_email)
     r = requests.post(f'http://{flaskaddr}/api/register', 
                     json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
@@ -32,11 +40,15 @@ def test_register(request, flaskaddr, receive_email):
 # Opening test gmail acount and downloading 
 # new email that should havbe been received.
 def test_register_email(request, receive_email):
-    while True:
-        if receive_email.new_message():  # Check for new mail
-            body = receive_email.fetch_message()[0]['bodyHtmlContent']  # Fetch all the messages
-            break
-        time.sleep(2)
+    time.sleep(3)
+    email, passwd = split(receive_email)
+    mail = imaplib.IMAP4_SSL(IMAP_SERVER)
+    mail.login(email, passwd)
+    mail.select('inbox')
+    _, data = mail.search(None, '(FROM utmroboticstesting SUBJECT "Welcome to Deerhunt!")')
+    msg = data[0].decode('utf-8').split(' ')[-1]
+    _, data = mail.fetch(msg, '(BODY.PEEK[TEXT])')
+    body = data[0][1].decode('utf-8')
     with BaseTester() as test:
         test.save_var('VERIFY_LINK', read_link(body))
         output = filter_link(body)
@@ -57,7 +69,7 @@ def test_verify_link(request):
 # creating an account that already exists.
 # Checking if error handling is correct.
 def test_register_existing_user(request, flaskaddr, receive_email):
-    email = str(receive_email)
+    email, _ = split(receive_email)
     r = requests.post(f'http://{flaskaddr}/api/register', 
                     json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
@@ -66,7 +78,7 @@ def test_register_existing_user(request, flaskaddr, receive_email):
 
 # Testing normal login now with the user in the database.
 def test_general_login(request, flaskaddr, receive_email):
-    email = str(receive_email)
+    email, _ = split(receive_email)
     r = requests.post(f'http://{flaskaddr}/api/login', json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
         test.save_var('JWT_TOKEN_USER', json.loads(r.text)['token'])
@@ -84,9 +96,7 @@ def test_admin_login_error(request, flaskaddr):
 
 # Testing to make sure default admin login works.
 def test_admin_login(request, flaskaddr, admin_default_creds):
-    temp = admin_default_creds.split(':')
-    username = temp[0]
-    password = temp[1]
+    username, password = split(admin_default_creds)
     r = requests.post(f'http://{flaskaddr}/api/adminlogin', json={'username': username, 'password': password})
     with BaseTester() as test:
         test.save_var('JWT_TOKEN_ADMIN', json.loads(r.text)['token'])
@@ -127,7 +137,7 @@ def test_delete_event(request, flaskaddr):
 
 # Running delete user.
 def test_teardown(request, flaskaddr, receive_email):
-    email = str(receive_email)
+    email, _ = split(receive_email)
     with BaseTester() as test:
         token = test.get_var('JWT_TOKEN_USER').rstrip()
         r = requests.delete(f'http://{flaskaddr}/api/login', 
