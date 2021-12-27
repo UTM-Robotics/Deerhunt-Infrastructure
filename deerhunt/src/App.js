@@ -3,7 +3,6 @@ import { Route, Switch } from "react-router";
 
 import Home from "./pages/Home";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
-import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import AdminLogin from "./pages/AdminLogin";
 import Events from "./pages/Events";

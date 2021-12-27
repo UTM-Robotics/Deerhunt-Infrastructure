@@ -9,11 +9,12 @@ const AboutUs = () => {
       width="full"
       justifyContent="center"
       alignItems="center"
+      bg="#011627"
     >
       <Box maxWidth="500px" mx={4}>
         <Heading color="white">Welcome to the Deerhunt Infrastructure</Heading>
         <Text pt={4} color="white">
-          This a project maintained by the Robotics Club at the University of
+          This is a project maintained by the Robotics Club at the University of
           Toronto Mississauga. To learn more about this project, visit our
           Github.
         </Text>

@@ -1,19 +1,20 @@
 import React from "react";
 import LoginForm from "../components/LoginForm";
 import AboutUs from "../components/AboutUs";
-import { Grid, GridItem } from "@chakra-ui/react";
-import ConnectWithUs from "../components/ConnectWithUs";
+import { Flex, Stack } from "@chakra-ui/react";
 
 const LoginPage = () => {
   return (
-    <Grid templateColumns="repeat(5, 1fr)">
-      <GridItem colSpan={3} bg="gray.800">
+    <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
+      <Flex flex={1}>
         <AboutUs />
-      </GridItem>
-      <GridItem colSpan={2} bg="white">
-        <LoginForm />
-      </GridItem>
-    </Grid>
+      </Flex>
+      <Flex p={8} flex={1} align={"center"} justify={"center"}>
+        <Stack spacing={4} w={"full"} maxW={"md"}>
+          <LoginForm />
+        </Stack>
+      </Flex>
+    </Stack>
   );
 };
 
