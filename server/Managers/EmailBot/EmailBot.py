@@ -28,7 +28,7 @@ class EmailBot:
         '''
         with open('Managers/EmailBot/{}.html'.format('registration')) as file:
             self.msg = EmailMessage()
-            self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'http://{Configuration.FLASK_ADDR}/api/verify/{code}'), subtype='html')
+            self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'http://{Configuration.FLASK_ADDR}/api/user/verify/{code}'), subtype='html')
         self.msg['Subject'] = Email_Titles['registration']
         self.msg['From'] = self.sender
 
