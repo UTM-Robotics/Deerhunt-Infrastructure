@@ -11,3 +11,4 @@ out/
 .env
 var/
 todo.txt
+package-lock.json

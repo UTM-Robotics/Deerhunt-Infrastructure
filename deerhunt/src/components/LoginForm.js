@@ -13,11 +13,11 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 
-export default function LoginForm() {
+export default function LoginForm(props) {
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting },
+    formState: {isSubmitting},
   } = useForm();
 
   async function login(values) {
@@ -28,6 +28,7 @@ export default function LoginForm() {
       .post("http://127.0.0.1:5000/api/user/auth", form)
       .then((response) => {
         console.log(response);
+        props.onLogin();
       })
       .catch(() => {
         console.log("failed to login");

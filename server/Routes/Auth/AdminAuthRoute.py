@@ -6,7 +6,7 @@ from flask_restful import Resource, reqparse
 from server.Managers.Auth.AdminManager import AdminManager
 
 
-class AdminUserRoute(Resource):
+class AdminAuthRoute(Resource):
 
     # flask parser
     parser = reqparse.RequestParser()
@@ -15,7 +15,7 @@ class AdminUserRoute(Resource):
 
     # Handles post request for admin login
     def post(self):
-        data = AdminUserRoute.parser.parse_args()
+        data = AdminAuthRoute.parser.parse_args()
         with AdminManager(data['username']) as adminmanager:
             result = adminmanager.login(data['password'])
         if result:

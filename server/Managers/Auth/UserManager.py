@@ -12,7 +12,7 @@ from server.Managers.EmailBot.EmailBot import EmailBot
 from server.config import Configuration
 
 
-CODE_LENGTH = 8
+CODE_LENGTH = 16
 
 
 def is_allowed(email: str) -> bool:
@@ -93,9 +93,23 @@ class UserManager:
             else:
                 return False
         return False
+
+
+    def update_password(self, old_password, new_password):
+        if self.found and self.user.verify_password(old_password):
+            self.user.set_password(sha512_crypt.hash(new_password))
+            self.commit()
+            return True
+        return False
+
+    def update_password_forgotten(self, new_password):
+        if self.found:
+            self.user.set_password(sha512_crypt.hash(new_password))
+            self.generate_code(CODE_LENGTH)
+            self.commit()
+            return True
+        return False
             
-                
-    
     
     def register(self, password):
         if not self.found:
@@ -153,8 +167,10 @@ class UserManager:
             with EmailBot() as emailbot:
                 emailbot.build_message_registration(self.user.get_code())
                 emailbot.send(self.user.get_email())
-        elif purpose == 'password_reset':
-            pass
+        elif purpose == 'forgotpassword':
+            with EmailBot() as emailbot:
+                emailbot.build_message_forgotpassword(self.user.get_code())
+                emailbot.send(self.user.get_email())
     
 
     def find_user(self):
