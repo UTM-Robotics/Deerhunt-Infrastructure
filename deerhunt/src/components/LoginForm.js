@@ -43,8 +43,8 @@ export default function LoginForm() {
       <Box>
         <Box
           borderWidth={1}
-          px={6}
-          py={6}
+          px={8}
+          py={8}
           borderRadius={4}
           boxShadow="lg"
           width="full"
@@ -52,7 +52,7 @@ export default function LoginForm() {
           bg="gray.300"
         >
           <Box textAlign="center" mb={4}>
-            <Heading>Login to Deerhunt</Heading>
+            <Heading size="md">Login to Deerhunt</Heading>
           </Box>
           <Box>
             <form onSubmit={handleSubmit(login)}>

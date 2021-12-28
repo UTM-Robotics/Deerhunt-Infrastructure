@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 
 import history from "./history";
 import LoginPage from "./pages/LoginPage";
+import SideNav from "./components/SideNav";
 
 class App extends React.Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class App extends React.Component {
       return (
         <Switch>
           <Route path="/" component={Home} exact />
+          <Route path="/test" component={SideNav} />
           <Route
             path="/login"
             component={() => <LoginPage onLogin={this.handleLogin} />}
@@ -65,6 +67,7 @@ class App extends React.Component {
             path="/adminlogin"
             component={() => <AdminLogin onLogin={this.handleLogin} />}
           />
+
           <Route component={NotFound} />
         </Switch>
       );

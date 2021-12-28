@@ -6,7 +6,7 @@ import { Flex, Stack } from "@chakra-ui/react";
 const LoginPage = () => {
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
-      <Flex flex={1}>
+      <Flex flex={2}>
         <AboutUs />
       </Flex>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
