@@ -8,10 +8,20 @@ const MenuItems = ({ children }) => (
   </Text>
 );
 
-const TopNav = (props) => {
+function TopNav(props) {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
-
+  let loginButton;
+  console.log("Props here:\n");
+  console.log(props);
+  if (!props.isLoggedIn) {
+    loginButton =
+      <RouteLink to="/login">
+        <Button bg="transparent" border="1px">
+          Login
+        </Button>
+      </RouteLink>;
+  }
   return (
     <Flex
       as="nav"
@@ -62,14 +72,10 @@ const TopNav = (props) => {
         display={{ base: show ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
       >
-        <RouteLink to="/login">
-          <Button bg="transparent" border="1px">
-            Login
-          </Button>
-        </RouteLink>
+        {loginButton}
       </Box>
     </Flex>
   );
-};
+}
 
 export default TopNav;
