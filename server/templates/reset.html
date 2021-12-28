@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Password</title>
+</head>
+<style>
+    body {
+        text-align: center;
+    }
+</style>
+<script>
+function validateForm(){
+  let old = document.forms["resetForm"]["old_password"].value
+  let tmp1 = document.forms["resetForm"]["new_password"].value
+  let tmp2 = document.forms["resetForm"]["new_password2"].value
+  console.log(old)
+  if (old == ""){
+    alert("Input the old password")
+    return false
+  }
+  if (tmp1 == "" || tmp2 == ""){
+    alert("Cannot have empty new password")
+    return false
+  }
+  if (tmp1 !== tmp2){
+    alert("New passwords do not match")
+    return false;
+  }
+}
+</script>
+<body>
+  <h1 style="color: blue">Reset your deerhunt password</h1>
+  <form name="resetForm", action="/api/user/forgotpassword/{{code}}", onsubmit="return validateForm()", method="post">
+    <label for="old_pass">Old Password:</label><br>
+    <input type="password" id="old_pass" name="old_password" value=""><br><br>
+    <label for="new_pass">New Password:</label><br>
+    <input type="password" id="new_pass" name="new_password" value=""><br><br>
+    <label for="new_pass2">New Password again:</label><br>
+    <input type="password" id="new_pass2" name="new_password2" value=""><br><br>
+    <input type="submit" value="Submit">
+  </form> 
+</body>
+</html>
