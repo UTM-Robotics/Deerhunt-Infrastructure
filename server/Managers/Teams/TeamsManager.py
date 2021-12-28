@@ -8,14 +8,15 @@ from server.Models.Teams.Teams import TeamsModel
 from server.config import Configuration
 
 class TeamsManager:
-    def __init__(self, name, owner):
+    def __init__(self, name):
         self.db = Mongo.teams
-        self.team = TeamsModel(name, owner)
+        self.team = TeamsModel(name)
 
     def __enter__(self):
         # self.session = Mongo.start_session()  <- mongodb mutex lock
         result = self.find_team()
         if result:
+            self.team.set_owner(result['owner'])
             self.team.set_members(result['members'])
             self.team.join_event(result['eventID'])
             self.team.set_last_submission_timestamp(result['last_submission'])
@@ -29,9 +30,10 @@ class TeamsManager:
         # self.session.end_session()  <- mongodb mutex unlock
         pass
 
-    def createTeam(self) -> bool:
+    def createTeam(self, owner) -> bool:
         if not self.found:
             try:
+                self.team.set_owner(owner)
                 self.team.set_created_timestamp(str(datetime.utcnow()))
                 self.commit()
                 return True

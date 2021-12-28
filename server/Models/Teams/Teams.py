@@ -1,11 +1,14 @@
 class TeamsModel:
-    def __init__(self, name, owner) -> None:
+    def __init__(self, name) -> None:
         self.name = name
-        self.owner = owner
+        self.owner = None
         self.members = []
         self.eventID = None
         self.last_submission_timestamp = None
         self.created_timestamp = None
+    
+    def set_owner(self, owner) -> None:
+        self.owner = owner
 
     def add_member(self, email) -> None:
         self.members.append(email)
