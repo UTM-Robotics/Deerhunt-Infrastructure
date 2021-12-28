@@ -10,7 +10,6 @@ import NotFound from "./pages/NotFound";
 
 import history from "./history";
 import LoginPage from "./pages/LoginPage";
-import TopNav from "./components/TopNav";
 import SignUpPage from "./pages/SignUpPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 
@@ -54,7 +53,6 @@ class App extends React.Component {
       return (
         <Switch>
           <Route path="/" component={Home} exact />
-          <Route path="/test" component={TopNav} />
           <Route
             path="/login"
             component={() => <LoginPage onLogin={this.handleLogin} />}
