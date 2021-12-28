@@ -40,12 +40,12 @@ class App extends React.Component {
         <Switch>
           <Route
             path="/"
-            component={() => <HomeLoggedIn email={this.state.email} />}
+            component={<HomeLoggedIn email={this.state.email} isloggedin={true}/>}
             exact
           />
-          <Route path="/events" component={Events} />
-          <Route path="/teams" component={Teams} />
-          <Route path="/admin" component={Admin} />
+          <Route path="/events" component={Events}/>
+          <Route path="/teams" component={Teams}/>
+          <Route path="/admin" component={Admin}/>
           <Route component={NotFound} />
         </Switch>
       );

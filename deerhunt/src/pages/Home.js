@@ -1,5 +1,5 @@
 import React from 'react'
-import Navbar from './MenuBar/Navbar'
+import TopNav from '../components/TopNav'
 import axios from 'axios'
 
 
@@ -9,8 +9,6 @@ class Home extends React.Component {
         super(props)
 
         this.all_events = []
-
-        // this.get_all_events = this.get_all_events.bind(this)
     }
 
     get_events(){
@@ -26,8 +24,7 @@ class Home extends React.Component {
         console.log("rendering")
         return (
             <div>
-                <Navbar>         
-                </Navbar>
+                <TopNav/>
                 <h1>Home Page</h1>
                 <p>Not signed in</p>
                 {this.get_events()}

@@ -82,7 +82,7 @@ export default function SignUpForm() {
               </FormControl>
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
-                  Login
+                  Sign Up
                 </Button>
               </Box>
               <Link

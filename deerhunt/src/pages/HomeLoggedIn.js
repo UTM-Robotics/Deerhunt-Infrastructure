@@ -1,6 +1,6 @@
 import React from 'react'
-import Navbar from './MenuBar/Navbar'
-// import './Home.css'
+import TopNav from '../components/TopNav'
+import { Heading, Box} from "@chakra-ui/react";
 
 class Home extends React.Component {
 
@@ -13,12 +13,13 @@ class Home extends React.Component {
     render() {
         return (
         <div>
-            <Navbar>         
-            </Navbar>
-            <h1>Home Page</h1>
-        {/* TODO: Add a conditional statement for when user not logged in */}
+            <TopNav isloggedin={true}/>
+            <Box textAlign="center">
+            <Heading > The UTM AI Competition Hub </Heading>
+            
             <h3>Welcome {this.state.email}</h3>
-        </div>
+            </Box>
+            </div>
         )
     }
 }
