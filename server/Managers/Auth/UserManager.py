@@ -159,8 +159,10 @@ class UserManager:
             with EmailBot() as emailbot:
                 emailbot.build_message_registration(self.user.get_code())
                 emailbot.send(self.user.get_email())
-        elif purpose == 'password_reset':
-            pass
+        elif purpose == 'forgotpassword':
+            with EmailBot() as emailbot:
+                emailbot.build_message_forgotpassword(self.user.get_code())
+                emailbot.send(self.user.get_email())
     
 
     def find_user(self):
