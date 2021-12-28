@@ -19,11 +19,12 @@ class TeamsRoute(Resource):
         user = None
         with UserManager(User_auth.current_user()) as usermanager:
             user = usermanager.user
+        TeamsRoute.parser.add_argument('members', type=str, action="append")
         data = TeamsRoute.parser.parse_args()
         with TeamsManager(data['name']) as teamsmanager:
             if teamsmanager.find_team():
                 return abort(HTTPStatus.BAD_REQUEST)
-            if teamsmanager.create_team(user.email):
+            if teamsmanager.create_team(user.email, data['members']):
                 return make_response(jsonify({'message': 'Successfully created a team'}), HTTPStatus.OK)
 
     @User_auth.login_required
