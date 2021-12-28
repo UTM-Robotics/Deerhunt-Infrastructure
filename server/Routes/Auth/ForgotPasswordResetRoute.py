@@ -9,7 +9,6 @@ class ForgotPasswordResetRoute(Resource):
 
     # flask parser
     parser = reqparse.RequestParser()
-    # parser.add_argument('old_password', type=str, required=True, help='Old user passwprd')
     parser.add_argument('new_password', type=str, required=True, help='New password to change to')
 
     # Getting page for user to reset their password.
