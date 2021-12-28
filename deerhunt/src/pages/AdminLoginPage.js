@@ -1,9 +1,9 @@
 import React from "react";
-import LoginForm from "../components/LoginForm";
+import AdminLoginForm from "../components/AdminLoginForm";
 import AboutUs from "../components/AboutUs";
-import { Flex, Stack, Link, Text } from "@chakra-ui/react";
+import { Flex, Stack } from "@chakra-ui/react";
 
-const LoginPage = () => {
+const AdminLoginPage = () => {
   return (
     <Stack minH={"100vh"} direction={{ base: "column", md: "row" }}>
       <Flex flex={2}>
@@ -11,11 +11,11 @@ const LoginPage = () => {
       </Flex>
       <Flex p={8} flex={1} align={"center"} justify={"center"}>
         <Stack spacing={4} w={"full"} maxW={"md"}>
-          <LoginForm />
+          <AdminLoginForm />
         </Stack>
       </Flex>
     </Stack>
   );
 };
 
-export default LoginPage;
+export default AdminLoginPage;

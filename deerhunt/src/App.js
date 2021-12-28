@@ -3,8 +3,6 @@ import { Route, Switch } from "react-router";
 
 import Home from "./pages/Home";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
-import Signup from "./pages/Signup";
-import AdminLogin from "./pages/AdminLogin";
 import Events from "./pages/Events";
 import Teams from "./pages/Teams";
 import Admin from "./pages/Admin";
@@ -12,6 +10,8 @@ import NotFound from "./pages/NotFound";
 
 import history from "./history";
 import LoginPage from "./pages/LoginPage";
+import SignUpPage from "./pages/SignUpPage";
+import AdminLoginPage from "./pages/AdminLoginPage";
 
 class App extends React.Component {
   constructor(props) {
@@ -59,12 +59,13 @@ class App extends React.Component {
           />
           <Route
             path="/signup"
-            component={() => <Signup onLogin={this.handleSignup} />}
+            component={() => <SignUpPage onLogin={this.handleSignup} />}
           />
           <Route
             path="/adminlogin"
-            component={() => <AdminLogin onLogin={this.handleLogin} />}
+            component={() => <AdminLoginPage onLogin={this.handleLogin} />}
           />
+
           <Route component={NotFound} />
         </Switch>
       );

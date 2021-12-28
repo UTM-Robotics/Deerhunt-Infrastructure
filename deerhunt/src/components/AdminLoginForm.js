@@ -8,8 +8,6 @@ import {
   FormLabel,
   Input,
   Button,
-  Link,
-  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 
@@ -22,10 +20,10 @@ export default function LoginForm() {
 
   async function login(values) {
     var form = new FormData();
-    form.append("email", values.email);
+    form.append("username", values.username);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/user/auth", form)
+      .post("http://127.0.0.1:5000/api/admin/auth", form)
       .then((response) => {
         console.log(response);
       })
@@ -53,16 +51,16 @@ export default function LoginForm() {
           bg="gray.300"
         >
           <Box textAlign="center" mb={4}>
-            <Heading size="md">Login to Deerhunt</Heading>
+            <Heading size="md">Admin Login</Heading>
           </Box>
           <Box>
             <form onSubmit={handleSubmit(login)}>
               <FormControl>
-                <FormLabel>Email</FormLabel>
+                <FormLabel>Username</FormLabel>
                 <Input
-                  type="email"
-                  placeholder="Enter Your Email"
-                  {...register("email", {
+                  type="text"
+                  placeholder="Enter Your Username"
+                  {...register("username", {
                     required: "This is required",
                   })}
                 />
@@ -81,31 +79,12 @@ export default function LoginForm() {
                   })}
                 />
               </FormControl>
-
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
                   Login
                 </Button>
               </Box>
-              <Link
-                onClick={() => {
-                  window.location.href = "/signup";
-                }}
-              >
-                <Box my={4}>
-                  <Button width="full">Create An Account</Button>
-                </Box>
-              </Link>
             </form>
-            <Box textAlign="center">
-              <Link
-                onClick={() => {
-                  window.location.href = "/forgotpassword";
-                }}
-              >
-                <Text>Forgot my password</Text>
-              </Link>
-            </Box>
           </Box>
         </Box>
       </Box>
