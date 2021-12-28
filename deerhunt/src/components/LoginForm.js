@@ -9,6 +9,7 @@ import {
   Input,
   Button,
   Link,
+  Text,
 } from "@chakra-ui/react";
 import axios from "axios";
 
@@ -80,6 +81,7 @@ export default function LoginForm() {
                   })}
                 />
               </FormControl>
+
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
                   Login
@@ -95,6 +97,15 @@ export default function LoginForm() {
                 </Box>
               </Link>
             </form>
+            <Box textAlign="center">
+              <Link
+                onClick={() => {
+                  window.location.href = "/forgotpassword";
+                }}
+              >
+                <Text>Forgot my password</Text>
+              </Link>
+            </Box>
           </Box>
         </Box>
       </Box>

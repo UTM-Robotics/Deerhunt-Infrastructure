@@ -1,7 +1,7 @@
 import React from "react";
 import LoginForm from "../components/LoginForm";
 import AboutUs from "../components/AboutUs";
-import { Flex, Stack } from "@chakra-ui/react";
+import { Flex, Stack, Link, Text } from "@chakra-ui/react";
 
 const LoginPage = () => {
   return (
