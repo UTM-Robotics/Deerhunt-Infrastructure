@@ -1,18 +1,27 @@
 from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
 
 from server.Managers.Teams.TeamsManager import TeamsManager
+from server.Managers.Auth.UserManager import UserManager
 
 from server.Managers.Auth.UserManager import User_auth
 
 
 class TeamsRoute(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('name', type=str, required=True,
+                        help='This field cannot be left blank')
 
     @User_auth.login_required
     def post(self):
-        email = auth.current_user()
-        with UserManager(auth.current_user()) as usermanager:
-            pass # check that user isn't part of team
-        with TeamsManager(request.json['name']) as teamsmanager:
-            pass # check that new team 'name' doesn't exist already. Creates if doesn't.
+        # email = User_auth.current_user()
+        user = None
+        with UserManager(User_auth.current_user()) as usermanager:
+            user = usermanager.user
+        data = TeamsRoute.parser.parse_args()
+        with TeamsManager(data['name'], user.email) as teamsmanager:
+            if teamsmanager.find_team():
+                return abort(HTTPStatus.BAD_REQUEST)
+            if teamsmanager.createTeam():
+                return make_response(jsonify({'message': 'Successfully created a team'}), HTTPStatus.OK)
