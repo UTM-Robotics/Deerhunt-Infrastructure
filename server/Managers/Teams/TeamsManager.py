@@ -48,8 +48,8 @@ class TeamsManager:
             return team
         return None
 
-    def is_joined_team(self):
-        pass
+    def is_part_of_team(self, email) -> bool:
+        return (email == self.team.owner) or (email in self.team.members)
 
     def commit(self):
         query = {'name': self.team.name}

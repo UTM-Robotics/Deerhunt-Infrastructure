@@ -24,3 +24,15 @@ class TeamsRoute(Resource):
                 return abort(HTTPStatus.BAD_REQUEST)
             if teamsmanager.createTeam(user.email):
                 return make_response(jsonify({'message': 'Successfully created a team'}), HTTPStatus.OK)
+
+    @User_auth.login_required
+    # Note: passing name parameter to route - /api/teams?name=<NAME>
+    def get(self):
+        user = None
+        with UserManager(User_auth.current_user()) as usermanager:
+            user = usermanager.user
+        data = TeamsRoute.parser.parse_args()
+        with TeamsManager(data['name']) as teamsmanager:
+            if not teamsmanager.is_part_of_team(user.email):
+                return abort(HTTPStatus.UNAUTHORIZED)
+            return teamsmanager.team.covert_to_dict()
