@@ -10,9 +10,6 @@ class TeamsModel:
     def set_owner(self, owner) -> None:
         self.owner = owner
 
-    def add_member(self, email) -> None:
-        self.members.append(email)
-
     def set_members(self, members: list) -> None:
         self.members = members
     
@@ -23,7 +20,7 @@ class TeamsModel:
         self.eventID = eventID
 
     def set_last_submission_timestamp(self, time) -> None:
-        self.created_timestamp = time
+        self.last_submission_timestamp = time
 
     def set_created_timestamp(self, time) -> None:
         self.created_timestamp = time
@@ -33,7 +30,7 @@ class TeamsModel:
                 'owner': self.owner,
                 'members': self.members,
                 'eventID': self.eventID,
-                'last_submission': self.last_submission_timestamp,
+                'last_submission_timestamp': self.last_submission_timestamp,
                 'created_timestamp': self.created_timestamp
                 }
                 
