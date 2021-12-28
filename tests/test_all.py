@@ -22,7 +22,7 @@ def split(string):
 # Error checking to make sure login error handles correctly.
 def test_general_login_non_existing(request, flaskaddr, receive_email):
     email, _ = split(receive_email)
-    r = requests.post(f'http://{flaskaddr}/api/login', json={'email': email, 'password': 'tester1234'})
+    r = requests.post(f'http://{flaskaddr}/api/user/auth', json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
         test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
 
@@ -31,7 +31,7 @@ def test_general_login_non_existing(request, flaskaddr, receive_email):
 # This function assumes the user doesn't exist in mongodb.
 def test_register(request, flaskaddr, receive_email):
     email, _ = split(receive_email)
-    r = requests.post(f'http://{flaskaddr}/api/register', 
+    r = requests.post(f'http://{flaskaddr}/api/user', 
                     json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
         test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
@@ -70,7 +70,7 @@ def test_verify_link(request):
 # Checking if error handling is correct.
 def test_register_existing_user(request, flaskaddr, receive_email):
     email, _ = split(receive_email)
-    r = requests.post(f'http://{flaskaddr}/api/register', 
+    r = requests.post(f'http://{flaskaddr}/api/user', 
                     json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
         test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
@@ -79,7 +79,7 @@ def test_register_existing_user(request, flaskaddr, receive_email):
 # Testing normal login now with the user in the database.
 def test_general_login(request, flaskaddr, receive_email):
     email, _ = split(receive_email)
-    r = requests.post(f'http://{flaskaddr}/api/login', json={'email': email, 'password': 'tester1234'})
+    r = requests.post(f'http://{flaskaddr}/api/user/auth', json={'email': email, 'password': 'tester1234'})
     with BaseTester() as test:
         test.save_var('JWT_TOKEN_USER', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
@@ -88,7 +88,7 @@ def test_general_login(request, flaskaddr, receive_email):
 
 # Testing admin login with incorrect password
 def test_admin_login_error(request, flaskaddr):
-    r = requests.post(f'http://{flaskaddr}/api/adminlogin', json={'username': 'nonexistent', 'password': 'tester1234'})
+    r = requests.post(f'http://{flaskaddr}/api/admin/auth', json={'username': 'nonexistent', 'password': 'tester1234'})
     with BaseTester() as test:
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
@@ -97,7 +97,7 @@ def test_admin_login_error(request, flaskaddr):
 # Testing to make sure default admin login works.
 def test_admin_login(request, flaskaddr, admin_default_creds):
     username, password = split(admin_default_creds)
-    r = requests.post(f'http://{flaskaddr}/api/adminlogin', json={'username': username, 'password': password})
+    r = requests.post(f'http://{flaskaddr}/api/admin/auth', json={'username': username, 'password': password})
     with BaseTester() as test:
         test.save_var('JWT_TOKEN_ADMIN', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
@@ -140,7 +140,7 @@ def test_teardown(request, flaskaddr, receive_email):
     email, _ = split(receive_email)
     with BaseTester() as test:
         token = test.get_var('JWT_TOKEN_USER').rstrip()
-        r = requests.delete(f'http://{flaskaddr}/api/login', 
+        r = requests.delete(f'http://{flaskaddr}/api/user/auth', 
                             json={'email': email},
                             headers={'Authorization': f'Bearer {token}'})
         test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
