@@ -51,7 +51,7 @@ done
 OS=$(uname)
 
 if [[ ${OS} == 'Linux' ]]; then
-   sudo apt install npm python3-pip python3-venv
+   sudo apt install npm python3-pip python3-venv docker.io docker-compose
 elif [[ ${OS} == 'Darwin' ]]; then
    brew install npm
 else
