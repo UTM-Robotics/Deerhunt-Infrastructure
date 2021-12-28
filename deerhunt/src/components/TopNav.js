@@ -8,7 +8,7 @@ const MenuItems = ({ children }) => (
   </Text>
 );
 
-const SideNav = (props) => {
+const TopNav = (props) => {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
 
@@ -62,12 +62,14 @@ const SideNav = (props) => {
         display={{ base: show ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
       >
-        <Button bg="transparent" border="1px">
-          Login
-        </Button>
+        <RouteLink to="/login">
+          <Button bg="transparent" border="1px">
+            Login
+          </Button>
+        </RouteLink>
       </Box>
     </Flex>
   );
 };
 
-export default SideNav;
+export default TopNav;

@@ -12,7 +12,7 @@ import NotFound from "./pages/NotFound";
 
 import history from "./history";
 import LoginPage from "./pages/LoginPage";
-import SideNav from "./components/SideNav";
+import TopNav from "./components/TopNav";
 
 class App extends React.Component {
   constructor(props) {
@@ -54,7 +54,7 @@ class App extends React.Component {
       return (
         <Switch>
           <Route path="/" component={Home} exact />
-          <Route path="/test" component={SideNav} />
+          <Route path="/test" component={TopNav} />
           <Route
             path="/login"
             component={() => <LoginPage onLogin={this.handleLogin} />}
