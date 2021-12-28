@@ -28,10 +28,22 @@ class EmailBot:
         '''
         with open('Managers/EmailBot/{}.html'.format('registration')) as file:
             self.msg = EmailMessage()
-            self.msg.set_content(file.read().replace('{{ Registeration_link }}', f'http://{Configuration.FLASK_ADDR}/api/verify/{code}'), subtype='html')
+            self.msg.set_content(file.read().replace('{{ Registeration_link }}',
+                    f'http://{Configuration.FLASK_ADDR}/api/user/verify/{code}'), subtype='html')
         self.msg['Subject'] = Email_Titles['registration']
         self.msg['From'] = self.sender
 
+    def build_message_forgotpassword(self, code) -> None:
+        '''
+        Opens forgotpassword.html, reads contents and builds
+        email message with unique verification link.
+        '''
+        with open('Managers/EmailBot/{}.html'.format('forgotpassword')) as file:
+            self.msg = EmailMessage()
+            self.msg.set_content(file.read().replace('{{ Password_Reset_link }}',
+                    f'http://{Configuration.FLASK_ADDR}/api/user/forgotpassword/{code}'), subtype='html')
+        self.msg['Subject'] = Email_Titles['registration']
+        self.msg['From'] = self.sender
 
     def send(self, receiver) -> None:
         '''
