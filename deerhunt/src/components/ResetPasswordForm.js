@@ -21,14 +21,13 @@ export default function ResetPasswordForm() {
   async function ResetPassword(values) {
     var form = new FormData();
     form.append("email", values.email);
-    form.append("password", values.password);
     await axios
       .post("http://127.0.0.1:5000/api/user/forgotpassword", form)
       .then((response) => {
         console.log(response);
       })
       .catch(() => {
-        console.log("failed to reset");
+        console.log("Failed to reset password");
       });
   }
 
@@ -65,21 +64,6 @@ export default function ResetPasswordForm() {
                   })}
                 />
               </FormControl>
-              <FormControl mt={4}>
-                <FormLabel>Password</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Enter Your Password"
-                  {...register("password", {
-                    required: "This is required",
-                    minLength: {
-                      value: 8,
-                      message: "Minimum length should be 8",
-                    },
-                  })}
-                />
-              </FormControl>
-
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
                   Submit
