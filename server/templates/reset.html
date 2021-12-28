@@ -34,8 +34,6 @@ function validateForm(){
 <body>
   <h1 style="color: blue">Reset your deerhunt password</h1>
   <form name="resetForm", action="/api/user/forgotpassword/{{code}}", onsubmit="return validateForm()", method="post">
-    <label for="old_pass">Old Password:</label><br>
-    <input type="password" id="old_pass" name="old_password" value=""><br><br>
     <label for="new_pass">New Password:</label><br>
     <input type="password" id="new_pass" name="new_password" value=""><br><br>
     <label for="new_pass2">New Password again:</label><br>
