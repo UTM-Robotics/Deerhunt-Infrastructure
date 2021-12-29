@@ -31,6 +31,12 @@ class App extends React.Component {
         "Bearer " + localStorage.getItem("token");
       console.log('set token')
     }
+    axios.get("http://127.0.0.1:5000/api/user/info")
+      .then(resp => {
+        this.setState({email: resp.data.email});
+      }).catch(err => {
+      console.log(err)
+    })
   }
 
   handleLogin(user) {
@@ -52,7 +58,7 @@ class App extends React.Component {
       return (
         <Switch>
           <Route path="/" component={() => <HomeLoggedIn/>} exact />
-          <Route path="/events" component={Events}/>  
+          <Route path="/events" component={Events}/>
           <Route path="/teams" component={Teams}/>
           <Route path="/admin" component={Admin}/>
           <Route component={NotFound} />
