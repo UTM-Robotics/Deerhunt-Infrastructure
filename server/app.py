@@ -3,6 +3,7 @@ from flask_restful import Api
 from flask_cors import CORS
 
 # Importing Auth routes
+from server.Routes.Auth.AmIAuthRoute import AmIAuthRoute
 from server.Routes.Auth.UserRoute import UserRoute
 from server.Routes.Auth.UserAuthRoute import UserAuthRoute
 from server.Routes.Auth.VerifyRoute import VerifyRoute
@@ -26,6 +27,7 @@ api.add_resource(ChangePasswordRoute, '/api/user/changepassword')
 api.add_resource(ForgotPasswordRoute, '/api/user/forgotpassword')
 api.add_resource(ForgotPasswordResetRoute, '/api/user/forgotpassword/<code>')
 api.add_resource(AdminAuthRoute, '/api/admin/auth')
+api.add_resource(AmIAuthRoute, '/api/amiauth')
 
 # Initializing other routes
 api.add_resource(EventRoute, '/api/events')

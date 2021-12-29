@@ -9,7 +9,7 @@ import {
   Input,
   Button,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "../config/config";
 
 export default function LoginForm() {
   const {
