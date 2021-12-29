@@ -38,12 +38,12 @@ class TeamsManager:
         if data['last_submission_timestamp']:
             self.team.set_last_submission_timestamp(data['last_submission_timestamp'])
 
-    def create_team(self, owner: str, members: Optional[List[str]]) -> bool:
+    def create_team(self, owner: str, data) -> bool:
         if not self.found:
             try:
                 self.team.set_owner(owner)
-                if members:
-                    self.add_members(members)
+                if data['members']:
+                    self.add_members(list(set(data['members'])))
                 self.team.set_created_timestamp(str(datetime.utcnow()))
                 self.commit()
                 return True

@@ -23,7 +23,7 @@ class TeamsRoute(Resource):
         with TeamsManager(data['name']) as teamsmanager:
             if teamsmanager.find_team():
                 return abort(HTTPStatus.BAD_REQUEST)
-            if teamsmanager.create_team(user.email, list(set(data['members']))):
+            if teamsmanager.create_team(user.email, data):
                 return make_response(jsonify({'message': 'Successfully created a team'}), HTTPStatus.OK)
             else:
                 raise SystemError("Error occurs when create a team")
