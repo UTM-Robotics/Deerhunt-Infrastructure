@@ -7,11 +7,16 @@ import theme from './theme'
 
 import history from "./history";
 import App from './App.js'
+import { StateProvider } from './statemanager/StateProvider';
+import SignUpReducer, { initialState } from './statemanager/SignUpStatusReducer';
 
 ReactDOM.render(
       <ChakraProvider theme={theme}>
         <Router history={history}>
-          <App />
+          <StateProvider initialState={initialState} reducer={SignUpReducer}>
+            <App />
+          </StateProvider>
+          
         </Router>
       </ChakraProvider>,
   document.getElementById('root')
