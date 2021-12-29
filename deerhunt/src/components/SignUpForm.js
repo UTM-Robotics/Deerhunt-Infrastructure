@@ -35,26 +35,19 @@ export default function SignUpForm(props) {
     await axios
       .post("http://127.0.0.1:5000/api/user", form)
       .then((response) => {
-        console.log(response);
         dispatch({
           type: "SIGNED_UP",
         });
-        history.push("/login");  
-        
+        history.push("/login");
       })
       .catch((error) => {
-        console.log(error.response.data.message);
       
         setError(error.response.data.message);
-        console.log(error1)
-        console.log("failed to login");
+
         dispatch({
           type: "SignUpFail",
           
         });
-        console.log(userSignStatus);
-        
-        
       });
   }
   

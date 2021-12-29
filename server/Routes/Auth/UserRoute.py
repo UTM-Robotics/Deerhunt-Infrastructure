@@ -15,11 +15,9 @@ class UserRoute(Resource):
     # Handles post request for user registration.
     def post(self):
         data = UserRoute.parser.parse_args()
-        print(f'data: {data}')
         if is_allowed(data['email']):
             with UserManager(data['email']) as usermanager:
                 result = usermanager.register(data['password'])
-            print(result)
             if result:
                 return make_response(jsonify({'message': 'Account partially created. Verification email sent\n'}), 
                                     HTTPStatus.OK)

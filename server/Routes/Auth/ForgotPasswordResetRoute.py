@@ -18,9 +18,7 @@ class ForgotPasswordResetRoute(Resource):
 
         
     def post(self, code):
-        print(code)
         data = ForgotPasswordResetRoute.parser.parse_args()
-        print(code,  'hlma')
         with UserManager(None,code) as usermanager:
             result = usermanager.update_password(data['old_password'], data['new_password'])
         if result:
