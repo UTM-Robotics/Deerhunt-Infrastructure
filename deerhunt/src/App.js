@@ -12,6 +12,7 @@ import history from "./history";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 class App extends React.Component {
   constructor(props) {
@@ -65,7 +66,7 @@ class App extends React.Component {
             path="/adminlogin"
             component={() => <AdminLoginPage onLogin={this.handleLogin} />}
           />
-
+          <Route path="/forgotpassword" component={ResetPasswordPage} />
           <Route component={NotFound} />
         </Switch>
       );
