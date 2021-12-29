@@ -1,3 +1,10 @@
+from datetime import datetime
+from typing import List
+
+import re
+
+email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+
 class TeamsModel:
     def __init__(self, name) -> None:
         self.name = name
@@ -7,13 +14,20 @@ class TeamsModel:
         self.last_submission_timestamp = None
         self.created_timestamp = None
     
-    def set_owner(self, owner) -> None:
+    def set_owner(self, owner: str) -> None:
+        if not re.fullmatch(email_regex, owner):
+            raise TypeError("Must be a valid email")
         self.owner = owner
 
-    def set_members(self, members: list) -> None:
-        self.members = members
+    def set_members(self, members: List[str]) -> None:
+        for email in members:
+            if not re.fullmatch(email_regex, email):
+                raise TypeError("Must enter a valid email for member")
+        if len(members) > 4:
+            raise ValueError("Must have less than or equal 4 members")
+        self.members.extend(members)
     
-    def get_members(self) -> list:
+    def get_members(self) -> List[str]:
         return self.members
     
     def join_event(self, eventID: str) -> None:

@@ -1,7 +1,6 @@
 from datetime import time
 from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
-from flask.json import JSONDecoder
 from flask_restful import Resource, reqparse
 
 from server.Managers.Teams.TeamsManager import TeamsManager
@@ -24,8 +23,10 @@ class TeamsRoute(Resource):
         with TeamsManager(data['name']) as teamsmanager:
             if teamsmanager.find_team():
                 return abort(HTTPStatus.BAD_REQUEST)
-            if teamsmanager.create_team(user.email, data['members']):
+            if teamsmanager.create_team(user.email, list(set(data['members']))):
                 return make_response(jsonify({'message': 'Successfully created a team'}), HTTPStatus.OK)
+            else:
+                raise SystemError("Error occurs when create a team")
 
     @User_auth.login_required
     # Note: passing name parameter to route - /api/teams?name=<NAME>
