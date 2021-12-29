@@ -9,7 +9,7 @@ import {
   Input,
   Button,
   Link,
- 
+  Text,
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useStateValue } from "../statemanager/StateProvider";
@@ -103,15 +103,15 @@ export default function SignUpForm(props) {
                   Sign Up
                 </Button>
               </Box>
-              <Link
-                onClick={() => {
-                  window.location.href = "/login";
-                }}
-              >
-                <Box my={4}>
-                  <Button width="full">I already have an account</Button>
-                </Box>
-              </Link>
+              <Box textAlign="center">
+                <Link
+                  onClick={() => {
+                    window.location.href = "/login";
+                  }}
+                >
+                  <Text>I already have an account</Text>
+                </Link>
+              </Box>
             </form>
           </Box>
         </Box>

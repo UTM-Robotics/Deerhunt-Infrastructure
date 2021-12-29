@@ -30,6 +30,7 @@ api.add_resource(AdminAuthRoute, '/api/admin/auth')
 # Initializing other routes
 api.add_resource(EventRoute, '/api/events')
 api.add_resource(TeamsRoute, '/api/teams')
+app.debug=True
 
 if __name__ == '__main__':
     app.run()
