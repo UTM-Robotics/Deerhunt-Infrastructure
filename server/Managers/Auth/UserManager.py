@@ -53,6 +53,7 @@ class UserManager:
 
     def __enter__(self):
         result = self.find_user()
+        print(result)
         if result:
             self.user.set_email(result['email'])
             self.user.set_password(result['password'])
@@ -171,7 +172,7 @@ class UserManager:
             with EmailBot() as emailbot:
                 emailbot.build_message_forgotpassword(self.user.get_code())
                 emailbot.send(self.user.get_email())
-    
+        return True
 
     def find_user(self):
         if self.user.get_email():

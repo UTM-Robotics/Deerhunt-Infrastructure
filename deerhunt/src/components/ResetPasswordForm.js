@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   Flex,
@@ -8,10 +8,15 @@ import {
   FormLabel,
   Input,
   Button,
+  Text,
+  Alert,
+  AlertIcon,
 } from "@chakra-ui/react";
 import axios from "axios";
 
 export default function ResetPasswordForm() {
+  const [error, setError] = useState(null);
+
   const {
     handleSubmit,
     register,
@@ -21,16 +26,35 @@ export default function ResetPasswordForm() {
   async function ResetPassword(values) {
     var form = new FormData();
     form.append("email", values.email);
-    form.append("password", values.password);
     await axios
       .post("http://127.0.0.1:5000/api/user/forgotpassword", form)
       .then((response) => {
         console.log(response);
+        setError("Success");
       })
       .catch(() => {
-        console.log("failed to reset");
+        console.log("Failed to reset password");
+        setError("Error");
       });
   }
+
+  const ErrorMessage = () => {
+    return (
+      <Alert status="error">
+        <AlertIcon />
+        There was an error processing your request
+      </Alert>
+    );
+  };
+
+  const SuccessMessage = () => {
+    return (
+      <Alert status="success">
+        <AlertIcon />
+        Success! Check your email for the password reset link
+      </Alert>
+    );
+  };
 
   return (
     <Flex
@@ -51,7 +75,10 @@ export default function ResetPasswordForm() {
           bg="gray.300"
         >
           <Box textAlign="center" mb={4}>
-            <Heading size="md">Reset Password</Heading>
+            <Heading size="md" mb={4}>
+              Reset Password
+            </Heading>
+            <Text>Enter the email associated with your account</Text>
           </Box>
           <Box>
             <form onSubmit={handleSubmit(ResetPassword)}>
@@ -65,21 +92,6 @@ export default function ResetPasswordForm() {
                   })}
                 />
               </FormControl>
-              <FormControl mt={4}>
-                <FormLabel>Password</FormLabel>
-                <Input
-                  type="password"
-                  placeholder="Enter Your Password"
-                  {...register("password", {
-                    required: "This is required",
-                    minLength: {
-                      value: 8,
-                      message: "Minimum length should be 8",
-                    },
-                  })}
-                />
-              </FormControl>
-
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
                   Submit
@@ -87,6 +99,8 @@ export default function ResetPasswordForm() {
               </Box>
             </form>
           </Box>
+          {error === "Success" ? SuccessMessage() : null}
+          {error === "Error" ? ErrorMessage() : null}
         </Box>
       </Box>
     </Flex>

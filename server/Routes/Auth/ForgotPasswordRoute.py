@@ -14,11 +14,19 @@ class ForgotPasswordRoute(Resource):
     # Handles post request for user registration.
     def post(self):
         data = ForgotPasswordRoute.parser.parse_args()
+        print("1")
         with UserManager(data['email']) as usermanager:
-            usermanager.generate_code(CODE_LENGTH)
-            result = usermanager.send_email('forgotpassword')
-            usermanager.commit()
+            print(usermanager.found)
+            if usermanager.found:
+
+                usermanager.generate_code(CODE_LENGTH)
+                result = usermanager.send_email('forgotpassword')
+                usermanager.commit()
+                print("2")
         if result:
+            print("3")
+            
             return make_response(jsonify({'message': 'Email with password reset link sent'}), 
                                 HTTPStatus.OK)
+        print(result)
         abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not send password reset link')
