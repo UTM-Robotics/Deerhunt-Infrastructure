@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router";
+import  {Route, Switch} from "react-router-dom";
 
 import Home from "./pages/Home";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
@@ -51,12 +51,8 @@ class App extends React.Component {
     if (this.state.email !== "") {
       return (
         <Switch>
-          <Route
-            path="/"
-            component={<HomeLoggedIn email={this.state.email} isloggedin={true}/>}
-            exact
-          />
-          <Route path="/events" component={Events}/>
+          <Route path="/" component={() => <HomeLoggedIn/>} exact />
+          <Route path="/events" component={Events}/>  
           <Route path="/teams" component={Teams}/>
           <Route path="/admin" component={Admin}/>
           <Route component={NotFound} />
@@ -65,7 +61,7 @@ class App extends React.Component {
     } else {
       return (
         <Switch>
-          <Route path="/" component={Home} exact />
+          <Route path="/" component={() => <Home/>} exact />
           <Route
             path="/login"
             component={() => <LoginPage onLogin={this.handleLogin} />}
