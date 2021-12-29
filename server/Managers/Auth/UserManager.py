@@ -10,7 +10,7 @@ from server.Models.User.GeneralUser import GeneralUserModel
 from server.Managers.EmailBot.EmailBot import EmailBot
 
 from server.config import Configuration
-
+ 
 
 CODE_LENGTH = 8
 
@@ -52,7 +52,9 @@ class UserManager:
         self.user = GeneralUserModel(email, code)
 
     def __enter__(self):
-        result = self.find_user()
+
+        result = self.find_user() 
+        print(result) 
         if result:
             self.user.set_email(result['email'])
             self.user.set_password(result['password'])
@@ -104,6 +106,7 @@ class UserManager:
             
     
     def register(self, password):
+        print(self.found)
         if not self.found:
             try:
                 self.user.set_password(sha512_crypt.hash(password))
@@ -113,6 +116,7 @@ class UserManager:
                 self.send_email('registration')
                 return True
             except Exception:
+                print('test')
                 return False
         else:
             return False
@@ -166,6 +170,8 @@ class UserManager:
     
 
     def find_user(self):
+        print(self.user.get_code())
+        print(self.user.get_email())
         if self.user.get_email():
             return self.db.find_one({'email': self.user.get_email()})
         if self.user.get_code():
