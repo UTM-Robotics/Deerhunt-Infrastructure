@@ -1,18 +1,18 @@
 import React from "react";
-import { Route, Switch } from "react-router";
+import { Route, Switch, Redirect } from "react-router";
 
 import Home from "./pages/Home";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
-import Events from "./pages/Events";
-import Teams from "./pages/Teams";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
-
 import history from "./history";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import MyEventsPage from "./pages/MyEventsPage";
+import EventsPage from "./pages/EventsPage";
+import TeamsPage from "./pages/TeamsPage";
 
 class App extends React.Component {
   constructor(props) {
@@ -41,12 +41,15 @@ class App extends React.Component {
         <Switch>
           <Route
             path="/"
-            component={<HomeLoggedIn email={this.state.email} isloggedin={true}/>}
+            component={
+              <HomeLoggedIn email={this.state.email} isLoggedIn={true} />
+            }
             exact
           />
-          <Route path="/events" component={Events}/>
-          <Route path="/teams" component={Teams}/>
-          <Route path="/admin" component={Admin}/>
+          <Route path="/events" component={EventsPage} />
+          <Route path="/myevents" component={MyEventsPage} />
+          <Route path="/teams" component={TeamsPage} />
+          <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
       );
