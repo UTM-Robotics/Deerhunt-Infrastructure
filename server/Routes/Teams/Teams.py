@@ -54,3 +54,16 @@ class TeamsRoute(Resource):
             if teamsmanager.update_team(data):
                 return make_response(jsonify({'message': 'Successfully update the team'}), HTTPStatus.OK)
             return abort(HTTPStatus.BAD_REQUEST)
+
+    @User_auth.login_required
+    def delete(self):
+        user = None
+        with UserManager(User_auth.current_user()) as usermanager:
+            user = usermanager.user
+        data = TeamsRoute.parser.parse_args()
+        with TeamsManager(data['name']) as teamsmanager:
+            if not teamsmanager.is_owner(user.email):
+                return abort(HTTPStatus.UNAUTHORIZED)
+            if teamsmanager.delete_team():
+                return make_response(jsonify({'message': 'Team deleted'}), HTTPStatus.OK)
+            return abort(HTTPStatus.BAD_REQUEST)

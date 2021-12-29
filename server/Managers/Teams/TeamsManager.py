@@ -73,6 +73,14 @@ class TeamsManager:
             self._id = team['_id']
             return team
         return None
+    
+    def delete_team(self) -> bool:
+        if self.found:
+            if self.db.delete_one({'name': self.team.name}):
+                return True
+            else:
+                return False
+        return False
 
     def is_owner(self, email) -> bool:
         return email == self.team.owner
