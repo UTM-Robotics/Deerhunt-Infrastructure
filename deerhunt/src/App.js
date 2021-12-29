@@ -84,6 +84,7 @@ class App extends React.Component {
             component={() => <AdminLoginPage onLogin={this.handleLogin} />}
           />
           <Route path="/forgotpassword" component={ResetPasswordPage} />
+          <Route path="/events" component={EventsPage} />
           <Route path="/amiauth" component={AmIAuthPage} />
           <Route component={NotFound} />
         </Switch>
