@@ -11,29 +11,46 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
+import { useHistory } from "react-router-dom";
+import { useStateValue } from "../statemanager/StateProvider";
 import axios from "axios";
 
-export default function SignUpForm() {
+
+
+export default function SignUpForm(props) {
+  const [{ userSignStatus}, dispatch] =useStateValue();
+  const error1 = props.error1;
+  const setError = props.setError;
   const {
     handleSubmit,
     register,
     formState: { isSubmitting },
   } = useForm();
-
+  const history = useHistory();
   async function SignUp(values) {
+    console.log(values);
     var form = new FormData();
     form.append("email", values.email);
     form.append("password", values.password);
     await axios
       .post("http://127.0.0.1:5000/api/user", form)
       .then((response) => {
-        console.log(response);
+        dispatch({
+          type: "SIGNED_UP",
+        });
+        history.push("/login");
       })
-      .catch(() => {
-        console.log("failed to login");
+      .catch((error) => {
+      
+        setError(error.response.data.message);
+
+        dispatch({
+          type: "SignUpFail",
+          
+        });
       });
   }
-
+  
   return (
     <Flex
       minHeight="100vh"
@@ -102,3 +119,4 @@ export default function SignUpForm() {
     </Flex>
   );
 }
+

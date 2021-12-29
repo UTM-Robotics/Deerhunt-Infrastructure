@@ -10,7 +10,7 @@ from server.Models.User.GeneralUser import GeneralUserModel
 from server.Managers.EmailBot.EmailBot import EmailBot
 
 from server.config import Configuration
-
+ 
 
 CODE_LENGTH = 16
 
@@ -53,7 +53,7 @@ class UserManager:
         self.user = GeneralUserModel(email, code)
 
     def __enter__(self):
-        result = self.find_user()
+        result = self.find_user() 
         if result:
             self.user.set_email(result["email"])
             self.user.set_password(result["password"])
