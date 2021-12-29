@@ -15,12 +15,13 @@ function TopNav(props) {
   console.log("Props here:\n");
   console.log(props);
   if (!props.isLoggedIn) {
-    loginButton =
+    loginButton = (
       <RouteLink to="/login">
         <Button bg="transparent" border="1px">
           Login
         </Button>
-      </RouteLink>;
+      </RouteLink>
+    );
   }
   return (
     <Flex
@@ -63,8 +64,8 @@ function TopNav(props) {
         <RouteLink to="/myevents">
           <MenuItems>My Events</MenuItems>
         </RouteLink>
-        <RouteLink to="/team">
-          <MenuItems>Team</MenuItems>
+        <RouteLink to="/teams">
+          <MenuItems>Teams</MenuItems>
         </RouteLink>
       </Box>
 
