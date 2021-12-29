@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useHistory } from "react-router-dom";
 import { useStateValue } from "../statemanager/StateProvider";
-import axios from "axios";
+import axios from "../config/config";
 
 
 
@@ -41,16 +41,16 @@ export default function SignUpForm(props) {
         history.push("/login");
       })
       .catch((error) => {
-      
+
         setError(error.response.data.message);
 
         dispatch({
           type: "SignUpFail",
-          
+
         });
       });
   }
-  
+
   return (
     <Flex
       minHeight="100vh"

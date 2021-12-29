@@ -12,7 +12,7 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "../config/config";
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState(null);

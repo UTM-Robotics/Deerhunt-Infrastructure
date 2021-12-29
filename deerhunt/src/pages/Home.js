@@ -1,7 +1,7 @@
 import React from "react";
 import TopNav from "../components/TopNav";
-import axios from "axios";
 import { Heading, Box, Text } from "@chakra-ui/react";
+import axios from "../config/config";
 
 class Home extends React.Component {
   constructor(props) {
@@ -12,7 +12,7 @@ class Home extends React.Component {
 
   get_events() {
     axios
-      .get("http://localhost:5000/api/events")
+      .get("http://127.0.0.1:5000/api/events")
       .then((resp) => {
         console.log(resp.data);
       })

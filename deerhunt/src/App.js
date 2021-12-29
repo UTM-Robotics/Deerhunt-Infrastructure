@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, Redirect } from "react-router";
+import { Route, Switch } from "react-router-dom";
 
 import Home from "./pages/Home";
 import HomeLoggedIn from "./pages/HomeLoggedIn";
@@ -13,12 +13,32 @@ import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MyEventsPage from "./pages/MyEventsPage";
 import EventsPage from "./pages/EventsPage";
 import TeamsPage from "./pages/TeamsPage";
+import AmIAuthPage from "./pages/AmIAuthPage";
+import redirect from "react-router-dom/es/Redirect";
+import axios from "./config/config";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { email: "", username: "", token: "" };
     this.handleLogin = this.handleLogin.bind(this);
+  }
+
+  componentDidMount() {
+    console.log("mounted");
+    if (localStorage.getItem("token")) {
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + localStorage.getItem("token");
+      console.log("set token");
+    }
+    axios
+      .get("http://127.0.0.1:5000/api/user/info")
+      .then((resp) => {
+        this.setState({ email: resp.data.email });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }
 
   handleLogin(user) {
@@ -39,13 +59,7 @@ class App extends React.Component {
     if (this.state.email !== "") {
       return (
         <Switch>
-          <Route
-            path="/"
-            component={
-              <HomeLoggedIn email={this.state.email} isLoggedIn={true} />
-            }
-            exact
-          />
+          <Route path="/" component={() => <HomeLoggedIn />} exact />
           <Route path="/events" component={EventsPage} />
           <Route path="/myevents" component={MyEventsPage} />
           <Route path="/teams" component={TeamsPage} />
@@ -56,7 +70,7 @@ class App extends React.Component {
     } else {
       return (
         <Switch>
-          <Route path="/" component={Home} exact />
+          <Route path="/" component={() => <Home />} exact />
           <Route
             path="/login"
             component={() => <LoginPage onLogin={this.handleLogin} />}
@@ -70,6 +84,7 @@ class App extends React.Component {
             component={() => <AdminLoginPage onLogin={this.handleLogin} />}
           />
           <Route path="/forgotpassword" component={ResetPasswordPage} />
+          <Route path="/amiauth" component={AmIAuthPage} />
           <Route component={NotFound} />
         </Switch>
       );

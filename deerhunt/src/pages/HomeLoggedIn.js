@@ -2,7 +2,7 @@ import React from "react";
 import TopNav from "../components/TopNav";
 import { Heading, Box } from "@chakra-ui/react";
 
-class Home extends React.Component {
+class HomeLoggedIn extends React.Component {
   constructor(props) {
     super(props);
 
@@ -13,14 +13,14 @@ class Home extends React.Component {
     return (
       <div>
         <TopNav isloggedin={true} />
-        <Box textAlign="center" mt={"12px"}>
-          <Heading>The UTM AI Competition Hub</Heading>
+        <Box textAlign="center">
+          <Heading> The UofT AI Competition Hub </Heading>
 
-          <h3>Welcome {this.state.email}</h3>
+          <Heading>Welcome {this.state.email}</Heading>
         </Box>
       </div>
     );
   }
 }
 
-export default Home;
+export default HomeLoggedIn;
