@@ -11,7 +11,7 @@ import {
   Link,
   Text,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "../config/config";
 
 export default function LoginForm(props) {
   const {
@@ -28,7 +28,13 @@ export default function LoginForm(props) {
       .post("http://127.0.0.1:5000/api/user/auth", form)
       .then((response) => {
         console.log(response);
-        props.onLogin();
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+          axios.defaults.headers.common["Authorization"] =
+            "Bearer " + response.data.token;
+        }
+        console.log(values.email)
+        props.onLogin(values.email.toString());
       })
       .catch(() => {
         console.log("failed to login");

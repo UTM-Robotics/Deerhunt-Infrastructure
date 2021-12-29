@@ -13,12 +13,24 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import AmIAuthPage from "./pages/AmIAuthPage";
+import redirect from "react-router-dom/es/Redirect";
+import axios from "./config/config";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { email: "", username: "", token: "" };
     this.handleLogin = this.handleLogin.bind(this);
+  }
+
+  componentDidMount() {
+    console.log('mounted')
+    if (localStorage.getItem("token")) {
+      axios.defaults.headers.common["Authorization"] =
+        "Bearer " + localStorage.getItem("token");
+      console.log('set token')
+    }
   }
 
   handleLogin(user) {
@@ -67,6 +79,7 @@ class App extends React.Component {
             component={() => <AdminLoginPage onLogin={this.handleLogin} />}
           />
           <Route path="/forgotpassword" component={ResetPasswordPage} />
+          <Route path="/amiauth" component={AmIAuthPage} />
           <Route component={NotFound} />
         </Switch>
       );
