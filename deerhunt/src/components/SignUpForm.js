@@ -19,12 +19,13 @@ import axios from "../config/config";
 
 
 export default function SignUpForm(props) {
-  const [{ }, dispatch] = useStateValue();
+  const [{ input, setInput}, dispatch] = useStateValue();
+  
   const setError = props.setError;
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting },
+    formState: {errors, isSubmitting },
   } = useForm();
   const history = useHistory();
   async function SignUp(values) {
@@ -85,9 +86,11 @@ export default function SignUpForm(props) {
           </Box>
           <Box>
             <form onSubmit={handleSubmit(SignUp)}>
-              <FormControl>
+              <FormControl isInvalid={errors.email}>
                 <FormLabel>Email</FormLabel>
                 <Input
+
+                  id='email'
                   type="email"
                   placeholder="Enter your UofT email"
                   {...register("email", {
@@ -96,16 +99,17 @@ export default function SignUpForm(props) {
                 />
             <FormHelperText>Use either @mail.utoronto.ca or @utoronto.ca </FormHelperText>
               </FormControl>
-              <FormControl mt={4}>
+              <FormControl mt={4} isInvalid={errors.password}>
                 <FormLabel>Password</FormLabel>
                 <Input
+                  id='password'
                   type="password"
                   placeholder="Enter Your Password"
                   {...register("password", {
                     required: "This is required",
                     minLength: {
                       value: 8,
-                      message: "Minimum length should be 4",
+                      message: "Minimum length should be 8",
                     },
                   })}
                 />
