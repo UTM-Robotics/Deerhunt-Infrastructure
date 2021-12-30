@@ -6,7 +6,7 @@ import ComingSoonCard from "../components/ComingSoonCard";
 export default function EventsPage() {
   return (
     <Box justifyContent={"left"}>
-      <TopNav />
+      <TopNav isloggedin={+true}/>
       <Box>
         <ComingSoonCard />
       </Box>

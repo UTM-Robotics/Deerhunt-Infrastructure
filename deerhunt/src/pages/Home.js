@@ -12,12 +12,12 @@ class Home extends React.Component {
 
   get_events() {
     axios
-      .get("http://127.0.0.1:5000/api/events")
+      .get("api/events")
       .then((resp) => {
-        console.log(resp.data);
+        /*console.log(resp.data);*/
       })
       .catch((err) => {
-        console.log(err);
+        /*console.log(err);*/
       });
   }
 
