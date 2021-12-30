@@ -31,6 +31,9 @@ class TeamsModel:
     def join_event(self, eventID: str) -> None:
         self.eventID = eventID
 
+    def get_last_submission_timestamp(self) -> str:
+        return self.last_submission_timestamp
+
     def set_last_submission_timestamp(self, time) -> None:
         self.last_submission_timestamp = time
 
