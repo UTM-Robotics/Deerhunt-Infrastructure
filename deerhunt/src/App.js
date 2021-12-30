@@ -14,7 +14,6 @@ import MyEventsPage from "./pages/MyEventsPage";
 import EventsPage from "./pages/EventsPage";
 import TeamsPage from "./pages/TeamsPage";
 import AmIAuthPage from "./pages/AmIAuthPage";
-import redirect from "react-router-dom/es/Redirect";
 import axios from "./config/config";
 
 class App extends React.Component {
