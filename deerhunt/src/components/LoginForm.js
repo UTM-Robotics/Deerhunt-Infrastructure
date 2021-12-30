@@ -27,17 +27,14 @@ export default function LoginForm(props) {
     await axios
       .post("api/user/auth", form)
       .then((response) => {
-        console.log(response);
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
           axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.token;
         }
-        console.log(values.email)
         props.onLogin(values.email.toString());
       })
       .catch(() => {
-        console.log("failed to login");
       });
   }
 

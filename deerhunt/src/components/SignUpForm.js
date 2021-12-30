@@ -6,6 +6,7 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  FormHelperText,
   Input,
   Button,
   Link,
@@ -18,7 +19,7 @@ import axios from "../config/config";
 
 
 export default function SignUpForm(props) {
-  const [{ }, dispatch] =useStateValue();
+  const [{ }, dispatch] = useStateValue();
   const setError = props.setError;
   const {
     handleSubmit,
@@ -40,13 +41,24 @@ export default function SignUpForm(props) {
         history.push("/login");
       })
       .catch((error) => {
-
-        setError(error.response.data.message);
-
-        dispatch({
-          type: "SignUpFail",
-
-        });
+        if (error.response) {
+          setError(error.response.data.message);
+          dispatch({
+            type: "SignUpFail",
+          });
+        }
+        else if (error.request) {
+          setError("Something went wrong! The request failed.");
+          dispatch({
+            type: "SignUpFail",
+          });
+        }
+        else {
+          setError("Something went wrong! Could not make request.");
+          dispatch({
+            type: "SignUpFail",
+          });
+        }
       });
   }
 
@@ -77,11 +89,12 @@ export default function SignUpForm(props) {
                 <FormLabel>Email</FormLabel>
                 <Input
                   type="email"
-                  placeholder="Enter Your Email"
+                  placeholder="Enter your UofT email"
                   {...register("email", {
                     required: "This is required",
                   })}
                 />
+            <FormHelperText>Use either @mail.utoronto.ca or @utoronto.ca </FormHelperText>
               </FormControl>
               <FormControl mt={4}>
                 <FormLabel>Password</FormLabel>
@@ -96,6 +109,7 @@ export default function SignUpForm(props) {
                     },
                   })}
                 />
+                <FormHelperText>Minimum password length of 8.</FormHelperText>
               </FormControl>
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
