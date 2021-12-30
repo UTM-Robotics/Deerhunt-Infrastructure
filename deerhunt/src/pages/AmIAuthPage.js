@@ -1,5 +1,4 @@
 import React from 'react'
-import TopNav from '../components/TopNav'
 import axios from "../config/config";
 
 
@@ -13,7 +12,7 @@ class Home extends React.Component {
 
 
     get_events(){
-        axios.get("http://localhost:5000/api/amiauth")
+        axios.get("api/amiauth")
         .then(resp => {
             console.log(resp.data)
         }).catch(err => {

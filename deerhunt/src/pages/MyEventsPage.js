@@ -5,7 +5,7 @@ import TopNav from "../components/TopNav";
 export default function MyEventsPage() {
   return (
     <Box>
-      <TopNav />
+      <TopNav $isloggedin={true} />
       <Box textAlign="center">
         <Heading>Coming soon!</Heading>
       </Box>

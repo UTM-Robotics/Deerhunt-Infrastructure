@@ -25,7 +25,7 @@ export default function LoginForm(props) {
     form.append("email", values.email);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/user/auth", form)
+      .post("api/user/auth", form)
       .then((response) => {
         console.log(response);
         if (response.data.token) {

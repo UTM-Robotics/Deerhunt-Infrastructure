@@ -23,7 +23,7 @@ export default function LoginForm() {
     form.append("username", values.username);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/admin/auth", form)
+      .post("api/admin/auth", form)
       .then((response) => {
         console.log(response);
       })

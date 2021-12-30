@@ -14,7 +14,6 @@ import MyEventsPage from "./pages/MyEventsPage";
 import EventsPage from "./pages/EventsPage";
 import TeamsPage from "./pages/TeamsPage";
 import AmIAuthPage from "./pages/AmIAuthPage";
-import redirect from "react-router-dom/es/Redirect";
 import axios from "./config/config";
 
 class App extends React.Component {
@@ -25,19 +24,17 @@ class App extends React.Component {
   }
 
   componentDidMount() {
-    console.log("mounted");
     if (localStorage.getItem("token")) {
       axios.defaults.headers.common["Authorization"] =
         "Bearer " + localStorage.getItem("token");
-      console.log("set token");
+      /*console.log("set token");*/
     }
     axios
-      .get("http://127.0.0.1:5000/api/user/info")
+      .get("/api/user/info")
       .then((resp) => {
         this.setState({ email: resp.data.email });
       })
       .catch((err) => {
-        console.log(err);
       });
   }
 
@@ -47,7 +44,6 @@ class App extends React.Component {
   }
 
   handleSignup(user) {
-    console.log("signed up");
   }
 
   handleAdminLogin(user) {
@@ -59,6 +55,7 @@ class App extends React.Component {
     if (this.state.email !== "") {
       return (
         <Switch>
+          <Route path="/login" component={() => <HomeLoggedIn />} exact />
           <Route path="/" component={() => <HomeLoggedIn />} exact />
           <Route path="/events" component={EventsPage} />
           <Route path="/myevents" component={MyEventsPage} />

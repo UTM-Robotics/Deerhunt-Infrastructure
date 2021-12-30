@@ -18,8 +18,7 @@ import axios from "../config/config";
 
 
 export default function SignUpForm(props) {
-  const [{ userSignStatus}, dispatch] =useStateValue();
-  const error1 = props.error1;
+  const [{ }, dispatch] =useStateValue();
   const setError = props.setError;
   const {
     handleSubmit,
@@ -28,12 +27,12 @@ export default function SignUpForm(props) {
   } = useForm();
   const history = useHistory();
   async function SignUp(values) {
-    console.log(values);
     var form = new FormData();
+    console.log(axios.defaults.baseURL);
     form.append("email", values.email);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/user", form)
+      .post("api/user", form)
       .then((response) => {
         dispatch({
           type: "SIGNED_UP",
