@@ -1,6 +1,5 @@
-import React from 'react'
+import React from "react";
 import axios from "../config/config";
-
 
 class Home extends React.Component {
 
@@ -30,4 +29,4 @@ class Home extends React.Component {
     }
 }
 
-export default Home
+export default Home;
