@@ -1,26 +1,26 @@
-import React from 'react'
-import Navbar from './MenuBar/Navbar'
-// import './Home.css'
+import React from "react";
+import TopNav from "../components/TopNav";
+import { Heading, Box } from "@chakra-ui/react";
 
-class Home extends React.Component {
+class HomeLoggedIn extends React.Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props)
+    this.state = { email: props.email };
+  }
 
-        this.state = { email: props.email }
-    }
+  render() {
+    return (
+      <div>
+        <TopNav isloggedin={+true} />
+        <Box textAlign="center">
+          <Heading> The UofT AI Competition Hub </Heading>
 
-    render() {
-        return (
-        <div>
-            <Navbar>         
-            </Navbar>
-            <h1>Home Page</h1>
-        {/* TODO: Add a conditional statement for when user not logged in */}
-            <h3>Welcome {this.state.email}</h3>
-        </div>
-        )
-    }
+          <Heading>Welcome {this.state.email}</Heading>
+        </Box>
+      </div>
+    );
+  }
 }
 
-export default Home
+export default HomeLoggedIn;

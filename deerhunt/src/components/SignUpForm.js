@@ -6,30 +6,61 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  FormHelperText,
   Input,
   Button,
   Link,
+  Text,
 } from "@chakra-ui/react";
-import axios from "axios";
+import { useHistory } from "react-router-dom";
+import { useStateValue } from "../statemanager/StateProvider";
+import axios from "../config/config";
 
-export default function SignUpForm() {
+
+
+export default function SignUpForm(props) {
+  // eslint-disable-next-line 
+  const [{ input, setInput}, dispatch] = useStateValue();
+  
+  const setError = props.setError;
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting },
+    formState: {errors, isSubmitting },
   } = useForm();
-
+  const history = useHistory();
   async function SignUp(values) {
     var form = new FormData();
+    console.log(axios.defaults.baseURL);
     form.append("email", values.email);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/user", form)
+      .post("api/user", form)
       .then((response) => {
-        console.log(response);
+        dispatch({
+          type: "SIGNED_UP",
+        });
+        history.push("/login");
       })
-      .catch(() => {
-        console.log("failed to login");
+      .catch((error) => {
+        if (error.response) {
+          setError(error.response.data.message);
+          dispatch({
+            type: "SignUpFail",
+          });
+        }
+        else if (error.request) {
+          setError("Something went wrong! The request failed.");
+          dispatch({
+            type: "SignUpFail",
+          });
+        }
+        else {
+          setError("Something went wrong! Could not make request.");
+          dispatch({
+            type: "SignUpFail",
+          });
+        }
       });
   }
 
@@ -56,44 +87,49 @@ export default function SignUpForm() {
           </Box>
           <Box>
             <form onSubmit={handleSubmit(SignUp)}>
-              <FormControl>
+              <FormControl isInvalid={errors.email}>
                 <FormLabel>Email</FormLabel>
                 <Input
+
+                  id='email'
                   type="email"
-                  placeholder="Enter Your Email"
+                  placeholder="Enter your UofT email"
                   {...register("email", {
                     required: "This is required",
                   })}
                 />
+            <FormHelperText>Use either @mail.utoronto.ca or @utoronto.ca </FormHelperText>
               </FormControl>
-              <FormControl mt={4}>
+              <FormControl mt={4} isInvalid={errors.password}>
                 <FormLabel>Password</FormLabel>
                 <Input
+                  id='password'
                   type="password"
                   placeholder="Enter Your Password"
                   {...register("password", {
                     required: "This is required",
                     minLength: {
                       value: 8,
-                      message: "Minimum length should be 4",
+                      message: "Minimum length should be 8",
                     },
                   })}
                 />
+                <FormHelperText>Minimum password length of 8.</FormHelperText>
               </FormControl>
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
-                  Login
+                  Sign Up
                 </Button>
               </Box>
-              <Link
-                onClick={() => {
-                  window.location.href = "/login";
-                }}
-              >
-                <Box my={4}>
-                  <Button width="full">I already have an account</Button>
-                </Box>
-              </Link>
+              <Box textAlign="center">
+                <Link
+                  onClick={() => {
+                    window.location.href = "/login";
+                  }}
+                >
+                  <Text>I already have an account</Text>
+                </Link>
+              </Box>
             </form>
           </Box>
         </Box>
@@ -101,3 +137,4 @@ export default function SignUpForm() {
     </Flex>
   );
 }
+
