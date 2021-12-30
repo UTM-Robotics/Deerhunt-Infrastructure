@@ -20,9 +20,6 @@ class TeamsModel:
         self.owner = owner
 
     def set_members(self, members: List[str]) -> None:
-        for email in members:
-            if not re.fullmatch(email_regex, email):
-                raise TypeError("Must enter a valid email for member")
         if len(members) > 4:
             raise ValueError("Must have less than or equal 4 members")
         self.members.extend(members)
