@@ -1,21 +1,11 @@
-import React from 'react'
-import {
-    Flex,
-    Box,
-    Heading,
-    FormControl,
-    FormLabel,
-    Input,
-    Button,
-    Link,
-    Text,
-  } from "@chakra-ui/react";
-  import history from "../history";
-
+import React from "react";
+import { Flex, Box, Heading, Button, Link, Text } from "@chakra-ui/react";
+import history from "../history";
 
 class NotFound extends React.Component {
-    render() {
-        return     <Flex
+  render() {
+    return (
+      <Flex
         minHeight="100vh"
         width="full"
         justifyContent="center"
@@ -33,8 +23,13 @@ class NotFound extends React.Component {
             bg="gray.300"
           >
             <Box textAlign="center" mb={4}>
-              <Heading size="lg">Page not Found!</Heading>
-              <Text>If this page should exist, please let us know through the Discord!</Text>
+              <Heading size="lg" m={[4, 4, 4, 4]}>
+                Page not Found!
+              </Heading>
+              <Text>
+                If this page should exist, please let us know through the
+                Discord!
+              </Text>
               <Link
                 onClick={() => {
                   history.replace("/");
@@ -44,12 +39,12 @@ class NotFound extends React.Component {
                   <Button width="full">Back to Home</Button>
                 </Box>
               </Link>
-            
             </Box>
           </Box>
         </Box>
       </Flex>
-    }
+    );
+  }
 }
 
-export default NotFound
+export default NotFound;

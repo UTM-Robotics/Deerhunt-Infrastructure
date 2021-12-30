@@ -1,13 +1,14 @@
 import React from "react";
-import { Box, Heading } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import TopNav from "../components/TopNav";
+import ComingSoon from "../components/ComingSoon";
 
 export default function MyEventsPage() {
   return (
     <Box>
       <TopNav />
       <Box textAlign="center">
-        <Heading>Coming soon!</Heading>
+        <ComingSoon />
       </Box>
     </Box>
   );
