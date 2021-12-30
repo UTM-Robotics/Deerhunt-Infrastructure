@@ -13,7 +13,8 @@ class TeamsModel:
         self.eventID = None
         self.last_submission_timestamp = None
         self.created_timestamp = None
-    
+        self.uuid = None
+
     def set_owner(self, owner: str) -> None:
         if not re.fullmatch(email_regex, owner):
             raise TypeError("Must be a valid email")
@@ -23,10 +24,10 @@ class TeamsModel:
         if len(members) > 4:
             raise ValueError("Must have less than or equal 4 members")
         self.members.extend(members)
-    
+
     def get_members(self) -> List[str]:
         return self.members
-    
+
     def join_event(self, eventID: str) -> None:
         self.eventID = eventID
 
@@ -36,12 +37,18 @@ class TeamsModel:
     def set_created_timestamp(self, time) -> None:
         self.created_timestamp = time
 
+    def set_uuid(self, uuid) -> None:
+        self.uuid = uuid
+
+    def get_uuid(self) -> str:
+        return self.uuid
+
     def covert_to_dict(self) -> dict:
         return {'name': self.name,
                 'owner': self.owner,
                 'members': self.members,
                 'eventID': self.eventID,
+                'uuid': self.uuid,
                 'last_submission_timestamp': self.last_submission_timestamp,
                 'created_timestamp': self.created_timestamp
                 }
-                

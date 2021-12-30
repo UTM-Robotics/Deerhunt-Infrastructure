@@ -1,3 +1,4 @@
+import uuid
 from datetime import datetime
 from typing import List, Optional
 
@@ -5,6 +6,7 @@ from server.Database import Mongo
 from server.Models.Teams.Teams import TeamsModel
 
 from server.config import Configuration
+
 
 class TeamsManager:
     def __init__(self, name) -> None:
@@ -17,6 +19,7 @@ class TeamsManager:
         if result:
             self.team.set_owner(result['owner'])
             self.team.set_created_timestamp(result['created_timestamp'])
+            self.team.set_uuid(result['uuid'])
             self.pass_data(result)
             self.found = True
         else:
@@ -28,7 +31,7 @@ class TeamsManager:
         pass
 
     def get_id(self) -> str:
-        return self._id
+        return self.team.uuid
 
     def pass_data(self, data) -> None:
         if data['members']:
@@ -36,7 +39,10 @@ class TeamsManager:
         if data['eventID']:
             self.team.join_event(data['eventID'])
         if data['last_submission_timestamp']:
-            self.team.set_last_submission_timestamp(data['last_submission_timestamp'])
+            self.team.set_last_submission_timestamp(
+                data['last_submission_timestamp'])
+        if data['uuid']:
+            self.team.set_uuid(data['uuid'])
 
     def create_team(self, owner: str, data) -> bool:
         if not self.found:
@@ -45,6 +51,7 @@ class TeamsManager:
                 if data['members']:
                     self.add_members(list(set(data['members'])))
                 self.team.set_created_timestamp(str(datetime.utcnow()))
+                self.team.uuid = str(uuid.uuid4())
                 self.commit()
                 return True
             except Exception:
@@ -64,10 +71,9 @@ class TeamsManager:
     def find_team(self):
         team = self.db.find_one({'name': self.team.name})
         if team:
-            self._id = team['_id']
             return team
         return None
-    
+
     def delete_team(self) -> bool:
         if self.found:
             if self.db.delete_one({'name': self.team.name}):
@@ -81,7 +87,7 @@ class TeamsManager:
 
     def is_part_of_team(self, email) -> bool:
         return self.is_owner(email) or (email in self.team.members)
-    
+
     def add_members(self, members: List[str]) -> None:
         for member in members:
             user = Mongo.users.find_one({'email': member})
