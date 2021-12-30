@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@reach/router": "^1.3.4",
-    "react-hook-form": "^7.19.1"
-  }
-}
