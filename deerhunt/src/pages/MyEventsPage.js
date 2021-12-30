@@ -6,7 +6,7 @@ import ComingSoon from "../components/ComingSoon";
 export default function MyEventsPage() {
   return (
     <Box>
-      <TopNav $isloggedin={true} />
+      <TopNav isloggedin={+true} />
       <Box textAlign="center">
         <ComingSoon />
       </Box>
