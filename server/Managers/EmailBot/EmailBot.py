@@ -67,8 +67,9 @@ class EmailBot:
         with smtplib.SMTP_SSL("smtp.gmail.com", self.port) as email:
             try:
                 email.login(self.sender, self.password)
+                print('Email logged in.')
             except smtplib.SMTPException as e:
-                print('email can not be logged in')
+                print('Email cannot be logged in')
                 print(e)
 
 
