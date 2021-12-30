@@ -12,7 +12,7 @@ class HomeLoggedIn extends React.Component {
   render() {
     return (
       <div>
-        <TopNav isloggedin={true} />
+        <TopNav isloggedin={+true} />
         <Box textAlign="center">
           <Heading> The UofT AI Competition Hub </Heading>
 

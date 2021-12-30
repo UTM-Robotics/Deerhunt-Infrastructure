@@ -11,7 +11,10 @@ class VerifyRoute(Resource):
     # get request when user clicks on verification link.
     def get(self, code):
         with UserManager(None, code.strip('\n')) as usermanager:
-            result = usermanager.verify_code()
+            if usermanager.found:
+                result = usermanager.verify_code()
+            else:
+                abort(HTTPStatus.GONE, 'Verification link expired or User did not exist')
         if result:
             return make_response(render_template("verified.html", origin=Configuration.FLASK_ADDR))
         abort(HTTPStatus.GONE, 'Verification link expired or did not work for other reasons')

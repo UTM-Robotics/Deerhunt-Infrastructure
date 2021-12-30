@@ -9,6 +9,7 @@ import {
   Input,
   Button,
   Link,
+  FormHelperText,
   Text,
 } from "@chakra-ui/react";
 import axios from "../config/config";
@@ -17,7 +18,7 @@ export default function LoginForm(props) {
   const {
     handleSubmit,
     register,
-    formState: {isSubmitting},
+    formState: { isSubmitting },
   } = useForm();
 
   async function login(values) {
@@ -84,6 +85,9 @@ export default function LoginForm(props) {
                     },
                   })}
                 />
+                <FormHelperText>
+                  Please ensure you have verified via email. If you don't see the email, please re-register.
+                </FormHelperText>
               </FormControl>
 
               <Box my={4}>
