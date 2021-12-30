@@ -1,4 +1,5 @@
 import random, string, jwt
+from typing import *
 
 from flask_httpauth import HTTPTokenAuth
 
@@ -10,7 +11,7 @@ from server.Models.User.GeneralUser import GeneralUserModel
 from server.Managers.EmailBot.EmailBot import EmailBot
 
 from server.config import Configuration
- 
+
 
 CODE_LENGTH = 16
 
@@ -53,7 +54,7 @@ class UserManager:
         self.user = GeneralUserModel(email, code)
 
     def __enter__(self):
-        result = self.find_user() 
+        result = self.find_user()
         if result:
             self.user.set_email(result["email"])
             self.user.set_password(result["password"])
@@ -176,13 +177,16 @@ class UserManager:
                 emailbot.send(self.user.get_email())
         return True
 
-    def find_user(self):
+    def find_user(self) -> Optional[GeneralUserModel]:
         if self.user.get_email():
             return self.db.find_one({"email": self.user.get_email()})
         if self.user.get_code():
             x = self.db.find_one({"code": self.user.get_code()})
             return x
         return None
+
+    def is_verified(self) -> bool:
+        return self.found and self.user.verified
 
     def commit(self):
         query = {"email": self.user.get_email()}
