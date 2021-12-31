@@ -17,7 +17,7 @@ export default function LoginForm(props) {
   const {
     handleSubmit,
     register,
-    formState: {isSubmitting},
+    formState: { isSubmitting },
   } = useForm();
 
   async function login(values) {
@@ -33,7 +33,7 @@ export default function LoginForm(props) {
           axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.token;
         }
-        console.log(values.email)
+        console.log(values.email);
         props.onLogin(values.email.toString());
       })
       .catch(() => {

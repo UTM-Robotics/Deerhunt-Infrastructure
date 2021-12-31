@@ -12,11 +12,10 @@ import AdminLoginPage from "./pages/AdminLoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import MyEventsPage from "./pages/MyEventsPage";
 import EventsPage from "./pages/EventsPage";
-import TeamsPage from "./pages/TeamsPage";
+import TeamsPage from "./components/TeamsPanel";
 import AmIAuthPage from "./pages/AmIAuthPage";
-import redirect from "react-router-dom/es/Redirect";
 import axios from "./config/config";
-import MyTeamsTable from "./components/MyTeamsTable";
+import EventUserPage from "./pages/EventUserPage";
 
 class App extends React.Component {
   constructor(props) {
@@ -86,7 +85,7 @@ class App extends React.Component {
           />
           <Route path="/forgotpassword" component={ResetPasswordPage} />
           <Route path="/events" component={EventsPage} />
-          <Route path="/test" component={MyTeamsTable} />
+          <Route path="/test" component={EventUserPage} />
           <Route path="/amiauth" component={AmIAuthPage} />
           <Route component={NotFound} />
         </Switch>
