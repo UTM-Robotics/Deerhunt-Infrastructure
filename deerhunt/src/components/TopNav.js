@@ -12,8 +12,6 @@ function TopNav(props) {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
   let loginButton;
-  console.log("Props here:\n");
-  console.log(props);
   if (!props.isLoggedIn) {
     loginButton = (
       <RouteLink to="/login">

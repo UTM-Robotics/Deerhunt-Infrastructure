@@ -6,21 +6,29 @@ import {
   Tab,
   TabPanels,
   TabPanel,
+  Center,
 } from "@chakra-ui/react";
 import TopNav from "../components/TopNav";
 import TeamsPanel from "../components/TeamsPanel";
+import { useParams } from "react-router-dom";
+import Leaderboard from "../components/Leaderboard";
 
 const EventUserPage = () => {
+  let { event } = useParams();
+  console.log(event);
   return (
     <>
       <TopNav />
-      <Heading size="md" m={[4, 4, 4, 4]}>
-        Some Event
-      </Heading>
+      <Center>
+        <Heading size="md" m={[4, 4, 4, 4]}>
+          {event}
+        </Heading>
+      </Center>
       <Tabs isFitted variant="enclosed-colored">
         <TabList>
           <Tab>Event Details</Tab>
           <Tab>Tutorial</Tab>
+          <Tab>Leaderboard</Tab>
           <Tab>Team</Tab>
         </TabList>
         <TabPanels>
@@ -29,6 +37,9 @@ const EventUserPage = () => {
           </TabPanel>
           <TabPanel>
             <p>Test</p>
+          </TabPanel>
+          <TabPanel>
+            <Leaderboard />
           </TabPanel>
           <TabPanel>
             <TeamsPanel />

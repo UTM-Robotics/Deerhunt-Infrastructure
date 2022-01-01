@@ -1,15 +1,5 @@
 import React from "react";
-import {
-  Flex,
-  Box,
-  Heading,
-  FormControl,
-  FormLabel,
-  Input,
-  Button,
-  Link,
-  Text,
-} from "@chakra-ui/react";
+import { Flex, Box, Heading, Button, Link, Text } from "@chakra-ui/react";
 import history from "../history";
 
 class NotFound extends React.Component {

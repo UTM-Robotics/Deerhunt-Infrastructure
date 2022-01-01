@@ -15,11 +15,8 @@ import { useHistory } from "react-router-dom";
 import { useStateValue } from "../statemanager/StateProvider";
 import axios from "../config/config";
 
-
-
 export default function SignUpForm(props) {
-  const [{ userSignStatus}, dispatch] =useStateValue();
-  const error1 = props.error1;
+  const [{ userSignStatus }, dispatch] = useStateValue();
   const setError = props.setError;
   const {
     handleSubmit,
@@ -41,12 +38,10 @@ export default function SignUpForm(props) {
         history.push("/login");
       })
       .catch((error) => {
-
         setError(error.response.data.message);
 
         dispatch({
           type: "SignUpFail",
-
         });
       });
   }
@@ -119,4 +114,3 @@ export default function SignUpForm(props) {
     </Flex>
   );
 }
-
