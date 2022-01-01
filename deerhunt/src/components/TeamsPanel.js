@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Button, useDisclosure } from "@chakra-ui/react";
+import SubmissionForm from "./SubmissionForm";
 
 import TeamsTable from "./TeamsTable";
 import AddTeamModal from "./AddTeamModal";
@@ -14,6 +15,7 @@ export default function TeamsPanel() {
         </Button>
         <AddTeamModal isOpen={isOpen} onClose={onClose} />
         <TeamsTable />
+        <SubmissionForm />
       </Box>
     </Box>
   );

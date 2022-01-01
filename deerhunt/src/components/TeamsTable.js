@@ -31,7 +31,7 @@ const TeamsTable = () => {
   const [teamsData, setTeamsData] = useState(mockTeamsData);
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
-    <Table variant="simple">
+    <Table variant="simple" size={"md"}>
       <Thead>
         <Tr>
           <Th>Team name </Th>

@@ -20,7 +20,7 @@ const EventUserPage = () => {
     <>
       <TopNav />
       <Center>
-        <Heading size="md" m={[4, 4, 4, 4]}>
+        <Heading size="lg" m={[4, 4, 4, 4]}>
           {event}
         </Heading>
       </Center>
