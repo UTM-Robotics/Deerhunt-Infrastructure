@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Button, Stack, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, useDisclosure } from "@chakra-ui/react";
 
 import TeamsTable from "./TeamsTable";
 import AddTeamModal from "./AddTeamModal";

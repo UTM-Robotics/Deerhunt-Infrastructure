@@ -82,7 +82,10 @@ class App extends React.Component {
             component={() => <AdminLoginPage onLogin={this.handleLogin} />}
           />
           <Route path="/forgotpassword" component={ResetPasswordPage} />
-          <Route path="/events" component={EventsPage} />
+          <Route exact path="/events" component={EventsPage} />
+          <Route exact path="/events/:event">
+            <EventUserPage />
+          </Route>
           <Route path="/test" component={EventUserPage} />
           <Route path="/amiauth" component={AmIAuthPage} />
           <Route component={NotFound} />

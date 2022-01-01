@@ -16,12 +16,11 @@ import { useHistory } from "react-router-dom";
 import { useStateValue } from "../statemanager/StateProvider";
 import axios from "../config/config";
 
-
-
 export default function SignUpForm(props) {
-  // eslint-disable-next-line 
+  const [{ userSignStatus }, dispatch] = useStateValue();
+  // eslint-disable-next-line
   const [{ input, setInput}, dispatch] = useStateValue();
-  
+
   const setError = props.setError;
   const {
     handleSubmit,
@@ -137,4 +136,3 @@ export default function SignUpForm(props) {
     </Flex>
   );
 }
-

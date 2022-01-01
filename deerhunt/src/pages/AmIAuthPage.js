@@ -1,14 +1,13 @@
 import React from "react";
 import axios from "../config/config";
 
+
 class Home extends React.Component {
+  constructor(props) {
+    super(props);
 
-    constructor(props) {
-        super(props)
-
-        this.all_events = []
-    }
-
+    this.all_events = [];
+  }
 
     get_events(){
         axios.get("api/amiauth")
@@ -19,14 +18,10 @@ class Home extends React.Component {
         })
     }
 
-    render() {
-        console.log("rendering")
-        return (
-            <div>
-                {this.get_events()}
-            </div>
-        )
-    }
+  render() {
+    console.log("rendering");
+    return <div>{this.get_events()}</div>;
+  }
 }
 
 export default Home;
