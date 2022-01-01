@@ -120,6 +120,11 @@ class UserManager:
                 return True
             except Exception:
                 return False
+        elif self.found and not self.user.verified:
+            self.generate_code(CODE_LENGTH)
+            self.commit()
+            self.send_email("registration")
+            return True
         else:
             return False
 

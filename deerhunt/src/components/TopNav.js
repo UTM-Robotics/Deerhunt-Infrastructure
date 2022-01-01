@@ -12,7 +12,7 @@ function TopNav(props) {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
   let loginButton;
-  if (!props.isLoggedIn) {
+  if (!props.isloggedin) {
     loginButton = (
       <RouteLink to="/login">
         <Button bg="transparent" border="1px">
@@ -33,9 +33,11 @@ function TopNav(props) {
       {...props}
     >
       <Flex align="center" mr={5}>
-        <Heading as="h1" size="md" letterSpacing={"-.1rem"}>
-          Deerhunt Infrastructure
-        </Heading>
+        <RouteLink to="/">
+          <Heading as="h1" size="md" letterSpacing={"-.1rem"}>
+            Deerhunt Infrastructure
+          </Heading>
+        </RouteLink>
       </Flex>
 
       <Box display={{ base: "block", md: "none" }} onClick={handleToggle}>
@@ -59,7 +61,7 @@ function TopNav(props) {
         <RouteLink to="/events">
           <MenuItems>Events</MenuItems>
         </RouteLink>
-        <RouteLink to="/myevents">
+        <RouteLink to={props.isloggedin ? "/myevents" : "/login"}>
           <MenuItems>My Events</MenuItems>
         </RouteLink>
         <RouteLink to="/teams">

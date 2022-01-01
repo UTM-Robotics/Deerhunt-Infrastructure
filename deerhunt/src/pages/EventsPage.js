@@ -6,7 +6,7 @@ import EventList from "../components/EventList";
 export default function EventsPage() {
   return (
     <Box justifyContent={"left"}>
-      <TopNav />
+      <TopNav isloggedin={+true}/>
       <Box>
         <EventList />
       </Box>

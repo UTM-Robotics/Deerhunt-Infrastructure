@@ -10,7 +10,7 @@ class Home extends React.Component {
 
   get_events() {
     axios
-      .get("http://localhost:5000/api/amiauth")
+      .get("api/amiauth")
       .then((resp) => {
         console.log(resp.data);
       })

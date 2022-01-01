@@ -9,6 +9,7 @@ import {
   Input,
   Button,
   Link,
+  FormHelperText,
   Text,
 } from "@chakra-ui/react";
 import axios from "../config/config";
@@ -25,20 +26,16 @@ export default function LoginForm(props) {
     form.append("email", values.email);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/user/auth", form)
+      .post("api/user/auth", form)
       .then((response) => {
-        console.log(response);
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
           axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.token;
         }
-        console.log(values.email);
         props.onLogin(values.email.toString());
       })
-      .catch(() => {
-        console.log("failed to login");
-      });
+      .catch(() => {});
   }
 
   return (
@@ -87,6 +84,10 @@ export default function LoginForm(props) {
                     },
                   })}
                 />
+                <FormHelperText>
+                  Please ensure you have verified via email. If you don't see
+                  the email, please re-register.
+                </FormHelperText>
               </FormControl>
 
               <Box my={4}>

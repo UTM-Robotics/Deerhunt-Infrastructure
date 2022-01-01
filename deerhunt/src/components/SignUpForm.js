@@ -6,6 +6,7 @@ import {
   Heading,
   FormControl,
   FormLabel,
+  FormHelperText,
   Input,
   Button,
   Link,
@@ -16,21 +17,23 @@ import { useStateValue } from "../statemanager/StateProvider";
 import axios from "../config/config";
 
 export default function SignUpForm(props) {
-  const [{ userSignStatus }, dispatch] = useStateValue();
+  // eslint-disable-next-line
+  const [{ input, setInput }, dispatch] = useStateValue();
+
   const setError = props.setError;
   const {
     handleSubmit,
     register,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm();
   const history = useHistory();
   async function SignUp(values) {
-    console.log(values);
     var form = new FormData();
+    console.log(axios.defaults.baseURL);
     form.append("email", values.email);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/user", form)
+      .post("api/user", form)
       .then((response) => {
         dispatch({
           type: "SIGNED_UP",
@@ -38,11 +41,22 @@ export default function SignUpForm(props) {
         history.push("/login");
       })
       .catch((error) => {
-        setError(error.response.data.message);
-
-        dispatch({
-          type: "SignUpFail",
-        });
+        if (error.response) {
+          setError(error.response.data.message);
+          dispatch({
+            type: "SignUpFail",
+          });
+        } else if (error.request) {
+          setError("Something went wrong! The request failed.");
+          dispatch({
+            type: "SignUpFail",
+          });
+        } else {
+          setError("Something went wrong! Could not make request.");
+          dispatch({
+            type: "SignUpFail",
+          });
+        }
       });
   }
 
@@ -69,29 +83,35 @@ export default function SignUpForm(props) {
           </Box>
           <Box>
             <form onSubmit={handleSubmit(SignUp)}>
-              <FormControl>
+              <FormControl isInvalid={errors.email}>
                 <FormLabel>Email</FormLabel>
                 <Input
+                  id="email"
                   type="email"
-                  placeholder="Enter Your Email"
+                  placeholder="Enter your UofT email"
                   {...register("email", {
                     required: "This is required",
                   })}
                 />
+                <FormHelperText>
+                  Use either @mail.utoronto.ca or @utoronto.ca{" "}
+                </FormHelperText>
               </FormControl>
-              <FormControl mt={4}>
+              <FormControl mt={4} isInvalid={errors.password}>
                 <FormLabel>Password</FormLabel>
                 <Input
+                  id="password"
                   type="password"
                   placeholder="Enter Your Password"
                   {...register("password", {
                     required: "This is required",
                     minLength: {
                       value: 8,
-                      message: "Minimum length should be 4",
+                      message: "Minimum length should be 8",
                     },
                   })}
                 />
+                <FormHelperText>Minimum password length of 8.</FormHelperText>
               </FormControl>
               <Box my={4}>
                 <Button width="full" isLoading={isSubmitting} type="submit">
