@@ -8,13 +8,16 @@ import {
   ListItem,
   Input,
   VStack,
+  Button,
 } from "@chakra-ui/react";
 
 function SubmissionForm() {
   const { acceptedFiles, getRootProps, getInputProps } = useDropzone();
 
   const files = acceptedFiles.map((file) => (
-    <ListItem key={file.path}>{file.path}</ListItem>
+    <ListItem key={file.path}>
+      {file.path} - {file.size} bytes
+    </ListItem>
   ));
 
   let formData = new FormData();
@@ -40,6 +43,7 @@ function SubmissionForm() {
       </Box>
       <Heading size={"md"}>File:</Heading>
       <UnorderedList>{files}</UnorderedList>
+      <Button>Submit</Button>
     </VStack>
   );
 }
