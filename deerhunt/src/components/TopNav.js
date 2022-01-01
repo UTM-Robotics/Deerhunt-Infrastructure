@@ -1,6 +1,8 @@
 import React from "react";
 import { Box, Heading, Flex, Text, Button } from "@chakra-ui/react";
-import { Link as RouteLink } from "react-router-dom";
+import { Link as RouteLink, useHistory } from "react-router-dom";
+
+
 
 const MenuItems = ({ children }) => (
   <Text mt={{ base: 4, md: 0 }} mr={6} display="block">
@@ -11,7 +13,16 @@ const MenuItems = ({ children }) => (
 function TopNav(props) {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
+  const history = useHistory();
+  const signOut = () => {
+    localStorage.clear();
+    window.history.replaceState({}, document.title);
+    history.replace({ pathname: '/', state: {} });
+    window.location.reload(true);
+    history.push('/');
+  }
   let loginButton;
+  let signOutButton;
   if (!props.isloggedin) {
     loginButton = (
       <RouteLink to="/login">
@@ -20,6 +31,14 @@ function TopNav(props) {
         </Button>
       </RouteLink>
     );
+  }else{
+    signOutButton = (
+
+          <Button bg="transparent" border="1px" onClick={signOut}>
+            Sign-out
+          </Button>
+    )
+
   }
   return (
     <Flex
@@ -75,6 +94,12 @@ function TopNav(props) {
         mt={{ base: 4, md: 0 }}
       >
         {loginButton}
+      </Box>
+      <Box
+        display={{ base: show ? "block" : "none", md: "block" }}
+        mt = {{ base: 4, md: 0}}
+      >
+        {signOutButton}
       </Box>
     </Flex>
   );
