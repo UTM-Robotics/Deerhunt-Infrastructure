@@ -12,6 +12,17 @@ class TeamsModel:
         self.members = []
         self.eventID = None
         self.last_submission_timestamp = None
+        self.submissions: List[str] = []
+        self.created_timestamp = None
+        self.uuid = None
+
+    def __init__(self) -> None:
+        self.name = None
+        self.owner = None
+        self.members = []
+        self.eventID = None
+        self.last_submission_timestamp = None
+        self.submissions: List[str] = []
         self.created_timestamp = None
         self.uuid = None
 
@@ -46,6 +57,21 @@ class TeamsModel:
     def get_uuid(self) -> str:
         return self.uuid
 
+    def get_submissions(self) -> List[str]:
+        return self.submissions
+
+    def set_submissions(self, submissions: List[str]) -> None:
+        self.submissions = submissions
+
+    def add_submission(self, submission: str) -> None:
+        self.submissions.append(submission)
+
+    def set_name(self, name) -> None:
+        self.name = name
+
+    def get_name(self) -> str:
+        return self.name
+
     def covert_to_dict(self) -> dict:
         return {'name': self.name,
                 'owner': self.owner,
@@ -53,5 +79,6 @@ class TeamsModel:
                 'eventID': self.eventID,
                 'uuid': self.uuid,
                 'last_submission_timestamp': self.last_submission_timestamp,
+                'submissions': self.submissions,
                 'created_timestamp': self.created_timestamp
                 }

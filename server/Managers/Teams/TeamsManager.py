@@ -9,9 +9,13 @@ from server.config import Configuration
 
 
 class TeamsManager:
-    def __init__(self, name) -> None:
+    def __init__(self, name):
         self.db = Mongo.teams
         self.team = TeamsModel(name)
+
+    def __init__(self):
+        self.db = Mongo.teams
+        self.team = TeamsModel()
 
     def __enter__(self):
         # self.session = Mongo.start_session()  <- mongodb mutex lock
@@ -33,6 +37,18 @@ class TeamsManager:
     def get_id(self) -> str:
         return self.team.uuid
 
+    def get_by_id(self, team_id: str) -> bool:
+        team = self.db.find_one({'uuid': team_id})
+        if team:
+            self.team.name = team['name']
+            self.team.set_owner(team['owner'])
+            self.team.set_created_timestamp(team['created_timestamp'])
+            self.team.set_uuid(team['uuid'])
+            self.pass_data(team)
+            self.found = True
+
+        return False
+
     def pass_data(self, data) -> None:
         if data['members']:
             self.add_members(list(set(data['members'])))
@@ -41,8 +57,8 @@ class TeamsManager:
         if data['last_submission_timestamp']:
             self.team.set_last_submission_timestamp(
                 data['last_submission_timestamp'])
-        if data['uuid']:
-            self.team.set_uuid(data['uuid'])
+        if data['submissions']:
+            self.team.set_submissions(data['submissions'])
 
     def create_team(self, owner: str, data) -> bool:
         if not self.found:

@@ -6,8 +6,12 @@ https://docs.microsoft.com/en-ca/azure/storage/blobs/media/storage-blobs-introdu
 '''
 import re
 import zipfile
+from typing import Union
+
+from azure.core.paging import ItemPaged
+
 from server.config import Configuration
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, ContainerClient, BlobProperties
 from azure.core.exceptions import ResourceExistsError, ResourceNotFoundError
 
 '''
@@ -54,17 +58,17 @@ class BlobStorageModel:
             return False
 
     # Return all the blobs in the specified container
-    def list_blobs_in_container(self, container_name):
+    def list_blobs_in_container(self, container_name) -> Union[ItemPaged[BlobProperties], bool]:
         # Return false if the container name is invalid
         if not self.container_name_checker(container_name):
-            return
+            return False
         container = self.get_container(container_name)
         # Return false if the specified container doesn't exist
         if not container:
             return False
         return container.list_blobs()
 
-    def get_container(self, container_name):
+    def get_container(self, container_name) -> Union[ContainerClient, bool]:
         container = self.service_client.get_container_client(container_name)
         if not (self.container_name_checker(container_name) and container.exists()):
             print("Invalid container name or no containers with given name")

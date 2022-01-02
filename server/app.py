@@ -14,6 +14,7 @@ from server.Routes.Auth.ForgotPasswordResetRoute import ForgotPasswordResetRoute
 from server.Routes.Auth.AdminAuthRoute import AdminAuthRoute
 
 from server.Routes.Events.Events import EventRoute
+from server.Routes.Submissions.Submissions import SubmissionsRoute
 from server.Routes.Teams.Teams import TeamsRoute
 
 app = Flask(__name__)
@@ -34,6 +35,7 @@ api.add_resource(UserInfoRoute, '/api/user/info')
 # Initializing other routes
 api.add_resource(EventRoute, '/api/events')
 api.add_resource(TeamsRoute, '/api/teams')
+api.add_resource(SubmissionsRoute, '/api/submissions')
 app.debug=True
 
 if __name__ == '__main__':
