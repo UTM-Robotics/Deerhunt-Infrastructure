@@ -18,6 +18,8 @@ class TeamsRoute(Resource):
         user = None
         with UserManager(User_auth.current_user()) as usermanager:
             user = usermanager.user
+        TeamsRoute.parser.add_argument('event_id', type=str, required=True,
+                            help='This field cannot be left blank')
         TeamsRoute.parser.add_argument('members', type=str, action="append")
         data = TeamsRoute.parser.parse_args()
         with TeamsManager(data['name']) as teamsmanager:
@@ -46,7 +48,7 @@ class TeamsRoute(Resource):
         with UserManager(User_auth.current_user()) as usermanager:
             user = usermanager.user
         TeamsRoute.parser.add_argument('members', type=str, action="append")
-        TeamsRoute.parser.add_argument('eventID', type=str)
+        TeamsRoute.parser.add_argument('event_id', type=str)
         TeamsRoute.parser.add_argument('last_submission_timestamp', type=time)
         data = TeamsRoute.parser.parse_args()
         with TeamsManager(data['name']) as teamsmanager:

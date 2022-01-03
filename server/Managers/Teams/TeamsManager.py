@@ -33,15 +33,19 @@ class TeamsManager:
     def pass_data(self, data) -> None:
         if data['members']:
             self.add_members(list(set(data['members'])))
-        if data['eventID']:
-            self.team.join_event(data['eventID'])
+        if data['event_id']:
+            self.team.join_event(data['event_id'])
         if data['last_submission_timestamp']:
             self.team.set_last_submission_timestamp(data['last_submission_timestamp'])
 
     def create_team(self, owner: str, data) -> bool:
         if not self.found:
             try:
-                self.team.set_owner(owner)
+                self.team.join_event(data['event_id'])
+                if not self.does_participate_event(owner, self.team.event_id):
+                    self.team.set_owner(owner)
+                else:
+                    raise ValueError("You already have team in this event")
                 if data['members']:
                     self.add_members(list(set(data['members'])))
                 self.team.set_created_timestamp(str(datetime.utcnow()))
@@ -82,14 +86,28 @@ class TeamsManager:
     def is_part_of_team(self, email) -> bool:
         return self.is_owner(email) or (email in self.team.members)
     
+    def does_own_team(self, email, event) -> bool:
+        if self.db.find_one({"owner": email, "event_id": event}):
+            return True
+        return False
+    
+    def does_have_team(self, email, event) -> bool:
+        if self.db.find_one({"members": email, "event_id": event}):
+            return True
+        return False
+    
+    def does_participate_event(self, email, event) -> bool:
+        return self.does_own_team(email, event) or self.does_have_team(email, event)
+    
     def add_members(self, members: List[str]) -> None:
         for member in members:
             user = Mongo.users.find_one({'email': member})
             if not user or not user['verified']:
-                raise ValueError(
-                    "Must invite registered and verified member(s)")
+                raise ValueError(f'Member {member} must be registered and verified first')
             elif self.is_part_of_team(member):
-                raise ValueError("Already added such members")
+                raise ValueError(f'Member {member} is already in your team')
+            elif self.does_participate_event(member, self.team.event_id):
+                raise ValueError(f'Member {member} already has a team')
             else:
                 self.team.set_members([member])
 

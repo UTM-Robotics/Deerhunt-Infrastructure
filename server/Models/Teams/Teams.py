@@ -10,7 +10,7 @@ class TeamsModel:
         self.name = name
         self.owner = None
         self.members = []
-        self.eventID = None
+        self.event_id = None
         self.last_submission_timestamp = None
         self.created_timestamp = None
     
@@ -27,8 +27,8 @@ class TeamsModel:
     def get_members(self) -> List[str]:
         return self.members
     
-    def join_event(self, eventID: str) -> None:
-        self.eventID = eventID
+    def join_event(self, event_id: str) -> None:
+        self.event_id = event_id
 
     def set_last_submission_timestamp(self, time) -> None:
         self.last_submission_timestamp = time
@@ -40,7 +40,7 @@ class TeamsModel:
         return {'name': self.name,
                 'owner': self.owner,
                 'members': self.members,
-                'eventID': self.eventID,
+                'event_id': self.event_id,
                 'last_submission_timestamp': self.last_submission_timestamp,
                 'created_timestamp': self.created_timestamp
                 }
