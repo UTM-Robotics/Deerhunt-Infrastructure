@@ -48,7 +48,6 @@ def test_register_email(request, receive_email):
         output = filter_link(body)
         test.run(request.node.name, output)
 
-
 # Sends the get request to the link received in the email.
 # Simulates a user opening their email and clicking the very link.
 def test_verify_link(request):
@@ -96,7 +95,7 @@ def test_update_team(request, flaskaddr):
         token = test.get_var('JWT_TOKEN_USER').rstrip()
         test.save_var('JWT_TOKEN_USER', token)
         r = requests.put(f'http://{flaskaddr}/api/teams',
-                            json={'name': 'test_team', 'eventID': "1234"},
+                            json={'name': 'test_team', 'event_id': "1234"},
                             headers={'Authorization': f'Bearer {token}'})
         test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
 
