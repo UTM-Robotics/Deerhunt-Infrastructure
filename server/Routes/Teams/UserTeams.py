@@ -1,28 +1,35 @@
-from datetime import time
 from http import HTTPStatus
+from datetime import time
+
 from flask import make_response, request, abort, jsonify
 from flask_restful import Resource, reqparse
 
-from server.Managers.Teams.TeamsManager import TeamsManager
-from server.Managers.Auth.UserManager import UserManager
-
-from server.Managers.Auth.UserManager import User_auth
+from server.Managers.Auth.UserManager import UserManager, is_allowed
 
 
 class UserTeamsRoute(Resource):
-    parser = reqparse.RequestParser()
+
+    # flask parser
+    parser = reqparse.RequestParser(bundle_errors=False)
     parser.add_argument(
-        "name", type=str, required=True, help="This field cannot be left blank"
+        "event_id", type=str, required=True, help="This field cannot be left blank"
     )
 
-    @User_auth.login_required
-    # Note: passing name parameter to route - /api/teams?name=<NAME>
-    def get(self):
-        user = None
-        with UserManager(User_auth.current_user()) as usermanager:
-            user = usermanager.user
-        data = UserTeamsRoute.parser.parse_args()
-        with TeamsManager(data["name"]) as teamsmanager:
-            if not teamsmanager.is_part_of_team(user.email):
-                return abort(HTTPStatus.UNAUTHORIZED)
-            return teamsmanager.team.covert_to_dict()
+    # Handles post request for user registration.
+    def post(self):
+        data = UserRoute.parser.parse_args()
+        if is_allowed(data["email"]):
+            with UserManager(data["email"]) as usermanager:
+                result = usermanager.register(data["password"])
+            if result:
+                return make_response(
+                    jsonify(
+                        {
+                            "message": "Account partially created. Verification email sent\n"
+                        }
+                    ),
+                    HTTPStatus.OK,
+                )
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, "User already exists")
+
+        abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Invalid email")

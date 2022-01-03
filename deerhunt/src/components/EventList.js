@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Heading,
@@ -13,19 +13,29 @@ import MCSSLogo from "../images/MCSSLogo.png";
 import UTMRoboticsLogo from "../images/UTMRoboticsLogo.png";
 import CountDownTimer from "./Countdown";
 import { Link } from "react-router-dom";
+import axios from "../config/config.js";
 
 export default function EventList() {
-  const eventsData = [
-    {
-      name: "Merlin",
-      description:
-        "Get excited for this year's Battlecode game! Program an AI that'll defend your army of knights, archers and workers while capturing a merlin to score points. Get your teams ready, this is sure to be a fun one!",
-      startDate: "01/05/2022",
-    },
-  ];
+  const [eventsData, setEventsData] = useState([]);
+  // const eventsData = [
+  //   {
+  //     name: "Merlin",
+  //     description:
+  //       "Get excited for this year's Battlecode game! Program an AI that'll defend your army of knights, archers and workers while capturing a merlin to score points. Get your teams ready, this is sure to be a fun one!",
+  //     startDate: "01/05/2022",
+  //   },
+  // ];
+
+  useEffect(() => {
+    axios.get("/api/events").then((response) => {
+      console.log(response);
+      setEventsData(response.data);
+    });
+  }, []);
+
   return eventsData.map((eventItem) => (
     <Link to={`/events/${eventItem.name}`}>
-      <Box m={[8, 8, 8, 8]}>
+      <Box m={8}>
         <Box
           maxW={"310px"}
           w={"full"}
