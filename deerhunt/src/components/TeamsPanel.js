@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { Box, Button, useDisclosure } from "@chakra-ui/react";
 import SubmissionForm from "./SubmissionForm";
 
 import TeamsTable from "./TeamsTable";
 import AddTeamModal from "./AddTeamModal";
-import axios from "axios";
+import axios from "../config/config";
 
 export default function TeamsPanel(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -18,19 +18,21 @@ export default function TeamsPanel(props) {
     formData.append("team_id", teamID);
 
     await axios
-      .post("api/submissions", form)
+      .post("api/submissions", formData)
       .then((response) => {
         console.log("Submission succeeded");
       })
       .catch(() => {});
   }
 
-  await axios
-    .get("api/user/info")
-    .then((response) => {
-      console.log(response);
-    })
-    .catch(() => {});
+  useEffect(() => {
+    axios
+      .get("api/user/info")
+      .then((response) => {
+        console.log(response);
+      })
+      .catch(() => {});
+  }, [])
   return (
     <Box>
       <Box textAlign="left">

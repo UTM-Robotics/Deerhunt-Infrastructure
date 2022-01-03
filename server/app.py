@@ -16,6 +16,7 @@ from server.Routes.Auth.AdminAuthRoute import AdminAuthRoute
 from server.Routes.Events.Events import EventRoute
 from server.Routes.Submissions.Submissions import SubmissionsRoute
 from server.Routes.Teams.Teams import TeamsRoute
+from server.Routes.Teams.UserTeams import UserTeamsRoute
 
 app = Flask(__name__)
 CORS(app)

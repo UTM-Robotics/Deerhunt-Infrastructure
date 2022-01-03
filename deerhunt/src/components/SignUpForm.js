@@ -18,8 +18,8 @@ import axios from "../config/config";
 
 export default function SignUpForm(props) {
   const [{ userSignStatus }, dispatch] = useStateValue();
-  // eslint-disable-next-line
-  const [{ input, setInput}, dispatch] = useStateValue();
+  // // eslint-disable-next-line
+  // const [{ input, setInput}, dispatch] = useStateValue();
 
   const setError = props.setError;
   const {

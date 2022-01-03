@@ -20,9 +20,9 @@ class SubmissionsRoute(Resource):
                              help='This field cannot be left blank')
     parser_post.add_argument('event_id', type=str, required=True,
                              help='This field cannot be left blank')
-    parser_post.add_argument('file', type=werkzeug.FileStorage,
-                             location='files', required=True,
-                             help='This field cannot be left blank')
+    # parser_post.add_argument('file', type=werkzeug.FileStorage,
+    #                          location='files', required=True,
+    #                          help='This field cannot be left blank')
 
     parser_get = reqparse.RequestParser()
     parser_get.add_argument('team_id', type=str, required=True,
