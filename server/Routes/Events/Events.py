@@ -1,14 +1,12 @@
 from http import HTTPStatus
 
-from flask import make_response, request, abort, jsonify
+from flask import make_response, abort, jsonify
 from flask_restful import Resource, reqparse
 from bson.json_util import dumps
 
 from server.Managers.Events.AdminEvents import EventsManager
-from server.Managers.Auth.UserManager import User_auth
 from server.Managers.Auth.AdminManager import Admin_auth
 from server.Managers.Leaderboard.LeaderboardManager import LeaderboardManager
-
 
 class EventRoute(Resource):
 
@@ -22,24 +20,26 @@ class EventRoute(Resource):
     @Admin_auth.login_required
     def post(self):
         data = EventRoute.parser.parse_args()
-        with EventsManager(data['name']) as admineventmanager:
-            result = admineventmanager.create_event(data['game'],
+        with EventsManager(data['name']) as eventmanager:
+            result = eventmanager.create_event(data['game'],
                                                     data['starttime'],
                                                     data['endtime'])
-            event_dict = admineventmanager.get_event_id()
-            if result:
-                with LeaderboardManager() as leaderboard:
-                    leaderboard.create_event_leaderboard(event_dict)
-                return make_response(jsonify({'message': 'Event Created'}), HTTPStatus.CREATED)
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
+        if result:
+            with EventsManager(data['name']) as eventmanager:
+                event_dict = eventmanager.get_event_data()
+            with LeaderboardManager() as leaderboardmanager:
+                leaderboardmanager.create_event_leaderboard(event_dict)
+            return make_response(jsonify({'message': 'Event Created'}), HTTPStatus.CREATED)
+        abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
 
 
     def get(self):
-        with EventsManager() as admineventmanager:
-            result = admineventmanager.get_events()
+        with EventsManager() as eventmanager:
+            result = eventmanager.get_events()
             if result:
                 return make_response(dumps(result), HTTPStatus.OK)
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not get events list')
+
 
     # Flask parser for delete request
     delete_parser = reqparse.RequestParser()

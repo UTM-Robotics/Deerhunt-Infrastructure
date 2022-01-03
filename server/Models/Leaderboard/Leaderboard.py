@@ -32,9 +32,14 @@ class LeaderboardModel:
         return self.teams_ids
 
     def covert_to_dict(self) -> dict:
-        return {'_id': self._id,
-                'name': self.name,
-                'event_id': self.event_id,
-                'team_ids': self.teams_ids
-                }
-                
+        if self.get_id():
+            return {'_id': self.get_id(),
+                    'name': self.get_name(),
+                    'event_id': self.get_event_id(),
+                    'team_ids': self.get_teams()
+                    }
+        else:
+            return {'name': self.get_name(),
+                    'event_id': self.get_event_id(),
+                    'team_ids': self.get_teams()
+                    }
