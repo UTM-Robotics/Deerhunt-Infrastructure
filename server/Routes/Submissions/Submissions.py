@@ -1,20 +1,19 @@
-import os
+import io
 import zipfile
 from datetime import datetime, timedelta, timezone
-from typing import List
 
 import werkzeug
-from flask import make_response, request, abort, jsonify, send_file
+from flask import make_response, request, jsonify, send_file
 from flask_restful import Resource, reqparse
 
 from server.Managers.Auth.UserManager import User_auth, UserManager
 from server.Managers.Events.AdminEvents import EventsManager
 from server.Managers.Teams.TeamsManager import TeamsManager
-from server.Models.User import GeneralUser
 
 from server.Managers.Blob.BlobStorage import BlobStorageModel
 
 
+# TODO: testing and refactoring
 class SubmissionsRoute(Resource):
     parser_post = reqparse.RequestParser()
     parser_post.add_argument('team_id', type=str, required=True,
@@ -45,6 +44,8 @@ class SubmissionsRoute(Resource):
 
         user_email = ''
         with UserManager(User_auth.current_user()) as usermanager:
+            if not usermanager.found():
+                return make_response(jsonify({'message': 'User not found'}), 404)
             if not usermanager.is_verified():
                 return make_response(jsonify({'message': 'Please verify your email first'}), 401)
             user_email = usermanager.user.get_email()
@@ -58,22 +59,10 @@ class SubmissionsRoute(Resource):
             if timestamp + timedelta(minutes=5) > datetime.now(timezone.utc):
                 return make_response(jsonify({'message': 'You can only submit once every 5 minutes'}), 401)
 
-            # TODO: upload the file to asure and update the team submission timestamp
             blob_storage = BlobStorageModel()
             container = blob_storage.get_container(data['event_id'])
             if container is None:
                 container = blob_storage.create_container(data['event_id'])
-
-            # # finds last submission of the team
-            # all_submissions = blob_storage.list_blobs_in_container(data['event_id'])
-            # if not all_submissions:
-            #     print('container fetch error')
-            #     return make_response(jsonify({'message': 'An error has occurred'}), 500)
-            #
-            # # formatted as "{teamID}_{submission_number}"
-            # user_submissions: List[str] = [blob for blob in all_submissions if blob.name.startswith(data['team_id'])]
-            # user_submissions.sort()
-            # last_submission = user_submissions[-1]
 
             # delete the last submission somewhere here if you want to
 
@@ -87,32 +76,29 @@ class SubmissionsRoute(Resource):
     @User_auth.login_required
     def get(self):
         data = SubmissionsRoute.parser_get.parse_args()
+        user_email = ''
         with UserManager(User_auth.current_user()) as usermanager:
+            if not usermanager.found():
+                return make_response(jsonify({'message': 'User not found'}), 404)
             if not usermanager.is_verified():
                 return make_response(jsonify({'message': 'Please verify your email first'}), 401)
             user_email = usermanager.user.get_email()
-        with TeamsManager(data['team_name']) as teamsmanager:
+        with TeamsManager() as teamsmanager:
+            teamsmanager.get_by_id(data['team_id'])
+
             if not teamsmanager.is_part_of_team(user_email):
                 return make_response(jsonify({'message': 'You are not part of this team'}), 401)
 
-            # TODO: Make this like the post route
-            #
-            # blob_storage = BlobStorageModel()
-            # container = blob_storage.get_container(data['event_id'])
-            # if container is None:
-            #     container = blob_storage.create_container(data['event_id'])
-            #
-            # sub = list(blob_storage.list_blobs_in_container(data['event_id']))
-            # print(sub)
-            #
-            # sub = [name for name in sub if name.startswith(teamsmanager.team.get_uuid())]
-            # sub.sort()
-            #
-            # last_sub = sub[-1]
-            #
-            # file = blob_storage.get_blob(data['event_id'], last_sub)
-            #
-            # if file:
-            #     return send_file(file, mimetype='application/zip')
-            # else:
-            #     return make_response(jsonify({'message': 'No submission found'}), 404)
+            blob_storage = BlobStorageModel()
+            container = blob_storage.get_container(data['event_id'])
+            if container is None:
+                return make_response(jsonify({'message': 'Event not found'}), 404)
+
+            last_submission = sorted(teamsmanager.team.submissions)[-1]
+            blob = container.get_blob_client(last_submission)
+
+            user_submission = blob.download_blob().readall()
+
+            # one of these two might work
+            return send_file(blob.download_blob(), attachment_filename=last_submission, as_attachment=True)
+            # return send_file(io.BytesIO(user_submission), attachment_filename=last_submission, as_attachment=True)
