@@ -12,6 +12,7 @@ from server.Routes.Auth.ChangePasswordRoute import ChangePasswordRoute
 from server.Routes.Auth.ForgotPasswordRoute import ForgotPasswordRoute
 from server.Routes.Auth.ForgotPasswordResetRoute import ForgotPasswordResetRoute
 from server.Routes.Auth.AdminAuthRoute import AdminAuthRoute
+from server.Routes.Consumer.Consumer import ConsumerRoute
 
 from server.Routes.Events.Events import EventRoute
 from server.Routes.Teams.Teams import TeamsRoute
@@ -34,6 +35,7 @@ api.add_resource(UserInfoRoute, '/api/user/info')
 # Initializing other routes
 api.add_resource(EventRoute, '/api/events')
 api.add_resource(TeamsRoute, '/api/teams')
+api.add_resource(ConsumerRoute, '/api/matches')
 
 if __name__ == '__main__':
     app.run()
