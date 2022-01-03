@@ -25,7 +25,7 @@ export default function SignUpForm(props) {
   const {
     handleSubmit,
     register,
-    formState: {errors, isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm();
   const history = useHistory();
   async function SignUp(values) {
@@ -47,14 +47,12 @@ export default function SignUpForm(props) {
           dispatch({
             type: "SignUpFail",
           });
-        }
-        else if (error.request) {
+        } else if (error.request) {
           setError("Something went wrong! The request failed.");
           dispatch({
             type: "SignUpFail",
           });
-        }
-        else {
+        } else {
           setError("Something went wrong! Could not make request.");
           dispatch({
             type: "SignUpFail",
@@ -89,20 +87,21 @@ export default function SignUpForm(props) {
               <FormControl isInvalid={errors.email}>
                 <FormLabel>Email</FormLabel>
                 <Input
-
-                  id='email'
+                  id="email"
                   type="email"
                   placeholder="Enter your UofT email"
                   {...register("email", {
                     required: "This is required",
                   })}
                 />
-            <FormHelperText>Use either @mail.utoronto.ca or @utoronto.ca </FormHelperText>
+                <FormHelperText>
+                  Use either @mail.utoronto.ca or @utoronto.ca{" "}
+                </FormHelperText>
               </FormControl>
               <FormControl mt={4} isInvalid={errors.password}>
                 <FormLabel>Password</FormLabel>
                 <Input
-                  id='password'
+                  id="password"
                   type="password"
                   placeholder="Enter Your Password"
                   {...register("password", {

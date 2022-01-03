@@ -9,14 +9,16 @@ class Home extends React.Component {
     this.all_events = [];
   }
 
-    get_events(){
-        axios.get("api/amiauth")
-        .then(resp => {
-            console.log(resp.data)
-        }).catch(err => {
-            console.log(err)
-        })
-    }
+  get_events() {
+    axios
+      .get("api/amiauth")
+      .then((resp) => {
+        console.log(resp.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   render() {
     console.log("rendering");

@@ -36,8 +36,7 @@ export default function LoginForm(props) {
         console.log(values.email);
         props.onLogin(values.email.toString());
       })
-      .catch(() => {
-      });
+      .catch(() => {});
   }
 
   return (
@@ -87,7 +86,8 @@ export default function LoginForm(props) {
                   })}
                 />
                 <FormHelperText>
-                  Please ensure you have verified via email. If you don't see the email, please re-register.
+                  Please ensure you have verified via email. If you don't see
+                  the email, please re-register.
                 </FormHelperText>
               </FormControl>
 
