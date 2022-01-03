@@ -7,6 +7,7 @@ from bson.json_util import dumps
 from server.Managers.Events.AdminEvents import EventsManager
 from server.Managers.Auth.UserManager import User_auth
 from server.Managers.Auth.AdminManager import Admin_auth
+from server.Managers.Leaderboard.LeaderboardManager import LeaderboardManager
 
 
 class EventRoute(Resource):
@@ -25,7 +26,10 @@ class EventRoute(Resource):
             result = admineventmanager.create_event(data['game'],
                                                     data['starttime'],
                                                     data['endtime'])
+            event_dict = admineventmanager.get_event_id()
             if result:
+                with LeaderboardManager() as leaderboard:
+                    leaderboard.create_event_leaderboard(event_dict)
                 return make_response(jsonify({'message': 'Event Created'}), HTTPStatus.CREATED)
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
 

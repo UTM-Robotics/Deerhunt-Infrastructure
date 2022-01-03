@@ -66,6 +66,10 @@ class EventsManager:
                 return False
         return False
 
+    def get_event_data(self):
+        return self.db.find_one({'name': self.event.get_name()}) # for now
+        # return self.event.covert_to_dict() <- the one it should be.
+
     def commit(self):
         query = {'name': self.event.get_name()}
         data = self.event.covert_to_dict()
