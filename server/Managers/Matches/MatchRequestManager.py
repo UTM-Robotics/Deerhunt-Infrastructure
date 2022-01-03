@@ -3,7 +3,7 @@ from datetime import datetime
 from bson import ObjectId
 
 from server.Database import Mongo
-from server.Models.Matches.Matches import MatchRequestModel
+from server.Models.Requests.Requests import MatchRequestModel
 
 
 class MatchRequestManager:
@@ -21,12 +21,8 @@ class MatchRequestManager:
         return self._id
 
     def pass_data(self, data) -> None:
-        if data['teams']:
-            self.request.set_teams(data['teams'])
-        if data['event_id']:
-            self.request.set_event(data['event_id'])
-        if data['created_timestamp']:
-            self.request.set_created_timestamp(data['created_timestamp'])
+        self.request.set_teams(data['teams'])
+        self.request.set_event(data['event_id'])
 
     def create_request(self, data) -> bool:
         if not self.find_request(data):
@@ -45,6 +41,7 @@ class MatchRequestManager:
         if request:
             self._id = request['_id']
             self.pass_data(request)
+            self.request.set_created_timestamp(request['created_timestamp'])
             return self.request.covert_to_dict()
         return None
     
@@ -54,6 +51,7 @@ class MatchRequestManager:
         if request:
             self._id = request['_id']
             self.pass_data(data)
+            self.request.set_created_timestamp(request['created_timestamp'])
             return request
         return None
 
@@ -61,5 +59,5 @@ class MatchRequestManager:
         return self.db.delete_one({'_id': ObjectId(id)})
 
     def commit(self) -> None:
-        data = self.request.covert_to_dict()
-        self.db.insert_one(data)
+        self.db.insert_one({'event_id': self.request.event_id, 'teams': self.request.teams,
+                           'created_timestamp': self.request.created_timestamp})
