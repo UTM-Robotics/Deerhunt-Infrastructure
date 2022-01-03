@@ -9,7 +9,7 @@ import {
   Input,
   Button,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "../config/config";
 
 export default function LoginForm() {
   const {
@@ -23,7 +23,7 @@ export default function LoginForm() {
     form.append("username", values.username);
     form.append("password", values.password);
     await axios
-      .post("http://127.0.0.1:5000/api/admin/auth", form)
+      .post("api/admin/auth", form)
       .then((response) => {
         console.log(response);
       })

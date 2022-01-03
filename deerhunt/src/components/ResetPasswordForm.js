@@ -12,7 +12,7 @@ import {
   Alert,
   AlertIcon,
 } from "@chakra-ui/react";
-import axios from "axios";
+import axios from "../config/config";
 
 export default function ResetPasswordForm() {
   const [error, setError] = useState(null);
@@ -27,13 +27,12 @@ export default function ResetPasswordForm() {
     var form = new FormData();
     form.append("email", values.email);
     await axios
-      .post("http://127.0.0.1:5000/api/user/forgotpassword", form)
+      .post("api/user/forgotpassword", form)
       .then((response) => {
-        console.log(response);
         setError("Success");
       })
       .catch(() => {
-        console.log("Failed to reset password");
+        /*Failed to reset password*/
         setError("Error");
       });
   }

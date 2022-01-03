@@ -1,6 +1,8 @@
 import React from "react";
 import { Box, Heading, Flex, Text, Button } from "@chakra-ui/react";
-import { Link as RouteLink } from "react-router-dom";
+import { Link as RouteLink, useHistory } from "react-router-dom";
+
+
 
 const MenuItems = ({ children }) => (
   <Text mt={{ base: 4, md: 0 }} mr={6} display="block">
@@ -11,16 +13,32 @@ const MenuItems = ({ children }) => (
 function TopNav(props) {
   const [show, setShow] = React.useState(false);
   const handleToggle = () => setShow(!show);
+  const history = useHistory();
+  const signOut = () => {
+    localStorage.clear();
+    window.history.replaceState({}, document.title);
+    history.replace({ pathname: '/', state: {} });
+    window.location.reload(true);
+    history.push('/');
+  }
   let loginButton;
-  console.log("Props here:\n");
-  console.log(props);
-  if (!props.isLoggedIn) {
-    loginButton =
+  let signOutButton;
+  if (!props.isloggedin) {
+    loginButton = (
       <RouteLink to="/login">
         <Button bg="transparent" border="1px">
           Login
         </Button>
-      </RouteLink>;
+      </RouteLink>
+    );
+  }else{
+    signOutButton = (
+
+          <Button bg="transparent" border="1px" onClick={signOut}>
+            Sign-out
+          </Button>
+    )
+
   }
   return (
     <Flex
@@ -34,9 +52,12 @@ function TopNav(props) {
       {...props}
     >
       <Flex align="center" mr={5}>
-        <Heading as="h1" size="md" letterSpacing={"-.1rem"}>
-          Deerhunt Infrastructure
-        </Heading>
+        <RouteLink to="/">
+          <Heading as="h1" size="md" letterSpacing={"-.1rem"}>
+            Deerhunt Infrastructure
+          </Heading>
+        </RouteLink>
+
       </Flex>
 
       <Box display={{ base: "block", md: "none" }} onClick={handleToggle}>
@@ -60,11 +81,11 @@ function TopNav(props) {
         <RouteLink to="/events">
           <MenuItems>Events</MenuItems>
         </RouteLink>
-        <RouteLink to="/myevents">
+        <RouteLink to={props.isloggedin ? "/myevents" : "/login"}>
           <MenuItems>My Events</MenuItems>
         </RouteLink>
-        <RouteLink to="/team">
-          <MenuItems>Team</MenuItems>
+        <RouteLink to="/teams">
+          <MenuItems>Teams</MenuItems>
         </RouteLink>
       </Box>
 
@@ -73,6 +94,12 @@ function TopNav(props) {
         mt={{ base: 4, md: 0 }}
       >
         {loginButton}
+      </Box>
+      <Box
+        display={{ base: show ? "block" : "none", md: "block" }}
+        mt = {{ base: 4, md: 0}}
+      >
+        {signOutButton}
       </Box>
     </Flex>
   );
