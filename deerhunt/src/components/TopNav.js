@@ -57,7 +57,6 @@ function TopNav(props) {
             Deerhunt Infrastructure
           </Heading>
         </RouteLink>
-
       </Flex>
 
       <Box display={{ base: "block", md: "none" }} onClick={handleToggle}>

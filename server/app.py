@@ -16,28 +16,33 @@ from server.Routes.Consumer.Consumer import ConsumerRoute
 
 from server.Routes.Events.Events import EventRoute
 from server.Routes.Match.Match import MatchRoute
+from server.Routes.Submissions.Submissions import SubmissionsRoute
 from server.Routes.Teams.Teams import TeamsRoute
+from server.Routes.Teams.UserTeams import UserTeamsRoute
 
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
 # Initializing user auth routes
-api.add_resource(UserRoute, '/api/user')
-api.add_resource(UserAuthRoute, '/api/user/auth')
-api.add_resource(VerifyRoute, '/api/user/verify/<code>')
-api.add_resource(ChangePasswordRoute, '/api/user/changepassword')
-api.add_resource(ForgotPasswordRoute, '/api/user/forgotpassword')
-api.add_resource(ForgotPasswordResetRoute, '/api/user/forgotpassword/<code>')
-api.add_resource(AdminAuthRoute, '/api/admin/auth')
-api.add_resource(AmIAuthRoute, '/api/amiauth')
-api.add_resource(UserInfoRoute, '/api/user/info')
+api.add_resource(UserRoute, "/api/user")
+api.add_resource(UserAuthRoute, "/api/user/auth")
+api.add_resource(VerifyRoute, "/api/user/verify/<code>")
+api.add_resource(ChangePasswordRoute, "/api/user/changepassword")
+api.add_resource(ForgotPasswordRoute, "/api/user/forgotpassword")
+api.add_resource(ForgotPasswordResetRoute, "/api/user/forgotpassword/<code>")
+api.add_resource(AdminAuthRoute, "/api/admin/auth")
+api.add_resource(AmIAuthRoute, "/api/amiauth")
+api.add_resource(UserInfoRoute, "/api/user/info")
 
 # Initializing other routes
-api.add_resource(EventRoute, '/api/events')
-api.add_resource(TeamsRoute, '/api/teams')
 api.add_resource(ConsumerRoute, '/api/requests')
 api.add_resource(MatchRoute, '/api/match')
+api.add_resource(EventRoute, "/api/events")
+api.add_resource(UserTeamsRoute, "/api/user/teams")
+api.add_resource(TeamsRoute, "/api/teams")
+api.add_resource(SubmissionsRoute, "/api/submissions")
+app.debug = True
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app.run()
