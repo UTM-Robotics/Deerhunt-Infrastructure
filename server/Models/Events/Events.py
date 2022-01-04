@@ -7,11 +7,11 @@ class EventsModel:
         self.endtime = None
         self.created_timestamp = None
 
-    def set_id(self, event_id) -> None:
-        self.eventid = event_id
+    def set_id(self, _id) -> None:
+        self._id = _id
 
-    def get_id(self) -> str:
-        return self.eventid
+    def get_id(self):
+        return self._id
 
     def set_name(self, name) -> None:
         self.name = name
