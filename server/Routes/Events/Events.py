@@ -29,7 +29,7 @@ class EventRoute(Resource):
         "endtime", type=str, required=True, help="This field cannot be left blank"
     )
 
-    # flask parser for post request
+    # flask parser for get request
     get_parser = reqparse.RequestParser()
     get_parser.add_argument(
         "game", type=str, required=False, help="If not provided, return all events"

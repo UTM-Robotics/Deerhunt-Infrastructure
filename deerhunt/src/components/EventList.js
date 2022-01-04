@@ -18,7 +18,7 @@ import { Link } from "react-router-dom";
 import axios from "../config/config.js";
 
 export default function EventList() {
-  const [eventsData, setEventsData] = useState(null);
+  const [eventsData, setEventsData] = useState([]);
 
   useEffect(() => {
     axios.get("/api/events").then((response) => {
