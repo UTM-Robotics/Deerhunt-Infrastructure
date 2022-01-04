@@ -18,4 +18,5 @@ class Configuration:
     ADMIN_USERNAME=os.getenv("ADMIN_USERNAME")
     ADMIN_PASSWORD=os.getenv("ADMIN_PASSWORD")
     AZURE_KEY = os.getenv("AZURE_KEY")
+    CONSUMER_TOKEN = os.getenv("CONSUMER_TOKEN")
     
