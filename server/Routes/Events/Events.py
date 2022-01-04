@@ -20,6 +20,9 @@ class EventRoute(Resource):
         "game", type=str, required=True, help="This field cannot be left blank"
     )
     parser.add_argument(
+        "description", type=str, required=True, help="This field cannot be left blank"
+    )
+    parser.add_argument(
         "starttime", type=str, required=True, help="This field cannot be left blank"
     )
     parser.add_argument(
@@ -37,7 +40,7 @@ class EventRoute(Resource):
         data = EventRoute.parser.parse_args()
         with EventsManager(data["name"]) as admineventmanager:
             result = admineventmanager.create_event(
-                data["game"], data["starttime"], data["endtime"]
+                data["game"], data["description"], data["starttime"], data["endtime"]
             )
             if result:
                 return make_response(
@@ -57,7 +60,6 @@ class EventRoute(Resource):
                             return make_response(dumps(event), HTTPStatus.OK)
                     abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Event does not exist")
                 return make_response(dumps(result), HTTPStatus.OK)
-
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not get events list")
 
     # Flask parser for delete request
