@@ -54,6 +54,7 @@ class EventsModel:
         return {
             "name": self.get_name(),
             "game": self.get_game(),
+            "description": self.get_description(),
             "starttime": self.get_starttime(),
             "endtime": self.get_endtime(),
             "eventid": self.get_eventid(),
