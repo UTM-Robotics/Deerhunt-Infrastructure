@@ -13,40 +13,66 @@ class EventRoute(Resource):
 
     # flask parser for post request
     parser = reqparse.RequestParser()
-    parser.add_argument('name', type=str, required=True, help='This field cannot be left blank')
-    parser.add_argument('game', type=str, required=True, help='This field cannot be left blank')
-    parser.add_argument('starttime', type=str, required=True, help='This field cannot be left blank')
-    parser.add_argument('endtime', type=str, required=True, help='This field cannot be left blank')
+    parser.add_argument(
+        "name", type=str, required=True, help="This field cannot be left blank"
+    )
+    parser.add_argument(
+        "game", type=str, required=True, help="This field cannot be left blank"
+    )
+    parser.add_argument(
+        "starttime", type=str, required=True, help="This field cannot be left blank"
+    )
+    parser.add_argument(
+        "endtime", type=str, required=True, help="This field cannot be left blank"
+    )
+
+    # flask parser for post request
+    get_parser = reqparse.RequestParser()
+    get_parser.add_argument(
+        "game", type=str, required=False, help="If not provided, return all events"
+    )
 
     @Admin_auth.login_required
     def post(self):
         data = EventRoute.parser.parse_args()
-        with EventsManager(data['name']) as admineventmanager:
-            result = admineventmanager.create_event(data['game'],
-                                                    data['starttime'],
-                                                    data['endtime'])
+        with EventsManager(data["name"]) as admineventmanager:
+            result = admineventmanager.create_event(
+                data["game"], data["starttime"], data["endtime"]
+            )
             if result:
-                return make_response(jsonify({'message': 'Event Created'}), HTTPStatus.CREATED)
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
+                return make_response(
+                    jsonify({"message": "Event Created"}), HTTPStatus.CREATED
+                )
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not create new event")
 
-
+    # Get either a list of all events or details for a specific event if a "game" parameter is provided
     def get(self):
         with EventsManager() as admineventmanager:
             result = admineventmanager.get_events()
             if result:
+                data = EventRoute.get_parser.parse_args()
+                if data["game"]:
+                    for event in result:
+                        if event["game"] == data["game"]:
+                            return make_response(dumps(event), HTTPStatus.OK)
+                    abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Event does not exist")
                 return make_response(dumps(result), HTTPStatus.OK)
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not get events list')
+
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not get events list")
 
     # Flask parser for delete request
     delete_parser = reqparse.RequestParser()
-    delete_parser.add_argument('name', type=str, required=True, help='This field cannot be left blank')
+    delete_parser.add_argument(
+        "name", type=str, required=True, help="This field cannot be left blank"
+    )
 
     @Admin_auth.login_required
     def delete(self):
         data = EventRoute.delete_parser.parse_args()
-        with EventsManager(data['name']) as adminmanager:
+        with EventsManager(data["name"]) as adminmanager:
             result = adminmanager.delete()
             if result:
-                return make_response(jsonify({'message': 'Event Deleted'}), HTTPStatus.OK)
-            abort(HTTPStatus.NOT_ACCEPTABLE, 'Could not delete event')
-            
+                return make_response(
+                    jsonify({"message": "Event Deleted"}), HTTPStatus.OK
+                )
+            abort(HTTPStatus.NOT_ACCEPTABLE, "Could not delete event")

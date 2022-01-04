@@ -12,10 +12,10 @@ import TopNav from "../components/TopNav";
 import TeamsPanel from "../components/TeamsPanel";
 import { useParams } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
+import EventDetailsPanel from "../components/EventDetailsPanel";
 
 const EventUserPage = () => {
   let { event } = useParams();
-  console.log(event);
   return (
     <>
       <TopNav />
@@ -33,7 +33,7 @@ const EventUserPage = () => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <p>Test</p>
+            <EventDetailsPanel event={event} />
           </TabPanel>
           <TabPanel>
             <p>Test</p>

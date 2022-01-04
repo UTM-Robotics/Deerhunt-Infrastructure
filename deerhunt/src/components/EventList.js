@@ -18,11 +18,10 @@ import { Link } from "react-router-dom";
 import axios from "../config/config.js";
 
 export default function EventList() {
-  const [eventsData, setEventsData] = useState([]);
+  const [eventsData, setEventsData] = useState(null);
 
   useEffect(() => {
     axios.get("/api/events").then((response) => {
-      console.log(response);
       setEventsData(response.data);
     });
   }, []);
@@ -36,8 +35,8 @@ export default function EventList() {
     <Grid
       templateColumns={{
         base: "repeat(1, 1fr)",
-        md: "repeat(3, 1fr)",
-        lg: "repeat(5, 1fr)",
+        md: "repeat(2, 1fr)",
+        lg: "repeat(3, 1fr)",
       }}
       gap={6}
       m={6}
