@@ -12,15 +12,25 @@ import {
 import { FaEdit } from "react-icons/fa";
 import axios from "../config/config.js";
 
-const TeamsTable = () => {
+const TeamsTable = (props) => {
   const [teamsData, setTeamsData] = useState([]);
   const [membersList, setMembersList] = useState([]);
 
-  useEffect(() => {
-    axios.get("/api/teams").then((response) => {
-      setTeamsData(response.data[0]);
-      setMembersList(response.data[0].members);
+  const findEvent = () => {
+    axios.get("/api/events").then((response) => {
+      const event = response.data.find((event) => {
+        return event.game === props.event;
+      });
     });
+  };
+
+  useEffect(() => {
+    axios
+      .get("/api/teams", { params: { game: props.event } })
+      .then((response) => {
+        setTeamsData(response.data);
+        setMembersList(response.data.members);
+      });
   }, []);
 
   return (
