@@ -20,6 +20,7 @@ class TeamsManager:
             self.team.set_members(result['members'])
             self.team.set_event_id(result['event_id'])
             self.team.set_last_submission_timestamp(['last_submission_timestamp'])
+            self.team.set_last_challenge_timestamp(result['last_challenge_timestamp'])
             self.team.set_created_timestamp(result['created_timestamp'])
             self.found = True
         else:
@@ -57,6 +58,9 @@ class TeamsManager:
         for i in ids:
             tmp.append(self.db.find_one({"_id": i}))
         return tmp
+
+    def find_team_by_id(self, id):
+        return self.db.find_one({'_id': id})
     
     def commit(self):
         query = {'name': self.team.get_name()}
@@ -65,5 +69,8 @@ class TeamsManager:
             self.db.update_one(query, {'$set': data})
         else:
             self.db.update_one(query, {"$setOnInsert": data}, upsert=True)
-
-
+    
+    def commit_data(self, data):
+        query = {'_id': data['_id']}
+        self.db.update_one(query, {'$set': data})
+        

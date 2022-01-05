@@ -23,7 +23,6 @@ def test_general_login(request, flaskaddr, receive_email):
         test.save_var('JWT_TOKEN_USER', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
-'''
 def test_challenge(request, flaskaddr):
     #email, _ = split(receive_email)
     with BaseTester() as test:
@@ -32,8 +31,10 @@ def test_challenge(request, flaskaddr):
                 json={'name': 'Battlecode', 'team1_id': '61d53a19dfd074d4783b18ac',                       'team2_id':'61d5401b732eca2411190bed'},
                             headers={'Authorization': f'Bearer {token}'})
         print(r.text)
+
 '''
 def test_consume_match(request, flaskaddr, receive_email):
     r = requests.get(f'http://{flaskaddr}/api/requests',
                     json={'event_id': '61d5387adfd074d4783aa8ad', 'token': 'blabla'})
     print(r.text)
+'''
