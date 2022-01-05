@@ -39,7 +39,7 @@ class EventRoute(Resource):
         data = EventRoute.parser.parse_args()
         with EventsManager(data['name']) as eventmanager:
             result = eventmanager.create_event(data['game'],
-                                               data["description"]
+                                               data["description"],
                                                data['starttime'],
                                                data['endtime'])
         if result:
