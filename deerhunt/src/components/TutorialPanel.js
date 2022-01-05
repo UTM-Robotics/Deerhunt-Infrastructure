@@ -17,11 +17,7 @@ const TutorialPanel = (props) => {
 
   return (
     <div>
-      <ReactMarkdown
-        components={ChakraUIRenderer()}
-        children={tutorial}
-        skipHtml
-      />
+      <ReactMarkdown components={ChakraUIRenderer()} children={tutorial} />
     </div>
   );
 };

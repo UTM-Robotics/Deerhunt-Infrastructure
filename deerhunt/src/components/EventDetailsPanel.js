@@ -15,13 +15,13 @@ const EventDetailsPanel = (props) => {
 
   return (
     <Stack>
-      <Heading size={"md"}>Game</Heading>
+      <Heading>Game</Heading>
       <Text>{eventData.game}</Text>
-      <Heading size={"md"}>Description</Heading>
+      <Heading>Description</Heading>
       <Text>{eventData.description}</Text>
-      <Heading size={"md"}>Start Time</Heading>
+      <Heading>Start Time</Heading>
       <Text>{eventData.starttime}</Text>
-      <Heading size={"md"}>End Time</Heading>
+      <Heading>End Time</Heading>
       <Text>{eventData.endtime}</Text>
     </Stack>
   );
