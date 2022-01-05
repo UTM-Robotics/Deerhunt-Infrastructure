@@ -9,14 +9,13 @@ from server.Managers.Auth.UserManager import User_auth
 
 
 class TeamsRoute(Resource):
-    parser = reqparse.RequestParser()
-    parser.add_argument('name', type=str, required=True, help='This field cannot be left blank')
-
     @User_auth.login_required
     def post(self):
-        TeamsRoute.parser.add_argument('event_id', type=str, required=True,
+        parser = reqparse.RequestParser()
+        parser.add_argument('name', type=str, required=True,
+                        help='This field cannot be left blank')
+        parser.add_argument('event_id', type=str, required=True,
                             help='This field cannot be left blank')
-        TeamsRoute.parser.add_argument('members', type=str, required=True)
         data = TeamsRoute.parser.parse_args()
         with TeamsManager(data['name']) as teamsmanager:
             result = teamsmanager.create_team(data, User_auth.current_user())

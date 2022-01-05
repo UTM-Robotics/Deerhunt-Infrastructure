@@ -17,6 +17,7 @@ from server.Routes.Consumer.Consumer import ConsumerRoute
 from server.Routes.Events.Events import EventRoute
 from server.Routes.Match.Match import MatchRoute
 from server.Routes.Submissions.Submissions import SubmissionsRoute
+from server.Routes.Teams.Team import TeamRoute
 from server.Routes.Teams.Teams import TeamsRoute
 from server.Routes.Teams.UserTeams import UserTeamsRoute
 
@@ -41,6 +42,7 @@ api.add_resource(MatchRoute, '/api/match')
 api.add_resource(EventRoute, "/api/events")
 api.add_resource(UserTeamsRoute, "/api/user/teams")
 api.add_resource(TeamsRoute, "/api/teams")
+api.add_resource(TeamRoute, "/api/team")
 api.add_resource(SubmissionsRoute, "/api/submissions")
 app.debug = True
 
