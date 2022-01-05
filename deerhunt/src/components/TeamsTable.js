@@ -11,18 +11,11 @@ import {
 } from "@chakra-ui/react";
 import { FaEdit } from "react-icons/fa";
 import axios from "../config/config.js";
+import AddTeamModal from "./AddTeamModal.js";
 
 const TeamsTable = (props) => {
   const [teamsData, setTeamsData] = useState([]);
   const [membersList, setMembersList] = useState([]);
-
-  const findEvent = () => {
-    axios.get("/api/events").then((response) => {
-      const event = response.data.find((event) => {
-        return event.game === props.event;
-      });
-    });
-  };
 
   useEffect(() => {
     axios
