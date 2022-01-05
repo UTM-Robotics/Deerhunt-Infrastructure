@@ -23,6 +23,9 @@ class EventRoute(Resource):
         "description", type=str, required=True, help="This field cannot be left blank"
     )
     parser.add_argument(
+        "tutorial", type=str, required=True, help="This field cannot be left blank"
+    )
+    parser.add_argument(
         "starttime", type=str, required=True, help="This field cannot be left blank"
     )
     parser.add_argument(
@@ -40,7 +43,11 @@ class EventRoute(Resource):
         data = EventRoute.parser.parse_args()
         with EventsManager(data["name"]) as admineventmanager:
             result = admineventmanager.create_event(
-                data["game"], data["description"], data["starttime"], data["endtime"]
+                data["game"],
+                data["description"],
+                data["tutorial"],
+                data["starttime"],
+                data["endtime"],
             )
             if result:
                 return make_response(

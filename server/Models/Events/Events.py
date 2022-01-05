@@ -26,6 +26,12 @@ class EventsModel:
     def get_description(self) -> str:
         return self.description
 
+    def set_tutorial(self, tutorial) -> None:
+        self.tutorial = tutorial
+
+    def get_tutorial(self) -> str:
+        return self.tutorial
+
     def set_starttime(self, starttime):
         self.starttime = starttime
 
@@ -55,6 +61,7 @@ class EventsModel:
             "name": self.get_name(),
             "game": self.get_game(),
             "description": self.get_description(),
+            "tutorial": self.get_tutorial(),
             "starttime": self.get_starttime(),
             "endtime": self.get_endtime(),
             "eventid": self.get_eventid(),
