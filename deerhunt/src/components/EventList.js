@@ -42,7 +42,7 @@ export default function EventList() {
       m={6}
     >
       {eventsData.map((eventItem) => (
-        <Link to={`/events/${eventItem.name}`}>
+        <Link to={`/events/${eventItem.game}`}>
           <GridItem>
             <Box>
               <Box
@@ -80,7 +80,7 @@ export default function EventList() {
                     fontSize={"2xl"}
                     fontFamily={"body"}
                   >
-                    {eventItem.name}
+                    {eventItem.game}
                   </Heading>
                   <Text color={"gray.500"} fontSize={"sm"}>
                     {eventItem.description}
