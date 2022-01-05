@@ -49,11 +49,12 @@ class EventsManager:
     def get_events(self):
         return self.all_events
 
-    def create_event(self, game, starttime, endtime):
+    def create_event(self, game, description, starttime, endtime):
         if not self.found and not self.all_events:
             self.event.set_game(game)
-            self.event.set_starttime("")
-            self.event.set_endtime("")
+            self.event.set_description(description)
+            self.event.set_starttime(starttime)
+            self.event.set_endtime(endtime)
             self.event.set_created_timestamp(str(datetime.utcnow()))
             self.commit()
             return True

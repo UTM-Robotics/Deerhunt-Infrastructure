@@ -26,8 +26,9 @@ def test_create_event(request, flaskaddr):
     with BaseTester() as test:
         token = test.get_var('JWT_TOKEN_ADMIN').rstrip()
         r = requests.post(f'http://{flaskaddr}/api/events', 
-                        json={'name': 'Showdown 2', 
+                        json={'name': 'Showdown 3', 
                               'game': 'Battlecode',
+                              'description': 'The greatest showdown of all time',
                               'starttime': '',
                               'endtime': '',},
                         headers={'Authorization': f'Bearer {token}'})

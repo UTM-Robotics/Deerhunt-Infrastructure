@@ -1,6 +1,7 @@
 from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
 from flask_restful import Resource, reqparse
+from server.Managers.Leaderboard.LeaderboardManager import LeaderboardManager
 
 from server.Managers.Matches.MatchResultManager import MatchResultManager
 from server.config import Configuration
@@ -20,6 +21,9 @@ class MatchRoute(Resource):
             return abort(HTTPStatus.UNAUTHORIZED)
         with MatchResultManager() as matchmanager:
             if matchmanager.create_match(data):
+                with LeaderboardManager() as leaderboardmanager:
+                    all_team_ids = leaderboardmanager.get_leaderboard(data['event_id'])
+                    leaderboardmanager.update_leaderboard(all_team_ids, data)
                 return make_response(jsonify({'message': 'Successfully created a match record'}), HTTPStatus.OK)
             else:
                 raise SystemError("Error occurs when create match record")

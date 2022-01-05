@@ -61,6 +61,12 @@ class TeamsManager:
         if self.team.get_name():
             return self.db.find_one({'name': self.team.get_name()})
         return False
+
+    def find_teams(self, ids):
+        tmp = []
+        for i in ids:
+            tmp.append(self.db.find_one({"_id": i}))
+        return tmp
     
     def commit(self):
         query = {'name': self.team.get_name()}
