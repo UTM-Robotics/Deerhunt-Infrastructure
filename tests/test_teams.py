@@ -38,10 +38,10 @@ def test_create_team(request, flaskaddr):
         token = test.get_var('JWT_TOKEN_USER').rstrip()
         test.save_var('JWT_TOKEN_USER', token)
         r = requests.post(f'http://{flaskaddr}/api/teams',
-                json={'name': 'Battlecode', 'event_id': '61d5387adfd074d4783aa8ad', 'members': ['janice@gmail.com nick@gmail.com']},
+                json={'name': 'Moose', 'event_name': 'Battlecode'},
                           headers={'Authorization': f'Bearer {token}'})
-        test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
-
+        print(r.text)
+'''
 # Getting a team details
 def test_get_team(request, flaskaddr):
     with BaseTester() as test:
@@ -52,3 +52,4 @@ def test_get_team(request, flaskaddr):
         print(r.status_code)
         print(r.text)
         #test.run(request.node.name, f'HTTP_Status: {r.status_code}')
+'''
