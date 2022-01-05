@@ -32,7 +32,7 @@ const EditTeamModal = (props) => {
               <Text fontWeight={700}>Team members:</Text>
               <List>
                 {props.teamsData[0].members.map((member, index) => (
-                  <ListItem>{member}</ListItem>
+                  <ListItem key={index}>{member}</ListItem>
                 ))}
               </List>
               <InputGroup mt={3}>

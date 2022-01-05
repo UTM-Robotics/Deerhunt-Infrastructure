@@ -36,7 +36,7 @@ const Leaderboard = () => {
       </Thead>
       <Tbody>
         {mockData.map((team, index) => (
-          <Tr>
+          <Tr key={index}>
             <Td>{index + 1}</Td>
             <Td>{team.name}</Td>
             <Td>

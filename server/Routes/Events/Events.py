@@ -28,6 +28,12 @@ class EventRoute(Resource):
         "endtime", type=str, required=True, help="This field cannot be left blank"
     )
 
+    # flask parser for get request
+    get_parser = reqparse.RequestParser()
+    get_parser.add_argument(
+        "game", type=str, required=False, help="If not provided, return all events"
+    )
+
     @Admin_auth.login_required
     def post(self):
         data = EventRoute.parser.parse_args()
@@ -44,10 +50,17 @@ class EventRoute(Resource):
             return make_response(jsonify({'message': 'Event Created'}), HTTPStatus.CREATED)
         abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
 
+    # Get either a list of all events or details for a specific event if a "game" parameter is provided
     def get(self):
         with EventsManager() as eventmanager:
             result = eventmanager.get_events()
             if result:
+                data = EventRoute.get_parser.parse_args()
+                if data["game"]:
+                    for event in result:
+                        if event["game"] == data["game"]:
+                            return make_response(dumps(event), HTTPStatus.OK)
+                    abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Event does not exist")
                 return make_response(dumps(result), HTTPStatus.OK)
             abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not get events list")
 
