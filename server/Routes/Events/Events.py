@@ -22,6 +22,9 @@ class EventRoute(Resource):
         "description", type=str, required=True, help="This field cannot be left blank"
     )
     parser.add_argument(
+        "tutorial", type=str, required=True, help="This field cannot be left blank"
+    )
+    parser.add_argument(
         "starttime", type=str, required=True, help="This field cannot be left blank"
     )
     parser.add_argument(
@@ -37,18 +40,26 @@ class EventRoute(Resource):
     @Admin_auth.login_required
     def post(self):
         data = EventRoute.parser.parse_args()
-        with EventsManager(data['name']) as eventmanager:
-            result = eventmanager.create_event(data['game'],
-                                               data["description"],
-                                               data['starttime'],
-                                               data['endtime'])
-        if result:
+        with EventsManager(data["name"]) as admineventmanager:
+            result = admineventmanager.create_event(
+                data["game"],
+                data["description"],
+                data["tutorial"],
+                data["starttime"],
+                data["endtime"],
+            )
             with EventsManager(data['name']) as eventmanager:
-                event_dict = eventmanager.get_event_data()
-            with LeaderboardManager() as leaderboardmanager:
-                leaderboardmanager.create_event_leaderboard(event_dict)
-            return make_response(jsonify({'message': 'Event Created'}), HTTPStatus.CREATED)
-        abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
+                result = eventmanager.create_event(data['game'],
+                                                   data["description"],
+                                                   data['starttime'],
+                                                   data['endtime'])
+            if result:
+                with EventsManager(data['name']) as eventmanager:
+                    event_dict = eventmanager.get_event_data()
+                with LeaderboardManager() as leaderboardmanager:
+                    leaderboardmanager.create_event_leaderboard(event_dict)
+                return make_response(jsonify({'message': 'Event Created'}), HTTPStatus.CREATED)
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not create new event')
 
     # Get either a list of all events or details for a specific event if a "game" parameter is provided
     def get(self):
