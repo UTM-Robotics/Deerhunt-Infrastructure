@@ -23,6 +23,7 @@ export default function EventList() {
   useEffect(() => {
     axios.get("/api/events").then((response) => {
       setEventsData(response.data);
+      console.log(response.data);
     });
   }, []);
 
@@ -71,7 +72,7 @@ export default function EventList() {
                   </Text>
                   <CountDownTimer date={eventItem.starttime} />
                   <Heading
-                    color={useColorModeValue("gray.700", "white")}
+                    color="gray.700"
                     fontSize={"2xl"}
                     fontFamily={"body"}
                   >
@@ -89,7 +90,9 @@ export default function EventList() {
                     <Image src={MCSSLogo} layout={"flex"} />
                   </Avatar>
                   <Stack direction={"column"} spacing={0} fontSize={"sm"}>
-                    <Text fontWeight={600}>Hosted by</Text>
+                    <Text color={"gray.600"} fontWeight={600}>
+                      Hosted by
+                    </Text>
                     <Text color={"gray.500"}>UTM Robotics and MCSS</Text>
                   </Stack>
                 </Stack>
