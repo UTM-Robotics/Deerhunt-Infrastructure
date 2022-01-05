@@ -32,17 +32,16 @@ def test_general_login(request, flaskaddr, receive_email):
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
 
-'''
 # Testing creating a new team.
 def test_create_team(request, flaskaddr):
     with BaseTester() as test:
         token = test.get_var('JWT_TOKEN_USER').rstrip()
         test.save_var('JWT_TOKEN_USER', token)
         r = requests.post(f'http://{flaskaddr}/api/teams',
-                json={'name': 'Battlecode', 'event_id': '612ebdbc35dbeeffdd417559', 'members': ['janice@gmail.com nick@gmail.com']},
+                json={'name': 'Battlecode', 'event_id': '61d5387adfd074d4783aa8ad', 'members': ['janice@gmail.com nick@gmail.com']},
                           headers={'Authorization': f'Bearer {token}'})
         test.run(request.node.name, f'{r.text}HTTP_Status: {r.status_code}')
-'''
+
 # Getting a team details
 def test_get_team(request, flaskaddr):
     with BaseTester() as test:

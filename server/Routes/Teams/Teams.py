@@ -6,6 +6,7 @@ from bson.json_util import dumps
 from server.Managers.Events.AdminEvents import EventsManager
 
 from server.Managers.Teams.TeamsManager import TeamsManager
+from server.Managers.Leaderboard.LeaderboardManager import LeaderboardManager
 from server.Managers.Auth.UserManager import User_auth
 
 
@@ -30,18 +31,31 @@ class TeamsRoute(Resource):
             "event_id", type=str, required=True, help="This field cannot be left blank"
         )
         TeamsRoute.parser.add_argument("members", type=str, required=True)
+
+    @User_auth.login_required
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument(
+            "name", type=str, required=True, help="This field cannot be left blank"
+        )
+        parser.add_argument(
+            "event_id", type=str, required=True, help="This field cannot be left blank"
+        )
         data = TeamsRoute.parser.parse_args()
         with TeamsManager(data["name"]) as teamsmanager:
             result = teamsmanager.create_team(data, User_auth.current_user())
-            if result:
-                return make_response(
-                    jsonify({"message": "Team created successfuly."}),
-                    HTTPStatus.CREATED,
-                )
-            abort(
-                HTTPStatus.UNPROCESSABLE_ENTITY,
-                "Team with provided name already exists.",
+        if result:
+            with TeamsManager(data["name"]) as teamsmanager:
+                team_data = teamsmanager.find_team()
+            with LeaderboardManager() as leaderboardmanager:
+                leaderboardmanager.add_to_leaderboard(team_data)
+            return make_response(
+                jsonify({"message": "Team created successfuly."}),
+                HTTPStatus.CREATED,
             )
+        abort(
+            HTTPStatus.UNPROCESSABLE_ENTITY, "Team with provided name already exists."
+        )
 
     @User_auth.login_required
     def get(self):
