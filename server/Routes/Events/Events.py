@@ -65,10 +65,8 @@ class EventRoute(Resource):
             result = eventmanager.get_events()
             if result:
                 data = EventRoute.get_parser.parse_args()
-                print(data)
                 if data["game"]:
                     for event in result:
-                        print(event)
                         if event["game"] == data["game"]:
                             return make_response(dumps(event), HTTPStatus.OK)
                     abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Event does not exist")

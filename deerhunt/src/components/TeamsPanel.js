@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Button, useDisclosure } from "@chakra-ui/react";
 import SubmissionForm from "./SubmissionForm";
 
@@ -32,13 +32,13 @@ export default function TeamsPanel(props) {
         console.log(response);
       })
       .catch(() => {});
-  }, [])
+  }, []);
   return (
     <Box>
       <Box textAlign="left">
-        <Button m={4} onClick={onOpen}>
+        {/* <Button m={4} onClick={onOpen}>
           Create a New Team
-        </Button>
+        </Button> */}
         <AddTeamModal isOpen={isOpen} onClose={onClose} />
         <TeamsTable />
         <SubmissionForm submissionCallback={Submit} />
