@@ -7,6 +7,7 @@ from server.Managers.Events.AdminEvents import EventsManager
 
 from server.Managers.Teams.TeamsManager import TeamsManager
 from server.Managers.Leaderboard.LeaderboardManager import LeaderboardManager
+from server.Managers.Events.AdminEvents import EventsManager
 from server.Managers.Auth.UserManager import User_auth
 
 
@@ -32,20 +33,26 @@ class TeamsRoute(Resource):
             "name", type=str, required=True, help="This field cannot be left blank"
         )
         parser.add_argument(
-            "event_id", type=str, required=True, help="This field cannot be left blank"
+            "event_name",
+            type=str,
+            required=True,
+            help="This field cannot be left blank",
         )
-        data = TeamsRoute.parser.parse_args()
+        data = parser.parse_args()
+        with EventsManager(data["event_name"]) as eventmanager:
+            eventdata = eventmanager.find_event()
+            data["event_id"] = eventdata["_id"]
         with TeamsManager(data["name"]) as teamsmanager:
             result = teamsmanager.create_team(data, User_auth.current_user())
-        if result:
-            with TeamsManager(data["name"]) as teamsmanager:
-                team_data = teamsmanager.find_team()
-            with LeaderboardManager() as leaderboardmanager:
-                leaderboardmanager.add_to_leaderboard(team_data)
-            return make_response(
-                jsonify({"message": "Team created successfuly."}),
-                HTTPStatus.CREATED,
-            )
+            if result:
+                with TeamsManager(data["name"]) as teamsmanager:
+                    team_data = teamsmanager.find_team()
+                with LeaderboardManager() as leaderboardmanager:
+                    leaderboardmanager.add_to_leaderboard(team_data)
+                return make_response(
+                    jsonify({"message": "Team created successfuly."}),
+                    HTTPStatus.CREATED,
+                )
         abort(
             HTTPStatus.UNPROCESSABLE_ENTITY, "Team with provided name already exists."
         )

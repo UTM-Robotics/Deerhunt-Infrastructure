@@ -35,6 +35,7 @@ def test_get_leaderboard(request, flaskaddr, receive_email):
                         json={'event_id': '61d5387adfd074d4783aa8ad'},
                         headers={'Authorization': f'Bearer {token}'})
         print(r.text)
+'''
 def test_swap(request, flaskaddr, receive_email):
     email, _ = split(receive_email)
     r = requests.post(f'http://{flaskaddr}/api/match',
@@ -60,3 +61,4 @@ def test_get_leaderboard2(request, flaskaddr, receive_email):
                         json={'event_id': '61d5387adfd074d4783aa8ad'},
                         headers={'Authorization': f'Bearer {token}'})
         print(r.text)
+'''

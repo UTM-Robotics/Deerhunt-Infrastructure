@@ -1,16 +1,11 @@
 import pytest
 import requests
-import time
 import json
-import imaplib
 
 from .testbase import BaseTester,  \
     filter_link, \
     read_link,   \
     filter_jwt_token
-IMAP_SERVER = 'imap.gmail.com'
-
-# Just a function to be used by a lot of tests
 
 
 def split(string):
@@ -18,9 +13,6 @@ def split(string):
     username = temp[0]
     password = temp[1]
     return username, password
-
-
-
 
 # Testing normal login now with the user in the database.
 def test_general_login(request, flaskaddr, receive_email):
@@ -31,25 +23,18 @@ def test_general_login(request, flaskaddr, receive_email):
         test.save_var('JWT_TOKEN_USER', json.loads(r.text)['token'])
         output = filter_jwt_token(r.text)
         test.run(request.node.name, f'{output}HTTP_Status: {r.status_code}')
+def test_challenge(request, flaskaddr):
+    #email, _ = split(receive_email)
+    with BaseTester() as test:
+        token = test.get_var('JWT_TOKEN_USER').rstrip()
+        r = requests.post(f'http://{flaskaddr}/api/requests',
+                json={'name': 'Battlecode', 'team1_id': '61d53a19dfd074d4783b18ac',                       'team2_id':'61d5401b732eca2411190bed'},
+                            headers={'Authorization': f'Bearer {token}'})
+        print(r.text)
 
-# Testing creating a new team.
-def test_create_team(request, flaskaddr):
-    with BaseTester() as test:
-        token = test.get_var('JWT_TOKEN_USER').rstrip()
-        test.save_var('JWT_TOKEN_USER', token)
-        r = requests.post(f'http://{flaskaddr}/api/teams',
-                json={'name': 'Moose', 'event_name': 'Battlecode'},
-                          headers={'Authorization': f'Bearer {token}'})
-        print(r.text)
 '''
-# Getting a team details
-def test_get_team(request, flaskaddr):
-    with BaseTester() as test:
-        token = test.get_var('JWT_TOKEN_USER').rstrip()
-        test.save_var('JWT_TOKEN_USER', token)
-        r = requests.get(f'http://{flaskaddr}/api/teams',
-                         headers={'Authorization': f'Bearer {token}'})
-        print(r.status_code)
-        print(r.text)
-        #test.run(request.node.name, f'HTTP_Status: {r.status_code}')
+def test_consume_match(request, flaskaddr, receive_email):
+    r = requests.get(f'http://{flaskaddr}/api/requests',
+                    json={'event_id': '61d5387adfd074d4783aa8ad', 'token': 'blabla'})
+    print(r.text)
 '''
