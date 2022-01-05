@@ -35,8 +35,7 @@ class App extends React.Component {
       .then((resp) => {
         this.setState({ email: resp.data.email });
       })
-      .catch((err) => {
-      });
+      .catch((err) => {});
   }
 
   handleLogin(user) {
@@ -44,8 +43,7 @@ class App extends React.Component {
     history.push("/");
   }
 
-  handleSignup(user) {
-  }
+  handleSignup(user) {}
 
   handleAdminLogin(user) {
     this.setState({ username: user });
@@ -58,7 +56,10 @@ class App extends React.Component {
         <Switch>
           <Route path="/login" component={() => <HomeLoggedIn />} exact />
           <Route path="/" component={() => <HomeLoggedIn />} exact />
-          <Route path="/events" component={EventsPage} />
+          <Route exact path="/events" component={EventsPage} />
+          <Route exact path="/events/:event">
+            <EventUserPage />
+          </Route>
           <Route path="/myevents" component={MyEventsPage} />
           <Route path="/teams" component={TeamsPage} />
           <Route path="/admin" component={Admin} />

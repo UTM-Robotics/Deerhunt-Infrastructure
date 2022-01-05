@@ -26,11 +26,6 @@ export default function EventList() {
     });
   }, []);
 
-  const convertDate = (dateString) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US").format(date);
-  };
-
   return (
     <Grid
       templateColumns={{
@@ -74,7 +69,7 @@ export default function EventList() {
                   >
                     Coming in:
                   </Text>
-                  <CountDownTimer date={convertDate(eventItem.starttime)} />
+                  <CountDownTimer date={eventItem.starttime} />
                   <Heading
                     color={useColorModeValue("gray.700", "white")}
                     fontSize={"2xl"}

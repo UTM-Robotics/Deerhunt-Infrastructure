@@ -1,19 +1,7 @@
-import React, { useState } from "react";
-import { FaEllipsisV } from "react-icons/fa";
-import {
-  VStack,
-  Text,
-  IconButton,
-  Tooltip,
-  Tr,
-  Td,
-  Tbody,
-  Table,
-  Thead,
-  Th,
-  useDisclosure,
-} from "@chakra-ui/react";
-import EditTeamModal from "./EditTeamModal";
+import React, { useState, useEffect } from "react";
+import { Heading, Stack, Text, IconButton, Tooltip } from "@chakra-ui/react";
+import { FaEdit } from "react-icons/fa";
+import axios from "../config/config.js";
 
 const mockTeamsData = [
   {
@@ -28,44 +16,28 @@ const mockTeamsData = [
 ];
 
 const TeamsTable = () => {
-  const [teamsData, setTeamsData] = useState(mockTeamsData);
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [teamsData, setTeamsData] = useState([]);
+
+  useEffect(() => {
+    axios.get("/api/teams").then((response) => {
+      setTeamsData(response.data);
+      console.log(response.data);
+    });
+  }, []);
+
   return (
-    <Table variant="simple" size={"md"}>
-      <Thead>
-        <Tr>
-          <Th>Team name </Th>
-          <Th>Team owner</Th>
-          <Th>Team members</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        {teamsData.map((team, index) => (
-          <Tr key={index}>
-            <Td>{team.team}</Td>
-            <Td>{team.owner}</Td>
-            <Td>
-              <VStack alignItems={"left"}>
-                <Text>{team.members[0]}</Text>
-                <Text>{team.members[1]}</Text>
-                <Text>{team.members[2]}</Text>
-              </VStack>
-            </Td>
-            <Td>
-              <Tooltip label="Edit team">
-                <IconButton icon={<FaEllipsisV />} onClick={onOpen} />
-              </Tooltip>
-              <EditTeamModal
-                isOpen={isOpen}
-                isClose={onClose}
-                teamsData={teamsData}
-              />
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
+    <Stack m={4}>
+      <Heading>
+        Current Team:{" "}
+        <Tooltip label="Edit team">
+          <IconButton icon={<FaEdit />} />
+        </Tooltip>
+      </Heading>
+      <Heading size={"lg"}>Owner</Heading>
+      <Text>Test</Text>
+      <Heading size={"lg"}>Members</Heading>
+      <Text>Test</Text>
+    </Stack>
   );
 };
 
