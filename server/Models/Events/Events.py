@@ -3,6 +3,7 @@ class EventsModel:
         self._id = None
         self.name = name
         self.game = None
+        self.description = None
         self.starttime = None
         self.endtime = None
         self.created_timestamp = None
@@ -24,6 +25,12 @@ class EventsModel:
 
     def get_game(self):
         return self.game
+
+    def set_description(self, description) -> None:
+        self.description = description
+
+    def get_description(self) -> str:
+        return self.description
 
     def set_starttime(self, starttime):
         self.starttime = starttime
@@ -48,6 +55,7 @@ class EventsModel:
             return {'_id': self.get_id(),
                     'name': self.get_name(),
                     'game': self.get_game(),
+                    'description': self.get_description(),
                     'starttime': self.get_starttime(),
                     'endtime': self.get_endtime(),
                     'created_timestamp': self.get_created_timestamp()
@@ -55,7 +63,9 @@ class EventsModel:
         else:
             return {'name': self.get_name(),
                     'game': self.get_game(),
+                    'description': self.get_description(),
                     'starttime': self.get_starttime(),
                     'endtime': self.get_endtime(),
                     'created_timestamp': self.get_created_timestamp()
                     }
+          
