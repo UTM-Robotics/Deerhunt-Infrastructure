@@ -57,7 +57,7 @@ const CreateTeam = (props) => {
                 <Input
                   type="email"
                   placeholder="Enter the first member's email"
-                  {...register("email", {
+                  {...register("members", {
                     required: false,
                   })}
                 />
@@ -67,7 +67,7 @@ const CreateTeam = (props) => {
                 <Input
                   type="email"
                   placeholder="Enter the second member's email"
-                  {...register("email", {
+                  {...register("members", {
                     required: false,
                   })}
                 />
@@ -77,7 +77,7 @@ const CreateTeam = (props) => {
                 <Input
                   type="email"
                   placeholder="Enter the third member's email"
-                  {...register("email", {
+                  {...register("members", {
                     required: false,
                   })}
                 />

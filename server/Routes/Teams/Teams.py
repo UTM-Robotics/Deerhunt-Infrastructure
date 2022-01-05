@@ -27,13 +27,6 @@ class TeamsRoute(Resource):
 
     @User_auth.login_required
     def post(self):
-        TeamsRoute.parser.add_argument(
-            "event_id", type=str, required=True, help="This field cannot be left blank"
-        )
-        TeamsRoute.parser.add_argument("members", type=str, required=True)
-
-    @User_auth.login_required
-    def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument(
             "name", type=str, required=True, help="This field cannot be left blank"
