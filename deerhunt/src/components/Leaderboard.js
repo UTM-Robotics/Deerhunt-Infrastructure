@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Table,
   Thead,
@@ -9,19 +9,22 @@ import {
   TableCaption,
   Button,
 } from "@chakra-ui/react";
+import axios from "../config/config.js";
 
-const Leaderboard = () => {
-  const mockData = [
-    {
-      name: "Team A",
-    },
-    {
-      name: "Team B",
-    },
-    {
-      name: "Team C",
-    },
-  ];
+const Leaderboard = (props) => {
+  const [leaderboard, setLeaderboard] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("/api/leaderboard", {
+        params: { name: props.event },
+      })
+      .then((response) => {
+        setLeaderboard(response.data);
+        console.log(response.data);
+      });
+  }, []);
+
   return (
     <Table>
       <TableCaption>
@@ -35,7 +38,7 @@ const Leaderboard = () => {
         </Tr>
       </Thead>
       <Tbody>
-        {mockData.map((team, index) => (
+        {leaderboard.map((team, index) => (
           <Tr key={index}>
             <Td>{index + 1}</Td>
             <Td>{team.name}</Td>

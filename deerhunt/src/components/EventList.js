@@ -5,7 +5,6 @@ import {
   Text,
   Stack,
   Avatar,
-  useColorModeValue,
   Image,
   Grid,
   GridItem,

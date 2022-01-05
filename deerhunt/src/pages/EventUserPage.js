@@ -40,7 +40,7 @@ const EventUserPage = () => {
             <TutorialPanel event={event} />
           </TabPanel>
           <TabPanel>
-            <Leaderboard />
+            <Leaderboard event={event} />
           </TabPanel>
           <TabPanel>
             <TeamsPanel event={event} />
