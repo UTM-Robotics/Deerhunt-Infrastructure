@@ -19,7 +19,7 @@ class TeamsManager:
             self.team.set_owner(result['owner'])
             self.team.set_members(result['members'])
             self.team.set_event_id(result['event_id'])
-            self.team.set_last_submission_timestamp(['last_submission_timestamp'])
+            self.team.set_last_submission_timestamp(result['last_submission_timestamp'])
             self.team.set_created_timestamp(result['created_timestamp'])
             self.found = True
         else:
@@ -57,9 +57,9 @@ class TeamsManager:
         for i in ids:
             tmp.append(self.db.find_one({"_id": i}))
         return tmp
-    
+
     def commit(self):
-        query = {'name': self.team.get_name()}
+        query = {'_id': self.team.get_id()}
         data = self.team.covert_to_dict()
         if self.found:
             self.db.update_one(query, {'$set': data})

@@ -32,7 +32,7 @@ class TeamsModel:
         if not re.fullmatch(email_regex, owner):
             raise TypeError("Must be a valid email")
         self.owner = owner
-    
+
     def get_owner(self):
         return self.owner
 
@@ -61,6 +61,9 @@ class TeamsModel:
 
     def get_submissions(self) -> List[str]:
         return self.submissions
+
+    def set_submissions(self, submissions: List[str]) -> None:
+        self.submissions = submissions
 
     def set_created_timestamp(self, time) -> None:
         self.created_timestamp = time
