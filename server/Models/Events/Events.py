@@ -1,12 +1,18 @@
 class EventsModel:
-    def __init__(self, name):
+    def __init__(self, name=None):
+        self._id = None
         self.name = name
         self.game = None
         self.description = None
         self.starttime = None
         self.endtime = None
         self.created_timestamp = None
-        self.eventid = None
+
+    def set_id(self, _id) -> None:
+        self._id = _id
+
+    def get_id(self):
+        return self._id
 
     def set_name(self, name) -> None:
         self.name = name
@@ -50,20 +56,25 @@ class EventsModel:
     def get_created_timestamp(self) -> str:
         return self.created_timestamp
 
-    def set_eventid(self, eventid) -> None:
-        self.eventid = eventid
-
-    def get_eventid(self) -> str:
-        return self.eventid
-
     def covert_to_dict(self) -> dict:
-        return {
-            "name": self.get_name(),
-            "game": self.get_game(),
-            "description": self.get_description(),
-            "tutorial": self.get_tutorial(),
-            "starttime": self.get_starttime(),
-            "endtime": self.get_endtime(),
-            "eventid": self.get_eventid(),
-            "created_timestamp": self.get_created_timestamp(),
-        }
+        if self.get_id():
+            return {
+                "_id": self.get_id(),
+                "name": self.get_name(),
+                "game": self.get_game(),
+                "description": self.get_description(),
+                "tutorial": self.get_tutorial(),
+                "starttime": self.get_starttime(),
+                "endtime": self.get_endtime(),
+                "created_timestamp": self.get_created_timestamp(),
+            }
+        else:
+            return {
+                "name": self.get_name(),
+                "game": self.get_game(),
+                "description": self.get_description(),
+                "tutorial": self.get_tutorial(),
+                "starttime": self.get_starttime(),
+                "endtime": self.get_endtime(),
+                "created_timestamp": self.get_created_timestamp(),
+            }
