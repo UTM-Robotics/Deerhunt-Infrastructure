@@ -83,6 +83,7 @@ class TeamsModel:
                     'members': self.get_members(),
                     'event_id': self.get_event_id(),
                     'last_submission_timestamp': self.get_last_submission_timestamp(),
+                    'last_challenge_timestamp': self.get_last_challenge_timestamp(),
                     'submissions': self.get_submissions(),
                     'created_timestamp': self.get_created_timestamp()
                     }
@@ -92,6 +93,7 @@ class TeamsModel:
                     'members': self.get_members(),
                     'event_id': self.get_event_id(),
                     'last_submission_timestamp': self.get_last_submission_timestamp(),
+                    'last_challenge_timestamp': self.get_last_challenge_timestamp(),
                     'submissions': self.get_submissions(),
                     'created_timestamp': self.get_created_timestamp()
                     }
