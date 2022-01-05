@@ -41,7 +41,7 @@ function SubmissionForm(props) {
               <Box
                 borderWidth={3}
                 borderRadius={"lg"}
-                _hover={{ background: "gray.200" }}
+                _hover={{ borderColor: "blue.200" }}
                 {...getRootProps()}
               >
                 <Input {...getInputProps()} />
