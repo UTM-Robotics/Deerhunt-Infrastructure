@@ -16,29 +16,14 @@ from bson.objectid import ObjectId
 
 # TODO: testing and refactoring
 class SubmissionsRoute(Resource):
-    parser_post = reqparse.RequestParser()
-    parser_post.add_argument('team_id', type=str, required=True,
-                             help='This field cannot be left blank')
-    # parser_post.add_argument('event_id', type=str, required=True,
-    #                          help='This field cannot be left blank')
-    # parser_post.add_argument('file', type=werkzeug.FileStorage,
-    #                          location='files', required=True,
-    #                          help='This field cannot be left blank')
-
-    parser_get = reqparse.RequestParser()
-    parser_get.add_argument('team_id', type=str, required=True,
-                            help='This field cannot be left blank')
-    # parser_get.add_argument('event_id', type=str, required=True,
-    #                         help='This field cannot be left blank')
+    parser = reqparse.RequestParser()
+    parser.add_argument('team_id', type=str, required=True, help='This field cannot be left blank')
 
     @User_auth.login_required
     def post(self):
-        data = SubmissionsRoute.parser_post.parse_args()
+        data = SubmissionsRoute.parser.parse_args()
         user_file = request.files['file']
-        # print(user_file)
-        # print(data)
         is_zip = user_file.filename.endswith('.zip')
-        # print(is_zip)
 
         if not is_zip:
             return make_response(jsonify({'message': 'File must be a zip file'}), 400)
@@ -50,7 +35,12 @@ class SubmissionsRoute(Resource):
                 return make_response(jsonify({'message': 'Please verify your email first'}), 401)
             user_email = usermanager.user.get_email()
         with TeamsManager() as teamsmanager:
-            teams = teamsmanager.find_teams([ObjectId(data['team_id'])])
+            try:
+                id_object = ObjectId(data['team_id'])
+            except:
+                return make_response(jsonify({'message': 'Invalid team id'}), 400)
+
+            teams = teamsmanager.find_teams([id_object])
             print(teams)
             print(type(teams))
             if not teams:
@@ -71,7 +61,6 @@ class SubmissionsRoute(Resource):
             if user_email not in team['members']:
                 return make_response(jsonify({'message': 'You are not part of this team'}), 401)
 
-            # print(str(team['event_id']))
             with EventsManager() as eventsmanager:
                 events = eventsmanager.find_event()
                 filtered_events = [event for event in events if event['_id'] == ObjectId(team['event_id'])]
@@ -79,8 +68,13 @@ class SubmissionsRoute(Resource):
                     return make_response(jsonify({'message': 'Event not found'}), 404)
 
                 event = filtered_events[0]
-                # print(event)
-                # TODO: check if event submission is open
+
+                start_time = datetime.fromisoformat(event['starttime'])
+                end_time = datetime.fromisoformat(event['endtime'])
+
+                if (not start_time < datetime.now() < end_time) or (not event['submission_open']):
+                    return make_response(jsonify({'message': 'Submission is not open'}), 401)
+
             if team['last_submission_timestamp'] is not None:
                 print("checking last_submission_timestamp")
                 timestamp = team['last_submission_timestamp']
@@ -89,10 +83,8 @@ class SubmissionsRoute(Resource):
 
             blob_storage = BlobStorageModel()
             container = blob_storage.get_container(str(event['_id']))
-            # print("existing-container", container)
             if not container:
                 container = blob_storage.create_container(str(event['_id']))
-                # print("new-container", container)
 
             if team['submissions']:
                 last_submission = sorted(team['submissions'])[-1]
@@ -110,8 +102,7 @@ class SubmissionsRoute(Resource):
 
     @User_auth.login_required
     def get(self):
-        data = SubmissionsRoute.parser_get.parse_args()
-        user_email = ''
+        data = SubmissionsRoute.parser.parse_args()
         with UserManager(User_auth.current_user()) as usermanager:
             if not usermanager.found:
                 return make_response(jsonify({'message': 'User not found'}), 404)
@@ -119,21 +110,54 @@ class SubmissionsRoute(Resource):
                 return make_response(jsonify({'message': 'Please verify your email first'}), 401)
             user_email = usermanager.user.get_email()
         with TeamsManager() as teamsmanager:
-            teamsmanager.get_by_id(data['team_id'])
+            try:
+                id_object = ObjectId(data['team_id'])
+            except:
+                return make_response(jsonify({'message': 'Invalid team id'}), 400)
 
-            if not teamsmanager.is_part_of_team(user_email):
+            teams = teamsmanager.find_teams([id_object])
+            print(teams)
+            print(type(teams))
+            if not teams:
+                return make_response(jsonify({'message': 'Team not found'}), 404)
+            team = teams[0]
+            print("team-type", type(team))
+            print(team)
+
+            teamsmanager.team.set_name(team['name'])
+            teamsmanager.team.set_id(team['_id'])
+            teamsmanager.team.set_owner(team['owner'])
+            teamsmanager.team.set_members(team['members'])
+            teamsmanager.team.set_event_id(team['event_id'])
+            teamsmanager.team.set_last_submission_timestamp(team['last_submission_timestamp'])
+            teamsmanager.team.set_created_timestamp(team['created_timestamp'])
+            teamsmanager.found = True
+
+            if user_email not in team['members']:
                 return make_response(jsonify({'message': 'You are not part of this team'}), 401)
 
-            blob_storage = BlobStorageModel()
-            container = blob_storage.get_container(data['event_id'])
-            if container is None:
-                return make_response(jsonify({'message': 'Event not found'}), 404)
+            with EventsManager() as eventsmanager:
+                events = eventsmanager.find_event()
+                filtered_events = [event for event in events if event['_id'] == ObjectId(team['event_id'])]
+                if not filtered_events:
+                    return make_response(jsonify({'message': 'Event not found'}), 404)
 
-            last_submission = sorted(teamsmanager.team.submissions)[-1]
+                event = filtered_events[0]
+
+            blob_storage = BlobStorageModel()
+            container = blob_storage.get_container(str(event['_id']))
+            if not container:
+                return make_response(jsonify({'message': 'No submissions found'}), 404)
+
+            if team['submissions']:
+                last_submission = sorted(team['submissions'])[-1]
+            else:
+                return make_response(jsonify({'message': 'No submissions found'}), 404)
+
             blob = container.get_blob_client(last_submission)
 
             user_submission = blob.download_blob().readall()
 
             # one of these two might work
-            return send_file(blob.download_blob(), attachment_filename=last_submission, as_attachment=True)
-            # return send_file(io.BytesIO(user_submission), attachment_filename=last_submission, as_attachment=True)
+            # return send_file(blob.download_blob(), attachment_filename=last_submission+".zip", as_attachment=True)
+            return send_file(io.BytesIO(user_submission), attachment_filename=last_submission, as_attachment=True)

@@ -23,6 +23,7 @@ class EventsManager:
             self.event.set_starttime(result['starttime'])
             self.event.set_endtime(result['endtime'])
             self.event.set_created_timestamp(result['created_timestamp'])
+            self.event.set_submission_open(result['submission_open'])
             self.found = True
         else:
             self.all_events = result
@@ -56,6 +57,7 @@ class EventsManager:
             self.event.set_starttime(starttime)
             self.event.set_endtime(endtime)
             self.event.set_created_timestamp(str(datetime.utcnow()))
+            self.event.set_submission_open(True)
             self.commit()
             return True
         return False
@@ -75,6 +77,6 @@ class EventsManager:
         query = {'name': self.event.get_name()}
         data = self.event.covert_to_dict()
         if self.found:
-            self.db.update_one(query, {'$set': data })
+            self.db.update_one(query, {'$set': data})
         else:
             self.db.update_one(query, {"$setOnInsert": data}, upsert=True)
