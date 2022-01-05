@@ -25,7 +25,7 @@ const CreateTeam = (props) => {
   async function CreateTeam(values) {
     var form = new FormData();
     form.append("name", values.name);
-    form.append("members", values.members);
+    form.append("event_name", props.event);
     await axios
       .post("api/teams", form)
       .then((response) => {
@@ -49,36 +49,6 @@ const CreateTeam = (props) => {
                   placeholder="Enter a team name"
                   {...register("name", {
                     required: "This is required",
-                  })}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Member 1</FormLabel>
-                <Input
-                  type="email"
-                  placeholder="Enter the first member's email"
-                  {...register("members", {
-                    required: false,
-                  })}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Member 1</FormLabel>
-                <Input
-                  type="email"
-                  placeholder="Enter the second member's email"
-                  {...register("members", {
-                    required: false,
-                  })}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel>Member 1</FormLabel>
-                <Input
-                  type="email"
-                  placeholder="Enter the third member's email"
-                  {...register("members", {
-                    required: false,
                   })}
                 />
               </FormControl>
