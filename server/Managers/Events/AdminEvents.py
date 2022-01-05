@@ -17,6 +17,7 @@ class EventsManager:
         # self.session = Mongo.start_session()
         result = self.find_event()
         if self.event.get_name() and result:
+            self.event.set_id(result['_id'])
             self.event.set_name(result['name'])
             self.event.set_game(result['game'])
             self.event.set_starttime(result['starttime'])
@@ -65,6 +66,9 @@ class EventsManager:
             else:
                 return False
         return False
+
+    def get_event_data(self):
+        return self.event.covert_to_dict()
 
     def commit(self):
         query = {'name': self.event.get_name()}
