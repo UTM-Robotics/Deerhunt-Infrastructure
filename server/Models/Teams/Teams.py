@@ -13,6 +13,7 @@ class TeamsModel:
         self.members = []
         self.event_id = None
         self.last_submission_timestamp = None
+        self.last_challenge_timestamp = None
         self.submissions: List[str] = []
         self.created_timestamp = None
 
@@ -55,6 +56,12 @@ class TeamsModel:
 
     def get_last_submission_timestamp(self) -> str:
         return self.last_submission_timestamp
+
+    def set_last_challenge_timestamp(self, time):
+        self.last_challenge_timestamp = time
+
+    def get_last_challenge_timestamp(self):
+        return self.last_challenge_timestamp
 
     def add_submission(self, submission: str) -> None:
         self.submissions.append(submission)

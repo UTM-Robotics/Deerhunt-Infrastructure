@@ -21,7 +21,7 @@ class MatchRequestManager:
         return self._id
 
     def pass_data(self, data) -> None:
-        self.request.set_teams(data['teams'])
+        self.request.set_teams([ObjectId(data['team1_id']), ObjectId(data['team2_id'])])
         self.request.set_event(data['event_id'])
 
     def create_request(self, data) -> bool:
@@ -39,15 +39,13 @@ class MatchRequestManager:
     def find_first_request(self, event_id):
         request = self.db.find_one({'event_id': ObjectId(event_id)})
         if request:
-            self._id = request['_id']
-            self.pass_data(request)
-            self.request.set_created_timestamp(request['created_timestamp'])
-            return self.request.covert_to_dict()
+            self.db.delete_one({'event_id': ObjectId(event_id)})
+            return request
         return None
     
     def find_request(self, data):
         request = self.db.find_one({'event_id': ObjectId(data['event_id']), 'teams': {
-                                   "$all": [ObjectId(data['teams'][0]), ObjectId(data['teams'][1])]}})
+                                   "$all": [ObjectId(data['team1_id']), ObjectId(data['team2_id'])]}})
         if request:
             self._id = request['_id']
             self.pass_data(data)
