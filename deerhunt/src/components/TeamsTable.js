@@ -8,12 +8,15 @@ import {
   UnorderedList,
   ListItem,
   Center,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { FaEdit } from "react-icons/fa";
 import axios from "../config/config.js";
 import AddTeamModal from "./AddTeamModal.js";
+import EditTeamModal from "./EditTeamModal.js";
 
 const TeamsTable = (props) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [teamsData, setTeamsData] = useState([]);
   const [membersList, setMembersList] = useState([]);
 
@@ -32,8 +35,13 @@ const TeamsTable = (props) => {
         <Heading>
           Current Team{" "}
           <Tooltip label="Edit team">
-            <IconButton icon={<FaEdit />} />
+            <IconButton icon={<FaEdit />} onClick={onOpen} />
           </Tooltip>
+          <EditTeamModal
+            isOpen={isOpen}
+            onClose={onClose}
+            teamsData={teamsData}
+          />
         </Heading>
         <Heading size={"lg"}>Name</Heading>
         <Text>{teamsData.name}</Text>
