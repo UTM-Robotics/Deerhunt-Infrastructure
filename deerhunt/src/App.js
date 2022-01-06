@@ -60,8 +60,8 @@ class App extends React.Component {
           <Route exact path="/events/:event">
             <EventUserPage />
           </Route>
-          <Route path="/myevents" component={MyEventsPage} />
-          <Route path="/teams" component={TeamsPage} />
+          {/*<Route path="/myevents" component={MyEventsPage} />*/}
+          {/*<Route path="/teams" component={TeamsPage} />*/}
           <Route path="/admin" component={Admin} />
           <Route component={NotFound} />
         </Switch>
@@ -87,8 +87,8 @@ class App extends React.Component {
           <Route exact path="/events/:event">
             <EventUserPage />
           </Route>
-          <Route path="/test" component={EventUserPage} />
-          <Route path="/amiauth" component={AmIAuthPage} />
+          {/*<Route path="/test" component={EventUserPage} />*/}
+          {/*<Route path="/amiauth" component={AmIAuthPage} />*/}
           <Route component={NotFound} />
         </Switch>
       );
