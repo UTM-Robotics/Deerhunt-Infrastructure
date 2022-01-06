@@ -26,7 +26,6 @@ const CreateTeam = (props) => {
     var form = new FormData();
     form.append("name", values.name);
     form.append("event_name", props.event);
-    console.log(values.name);
     await axios
       .post("api/teams", form)
       .then((response) => {

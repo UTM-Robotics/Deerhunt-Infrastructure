@@ -19,22 +19,18 @@ import {
 const EditTeamModal = (props) => {
   return (
     <>
-      <Modal isOpen={props.isOpen} onClose={props.isClose}>
+      <Modal isOpen={props.isOpen} onClose={props.onClose}>
         <ModalOverlay>
           <ModalContent>
             <ModalHeader>Edit Team</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
               <Text fontWeight={700}>{"Team name: "}</Text>
-              <Text>{props.teamsData[0].team}</Text>
+              <Text></Text>
               <Text fontWeight={700}>{"Team owner: "}</Text>
-              <Text>{props.teamsData[0].owner}</Text>
+              <Text></Text>
               <Text fontWeight={700}>Team members:</Text>
-              <List>
-                {props.teamsData[0].members.map((member, index) => (
-                  <ListItem key={index}>{member}</ListItem>
-                ))}
-              </List>
+
               <InputGroup mt={3}>
                 <Input placeholder="Enter member's email" />
                 <InputRightElement width="4.5rem">
