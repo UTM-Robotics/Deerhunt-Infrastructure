@@ -22,11 +22,11 @@ class UserAuthRoute(Resource):
         abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Username or Password is wrong')
 
 
-    # Deletes user from db
-    @User_auth.login_required
-    def delete(self):
-        with UserManager(User_auth.current_user()) as usermanager:
-            result = usermanager.delete()
-        if result:
-            return make_response(jsonify({'message': 'Account deleted'}), HTTPStatus.OK)
-        abort(HTTPStatus.NOT_ACCEPTABLE, 'Could not delete account')
+    # # Deletes user from db
+    # @User_auth.login_required
+    # def delete(self):
+    #     with UserManager(User_auth.current_user()) as usermanager:
+    #         result = usermanager.delete()
+    #     if result:
+    #         return make_response(jsonify({'message': 'Account deleted'}), HTTPStatus.OK)
+    #     abort(HTTPStatus.NOT_ACCEPTABLE, 'Could not delete account')
