@@ -1,71 +1,60 @@
-import React, { useState } from "react";
-import { FaEllipsisV } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
 import {
-  VStack,
+  Heading,
+  Stack,
   Text,
   IconButton,
   Tooltip,
-  Tr,
-  Td,
-  Tbody,
-  Table,
-  Thead,
-  Th,
+  UnorderedList,
+  ListItem,
+  Center,
   useDisclosure,
 } from "@chakra-ui/react";
-import EditTeamModal from "./EditTeamModal";
+import { FaEdit } from "react-icons/fa";
+import axios from "../config/config.js";
+import AddTeamModal from "./AddTeamModal.js";
+import EditTeamModal from "./EditTeamModal.js";
 
-const mockTeamsData = [
-  {
-    team: "Team A",
-    owner: "Joe@mail.utoronto.ca",
-    members: [
-      "Kat@mail.utoronto.ca",
-      "Diane@mail.utoronto.ca",
-      "Brandon@mail.utoronto.ca",
-    ],
-  },
-];
-
-const TeamsTable = () => {
-  const [teamsData, setTeamsData] = useState(mockTeamsData);
+const TeamsTable = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [teamsData, setTeamsData] = useState([]);
+  const [membersList, setMembersList] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("/api/teams", { params: { game: props.event } })
+      .then((response) => {
+        setTeamsData(response.data);
+        setMembersList(response.data.members);
+      });
+  }, []);
+
   return (
-    <Table variant="simple" size={"md"}>
-      <Thead>
-        <Tr>
-          <Th>Team name </Th>
-          <Th>Team owner</Th>
-          <Th>Team members</Th>
-          <Th />
-        </Tr>
-      </Thead>
-      <Tbody>
-        {teamsData.map((team, index) => (
-          <Tr key={index}>
-            <Td>{team.team}</Td>
-            <Td>{team.owner}</Td>
-            <Td>
-              <VStack alignItems={"left"}>
-                <Text>{team.members[0]}</Text>
-                <Text>{team.members[1]}</Text>
-                <Text>{team.members[2]}</Text>
-              </VStack>
-            </Td>
-            <Td>
-              <Tooltip label="Edit team">
-                <IconButton icon={<FaEllipsisV />} onClick={onOpen} />
-              </Tooltip>
-              <EditTeamModal
-                isOpen={isOpen}
-                isClose={onClose}
-                teamsData={teamsData}
-              />
-            </Td>
-          </Tr>
-        ))}
-      </Tbody>
-    </Table>
+    <Center>
+      <Stack m={4}>
+        <Heading>
+          Current Team{" "}
+          <Tooltip label="Edit team">
+            <IconButton icon={<FaEdit />} onClick={onOpen} />
+          </Tooltip>
+          <EditTeamModal
+            isOpen={isOpen}
+            onClose={onClose}
+            teamsData={teamsData}
+          />
+        </Heading>
+        <Heading size={"lg"}>Name</Heading>
+        <Text>{teamsData.name}</Text>
+        <Heading size={"lg"}>Owner</Heading>
+        <Text>{teamsData.owner}</Text>
+        <Heading size={"lg"}>Members</Heading>
+        <UnorderedList>
+          {membersList.map((member) => (
+            <ListItem>{member}</ListItem>
+          ))}
+        </UnorderedList>
+      </Stack>
+    </Center>
   );
 };
 

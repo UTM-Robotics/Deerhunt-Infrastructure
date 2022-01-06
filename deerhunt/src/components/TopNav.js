@@ -80,12 +80,12 @@ function TopNav(props) {
         <RouteLink to="/events">
           <MenuItems>Events</MenuItems>
         </RouteLink>
-        <RouteLink to={props.isloggedin ? "/myevents" : "/login"}>
-          <MenuItems>My Events</MenuItems>
-        </RouteLink>
-        <RouteLink to="/teams">
-          <MenuItems>Teams</MenuItems>
-        </RouteLink>
+        {/*<RouteLink to={props.isloggedin ? "/myevents" : "/login"}>*/}
+        {/*  <MenuItems>My Events</MenuItems>*/}
+        {/*</RouteLink>*/}
+        {/*<RouteLink to="/teams">*/}
+        {/*  <MenuItems>Teams</MenuItems>*/}
+        {/*</RouteLink>*/}
       </Box>
 
       <Box
