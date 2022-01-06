@@ -5,7 +5,6 @@ import {
   Text,
   Stack,
   Avatar,
-  useColorModeValue,
   Image,
   Grid,
   GridItem,
@@ -23,13 +22,9 @@ export default function EventList() {
   useEffect(() => {
     axios.get("/api/events").then((response) => {
       setEventsData(response.data);
+      console.log(response.data);
     });
   }, []);
-
-  const convertDate = (dateString) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat("en-US").format(date);
-  };
 
   return (
     <Grid
@@ -42,7 +37,7 @@ export default function EventList() {
       m={6}
     >
       {eventsData.map((eventItem) => (
-        <Link to={`/events/${eventItem.name}`}>
+        <Link to={`/events/${eventItem.game}`}>
           <GridItem>
             <Box>
               <Box
@@ -74,13 +69,13 @@ export default function EventList() {
                   >
                     Coming in:
                   </Text>
-                  <CountDownTimer date={convertDate(eventItem.starttime)} />
+                  <CountDownTimer date={eventItem.starttime} />
                   <Heading
-                    color={useColorModeValue("gray.700", "white")}
+                    color="gray.700"
                     fontSize={"2xl"}
                     fontFamily={"body"}
                   >
-                    {eventItem.name}
+                    {eventItem.game}
                   </Heading>
                   <Text color={"gray.500"} fontSize={"sm"}>
                     {eventItem.description}
@@ -94,7 +89,9 @@ export default function EventList() {
                     <Image src={MCSSLogo} layout={"flex"} />
                   </Avatar>
                   <Stack direction={"column"} spacing={0} fontSize={"sm"}>
-                    <Text fontWeight={600}>Hosted by</Text>
+                    <Text color={"gray.600"} fontWeight={600}>
+                      Hosted by
+                    </Text>
                     <Text color={"gray.500"}>UTM Robotics and MCSS</Text>
                   </Stack>
                 </Stack>
