@@ -7,6 +7,7 @@ class EventsModel:
         self.starttime = None
         self.endtime = None
         self.created_timestamp = None
+        self.submission_open = None
 
     def set_id(self, _id) -> None:
         self._id = _id
@@ -50,6 +51,12 @@ class EventsModel:
     def get_created_timestamp(self) -> str:
         return self.created_timestamp
 
+    def get_submission_open(self) -> bool:
+        return self.submission_open
+
+    def set_submission_open(self, submission_open: bool):
+        self.submission_open = submission_open
+
     def covert_to_dict(self) -> dict:
         if self.get_id():
             return {'_id': self.get_id(),
@@ -58,7 +65,8 @@ class EventsModel:
                     'description': self.get_description(),
                     'starttime': self.get_starttime(),
                     'endtime': self.get_endtime(),
-                    'created_timestamp': self.get_created_timestamp()
+                    'created_timestamp': self.get_created_timestamp(),
+                    'submission_open': self.get_submission_open()
                     }
         else:
             return {'name': self.get_name(),
@@ -66,6 +74,6 @@ class EventsModel:
                     'description': self.get_description(),
                     'starttime': self.get_starttime(),
                     'endtime': self.get_endtime(),
-                    'created_timestamp': self.get_created_timestamp()
+                    'created_timestamp': self.get_created_timestamp(),
+                    'submission_open': self.get_submission_open()
                     }
-          

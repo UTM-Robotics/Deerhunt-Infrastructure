@@ -23,7 +23,7 @@ class TeamManager:
             self.team.set_members(result['members'])
             self.team.set_event_id(result['event_id'])
             self.team.set_last_submission_timestamp(
-                ['last_submission_timestamp'])
+                result['last_submission_timestamp'])
             self.team.set_created_timestamp(result['created_timestamp'])
             self.found = True
         else:
@@ -54,7 +54,7 @@ class TeamManager:
         self.team.set_members(members)
         self.commit()
         return True
-    
+
     def leave_team(self, user: str):
         if len(self.team.members) == 1:
           return self.db.delete_one({'name': self.team.name})
@@ -64,7 +64,7 @@ class TeamManager:
         self.team.members.remove(user)
         self.commit()
         return True
-    
+
     def commit(self):
         query = {'name': self.team.get_name()}
         data = self.team.covert_to_dict()
