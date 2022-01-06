@@ -35,6 +35,7 @@ class CountDownTimer extends Component {
         fontWeight={800}
         fontSize={"sm"}
         letterSpacing={1.1}
+        color={"gray.700"}
       >
         Happening now!
       </Text>
@@ -44,6 +45,7 @@ class CountDownTimer extends Component {
         fontWeight={800}
         fontSize={"sm"}
         letterSpacing={1.1}
+        color={"gray.700"}
       >{`${days} ${dayString} ${hours} hours ${minutes}  minutes`}</Text>
     );
   }
