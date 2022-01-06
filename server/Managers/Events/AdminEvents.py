@@ -17,11 +17,13 @@ class EventsManager:
         # self.session = Mongo.start_session()
         result = self.find_event()
         if self.event.get_name() and result:
+            self.event.set_id(result['_id'])
             self.event.set_name(result['name'])
             self.event.set_game(result['game'])
             self.event.set_starttime(result['starttime'])
             self.event.set_endtime(result['endtime'])
             self.event.set_created_timestamp(result['created_timestamp'])
+            self.event.set_submission_open(result['submission_open'])
             self.found = True
         else:
             self.all_events = result
@@ -48,12 +50,14 @@ class EventsManager:
     def get_events(self):
         return self.all_events
 
-    def create_event(self, game, starttime, endtime):
+    def create_event(self, game, description, starttime, endtime):
         if not self.found and not self.all_events:
             self.event.set_game(game)
-            self.event.set_starttime("")
-            self.event.set_endtime("")
+            self.event.set_description(description)
+            self.event.set_starttime(starttime)
+            self.event.set_endtime(endtime)
             self.event.set_created_timestamp(str(datetime.utcnow()))
+            self.event.set_submission_open(True)
             self.commit()
             return True
         return False
@@ -66,10 +70,13 @@ class EventsManager:
                 return False
         return False
 
+    def get_event_data(self):
+        return self.event.covert_to_dict()
+
     def commit(self):
         query = {'name': self.event.get_name()}
         data = self.event.covert_to_dict()
         if self.found:
-            self.db.update_one(query, {'$set': data })
+            self.db.update_one(query, {'$set': data})
         else:
             self.db.update_one(query, {"$setOnInsert": data}, upsert=True)
