@@ -29,31 +29,33 @@ class TeamsRoute(Resource):
     @User_auth.login_required
     def post(self):
         parser = reqparse.RequestParser()
-        parser.add_argument('name', type=str, required=True,
-                        help='This field cannot be left blank')
-        parser.add_argument('event_name', type=str, required=True,
-                            help='This field cannot be left blank')
+        parser.add_argument(
+            "name", type=str, required=True, help="This field cannot be left blank"
+        )
+        parser.add_argument(
+            "event_name",
+            type=str,
+            required=True,
+            help="This field cannot be left blank",
+        )
         data = parser.parse_args()
-        with EventsManager(data['event_name']) as eventmanager:
+        with EventsManager(data["event_name"]) as eventmanager:
             eventdata = eventmanager.find_event()
-            data['event_id'] = eventdata['_id']
-        with TeamsManager(data['name']) as teamsmanager:
+            data["event_id"] = eventdata["_id"]
+        with TeamsManager(data["name"]) as teamsmanager:
             result = teamsmanager.create_team(data, User_auth.current_user())
             if result:
-                with TeamsManager(data['name']) as teamsmanager:
+                with TeamsManager(data["name"]) as teamsmanager:
                     team_data = teamsmanager.find_team()
                 with LeaderboardManager() as leaderboardmanager:
                     leaderboardmanager.add_to_leaderboard(team_data)
                 return make_response(
-                    jsonify(
-                        {
-                            "message": "Team created successfuly."
-                        }
-                    ),
+                    jsonify({"message": "Team created successfuly."}),
                     HTTPStatus.CREATED,
                 )
-        abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Team with provided name already exists.")
-
+        abort(
+            HTTPStatus.UNPROCESSABLE_ENTITY, "Team with provided name already exists."
+        )
 
     @User_auth.login_required
     def get(self):
@@ -81,8 +83,7 @@ class TeamsRoute(Resource):
                     dumps(result),
                     HTTPStatus.OK,
                 )
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Could not fetch teams of user.')
-
+            abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not fetch teams of user.")
 
     # @User_auth.login_required
     # def put(self):

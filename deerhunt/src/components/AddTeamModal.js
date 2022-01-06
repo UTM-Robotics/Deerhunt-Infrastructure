@@ -29,7 +29,7 @@ const CreateTeam = (props) => {
     await axios
       .post("api/teams", form)
       .then((response) => {
-        console.log(response);
+        console.log("Sucessfully created a team");
       })
       .catch(() => {});
   }
@@ -40,8 +40,9 @@ const CreateTeam = (props) => {
         <ModalContent>
           <ModalHeader>Create a New Team</ModalHeader>
           <ModalCloseButton />
-          <ModalBody>
-            <form onSubmit={handleSubmit(CreateTeam)}>
+
+          <form onSubmit={handleSubmit(CreateTeam)}>
+            <ModalBody>
               <FormControl>
                 <FormLabel>Team Name</FormLabel>
                 <Input
@@ -52,13 +53,13 @@ const CreateTeam = (props) => {
                   })}
                 />
               </FormControl>
-            </form>
-          </ModalBody>
-          <ModalFooter>
-            <Button isLoading={isSubmitting} type="submit">
-              Create Team
-            </Button>
-          </ModalFooter>
+            </ModalBody>
+            <ModalFooter>
+              <Button isLoading={isSubmitting} type="submit">
+                Create Team
+              </Button>
+            </ModalFooter>
+          </form>
         </ModalContent>
       </Modal>
     </>
