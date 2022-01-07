@@ -33,13 +33,15 @@ export default function TeamsPanel(props) {
       })
       .catch(() => {});
   }, []);
+
   return (
     <Box>
       <Box textAlign="left">
         <Button m={4} onClick={onOpen}>
           Create a New Team
+          <AddTeamModal isOpen={isOpen} onClose={onClose} event={props.event} />
         </Button>
-        <AddTeamModal isOpen={isOpen} onClose={onClose} event={props.event} />
+
         <TeamsTable event={props.event} />
         <SubmissionForm submissionCallback={Submit} />
       </Box>
