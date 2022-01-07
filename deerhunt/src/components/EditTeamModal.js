@@ -9,8 +9,6 @@ import {
   ModalFooter,
   Button,
   Text,
-  List,
-  ListItem,
   InputGroup,
   Input,
   InputRightElement,

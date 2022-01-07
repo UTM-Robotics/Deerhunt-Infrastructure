@@ -76,7 +76,7 @@ const Leaderboard = (props) => {
             <Td>
               <Button
                 onClick={
-                  myTeam._id != team._id ? (
+                  myTeam._id !== team._id ? (
                     getChallengeFunction(myTeam, team)
                   ) : (
                     <InvalidChallenge />

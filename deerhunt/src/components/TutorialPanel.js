@@ -1,4 +1,3 @@
-import { Text, Box } from "@chakra-ui/react";
 import axios from "../config/config.js";
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";

@@ -1,39 +1,49 @@
 import React from "react";
-import TopNav from "../components/TopNav";
-import { Heading, Box, Text } from "@chakra-ui/react";
-import axios from "../config/config";
+import { Box, Heading, Container, Text, Stack } from "@chakra-ui/react";
+import ConnectWithUs from "../components/ConnectWithUs";
 
-class Home extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.all_events = [];
-  }
-
-  get_events() {
-    axios
-      .get("api/events")
-      .then((resp) => {
-        /*console.log(resp.data);*/
-      })
-      .catch((err) => {
-        /*console.log(err);*/
-      });
-  }
-
-  render() {
-    console.log("rendering");
-    return (
-      <div>
-        <TopNav />
-        <Box textAlign="center" mt={"12px"}>
-          <Heading>The UTM AI Competition Hub</Heading>
-          <Text mt={"12px"}>Login to join the fun!</Text>
-        </Box>
-        {this.get_events()}
-      </div>
-    );
-  }
-}
+const Home = () => {
+  return (
+    <>
+      <Container maxW={"3xl"}>
+        <Stack
+          as={Box}
+          textAlign={"center"}
+          spacing={{ base: 6, md: 12 }}
+          py={{ base: 20, md: 36 }}
+        >
+          <Heading
+            fontWeight={700}
+            fontSize={{ base: "4xl", sm: "6xl", md: "8xl" }}
+            lineHeight={"110%"}
+          >
+            Deerhunt <br />
+            <Text as={"span"} color={"orange.400"}>
+              Infrastructure
+            </Text>
+          </Heading>
+          <Text color={"gray.500"}>
+            This is a project maintained by the Robotics Club at the University
+            of Toronto Mississauga. To learn more about this project, visit our
+            Github.
+          </Text>
+          <Text as="i" color={"gray.500"}>
+            Helping to bridge the gap between applied computer science and
+            robotics.
+          </Text>
+          <Stack
+            direction={"column"}
+            spacing={3}
+            align={"center"}
+            alignSelf={"center"}
+            position={"relative"}
+          >
+            <ConnectWithUs />
+          </Stack>
+        </Stack>
+      </Container>
+    </>
+  );
+};
 
 export default Home;
