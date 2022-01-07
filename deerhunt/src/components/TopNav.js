@@ -1,8 +1,7 @@
 import React from "react";
 import { Box, Heading, Flex, Text, Button } from "@chakra-ui/react";
 import { Link as RouteLink, useHistory } from "react-router-dom";
-
-
+import ColourModeToggle from "./ColourModeToggle";
 
 const MenuItems = ({ children }) => (
   <Text mt={{ base: 4, md: 0 }} mr={6} display="block">
@@ -17,10 +16,10 @@ function TopNav(props) {
   const signOut = () => {
     localStorage.clear();
     window.history.replaceState({}, document.title);
-    history.replace({ pathname: '/', state: {} });
+    history.replace({ pathname: "/", state: {} });
     window.location.reload(true);
-    history.push('/');
-  }
+    history.push("/");
+  };
   let loginButton;
   let signOutButton;
   if (!props.isloggedin) {
@@ -31,14 +30,12 @@ function TopNav(props) {
         </Button>
       </RouteLink>
     );
-  }else{
+  } else {
     signOutButton = (
-
-          <Button bg="transparent" border="1px" onClick={signOut}>
-            Sign-out
-          </Button>
-    )
-
+      <Button bg="transparent" border="1px" onClick={signOut}>
+        Sign-out
+      </Button>
+    );
   }
   return (
     <Flex
@@ -87,7 +84,6 @@ function TopNav(props) {
         {/*  <MenuItems>Teams</MenuItems>*/}
         {/*</RouteLink>*/}
       </Box>
-
       <Box
         display={{ base: show ? "block" : "none", md: "block" }}
         mt={{ base: 4, md: 0 }}
@@ -96,10 +92,11 @@ function TopNav(props) {
       </Box>
       <Box
         display={{ base: show ? "block" : "none", md: "block" }}
-        mt = {{ base: 4, md: 0}}
+        mt={{ base: 4, md: 0 }}
       >
         {signOutButton}
       </Box>
+      <ColourModeToggle />
     </Flex>
   );
 }
