@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Heading, Container, Text, Stack } from "@chakra-ui/react";
 import ConnectWithUs from "../components/ConnectWithUs";
+import axios from "../config/config.js";
 
-const Home = () => {
+const HomeLoggedIn = (props) => {
+  const [user, setUser] = useState("");
+
+  useEffect(() => {
+    axios.get("/api/user/info").then((response) => {
+      setUser(response.data.email);
+    });
+  }, []);
   return (
     <>
-      <Container maxW={"3xl"}>
+      <Container maxW={"5xl"}>
         <Stack
           as={Box}
           textAlign={"center"}
@@ -14,12 +22,12 @@ const Home = () => {
         >
           <Heading
             fontWeight={700}
-            fontSize={{ base: "4xl", sm: "6xl", md: "8xl" }}
+            fontSize={{ base: "2xl", sm: "4xl", md: "6xl" }}
             lineHeight={"110%"}
           >
-            Deerhunt <br />
+            Welcome back, <br />
             <Text as={"span"} color={"orange.400"}>
-              Infrastructure
+              {user}
             </Text>
           </Heading>
           <Text color={"gray.500"}>
@@ -46,4 +54,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeLoggedIn;
