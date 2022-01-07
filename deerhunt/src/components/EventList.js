@@ -22,7 +22,6 @@ export default function EventList() {
   useEffect(() => {
     axios.get("/api/events").then((response) => {
       setEventsData(response.data);
-      console.log(response.data);
     });
   }, []);
 
@@ -30,8 +29,8 @@ export default function EventList() {
     <Grid
       templateColumns={{
         base: "repeat(1, 1fr)",
-        md: "repeat(2, 1fr)",
-        lg: "repeat(3, 1fr)",
+        sm: "repeat(2, 1fr)",
+        md: "repeat(3, 1fr)",
       }}
       gap={6}
       m={6}
