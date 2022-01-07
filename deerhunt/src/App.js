@@ -147,7 +147,6 @@ class App extends React.Component {
   }
 }
 function RouteWrapper({ component: Component, layout: Layout, ...rest }) {
-  console.log(rest);
   return (
     <Route
       {...rest}

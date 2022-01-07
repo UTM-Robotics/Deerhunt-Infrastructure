@@ -1,7 +1,6 @@
 import React from "react";
 import { Box, Heading, Flex, Text, Button } from "@chakra-ui/react";
 import { Link as RouteLink, useHistory } from "react-router-dom";
-import ColourModeToggle from "./ColourModeToggle";
 
 const MenuItems = ({ children }) => (
   <Text mt={{ base: 4, md: 0 }} mr={6} display="block">
@@ -22,19 +21,19 @@ function TopNav(props) {
   };
   let loginButton;
   let signOutButton;
-  if (!props.isloggedin) {
+  if (localStorage.getItem("token")) {
+    signOutButton = (
+      <Button bg="transparent" border="1px" onClick={signOut}>
+        Sign-out
+      </Button>
+    );
+  } else {
     loginButton = (
       <RouteLink to="/login">
         <Button bg="transparent" border="1px">
           Login
         </Button>
       </RouteLink>
-    );
-  } else {
-    signOutButton = (
-      <Button bg="transparent" border="1px" onClick={signOut}>
-        Sign-out
-      </Button>
     );
   }
   return (
@@ -96,7 +95,6 @@ function TopNav(props) {
       >
         {signOutButton}
       </Box>
-      <ColourModeToggle />
     </Flex>
   );
 }

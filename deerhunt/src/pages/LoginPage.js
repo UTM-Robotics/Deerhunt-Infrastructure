@@ -3,7 +3,6 @@ import LoginForm from "../components/LoginForm";
 import { Flex, Stack, Image } from "@chakra-ui/react";
 import SignUpAlert from "../components/SignUpAlert";
 import background from "../images/background.png";
-import ColourModeToggle from "../components/ColourModeToggle";
 
 const LoginPage = (props) => {
   return (
@@ -21,7 +20,6 @@ const LoginPage = (props) => {
           <LoginForm onLogin={props.onLogin} />
         </Stack>
       </Flex>
-      <ColourModeToggle />
     </Stack>
   );
 };

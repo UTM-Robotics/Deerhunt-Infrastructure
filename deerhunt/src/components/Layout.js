@@ -11,10 +11,10 @@ const LoginLayout = ({ children }) => {
   );
 };
 
-const GeneralLayout = ({ children }) => {
+const GeneralLayout = ({ children }, props) => {
   return (
     <div>
-      <TopNav />
+      <TopNav isLoggedIn={props.isLoggedIn} />
       <ColourModeToggle />
       {children}
     </div>

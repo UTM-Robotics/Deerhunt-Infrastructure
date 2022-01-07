@@ -2,7 +2,6 @@ import React from "react";
 import AdminLoginForm from "../components/AdminLoginForm";
 import { Flex, Stack, Image } from "@chakra-ui/react";
 import background from "../images/background.png";
-import ColourModeToggle from "../components/ColourModeToggle";
 
 const AdminLoginPage = () => {
   return (
@@ -19,7 +18,6 @@ const AdminLoginPage = () => {
           <AdminLoginForm />
         </Stack>
       </Flex>
-      <ColourModeToggle />
     </Stack>
   );
 };

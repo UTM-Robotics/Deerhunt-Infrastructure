@@ -3,7 +3,6 @@ import SignUpForm from "../components/SignUpForm";
 import { Flex, Stack, Image } from "@chakra-ui/react";
 import SignUpAlert from "../components/SignUpAlert";
 import background from "../images/background.png";
-import ColourModeToggle from "../components/ColourModeToggle";
 
 export default function SignUpPage() {
   const [error1, setError] = useState(null);
@@ -22,7 +21,6 @@ export default function SignUpPage() {
           <SignUpForm error1={error1} setError={setError} />
         </Stack>
       </Flex>
-      <ColourModeToggle />
     </Stack>
   );
 }
