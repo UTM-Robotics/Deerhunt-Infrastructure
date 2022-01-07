@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Heading, useDisclosure } from "@chakra-ui/react";
 import SubmissionForm from "./SubmissionForm";
 
 import TeamsTable from "./TeamsTable";
@@ -27,24 +27,36 @@ export default function TeamsPanel(props) {
 
   useEffect(() => {
     axios
-      .get("api/user/info")
+      .get("/api/teams", { params: { game: props.event } })
       .then((response) => {
+        setTeamID(response.data._id["$oid"]);
         console.log(response);
       })
       .catch(() => {});
   }, []);
 
   return (
-    <Box>
-      <Box textAlign="left">
-        <Button m={4} onClick={onOpen}>
-          Create a New Team
-          <AddTeamModal isOpen={isOpen} onClose={onClose} event={props.event} />
-        </Button>
-
-        <TeamsTable event={props.event} />
-        <SubmissionForm submissionCallback={Submit} />
-      </Box>
+    <Box m={4}>
+      {teamID === "" ? (
+        <Box textAlign="center">
+          <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
+            You're not currently in a team for this event.
+          </Heading>
+          <Button m={4} onClick={onOpen}>
+            Create a New Team
+            <AddTeamModal
+              isOpen={isOpen}
+              onClose={onClose}
+              event={props.event}
+            />
+          </Button>
+        </Box>
+      ) : (
+        <Box textAlign={"center"}>
+          <TeamsTable event={props.event} />
+          <SubmissionForm submissionCallback={Submit} />
+        </Box>
+      )}
     </Box>
   );
 }
