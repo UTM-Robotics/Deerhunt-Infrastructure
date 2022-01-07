@@ -76,13 +76,21 @@ class App extends React.Component {
             component={EventsPage}
             layout={GeneralLayout}
           />
-          <RouteWrapper exact path="/events/:event" layout={GeneralLayout}>
-            <EventUserPage />
-          </RouteWrapper>
+          <RouteWrapper
+            exact
+            path="/events/:event"
+            component={EventUserPage}
+            layout={GeneralLayout}
+          />
+
           {/*<Route path="/myevents" component={MyEventsPage} />*/}
           {/*<Route path="/teams" component={TeamsPage} />*/}
-          <RouteWrapper path="/admin" component={Admin} />
-          <RouteWrapper component={NotFound} layout={LoginLayout} />
+          <Route path="/admin" component={Admin} />
+          <RouteWrapper
+            path="/notfound"
+            component={NotFound}
+            layout={LoginLayout}
+          />
         </Switch>
       );
     } else {
@@ -120,28 +128,36 @@ class App extends React.Component {
             component={EventsPage}
             layout={GeneralLayout}
           />
-          <RouteWrapper exact path="/events/:event" layout={GeneralLayout}>
-            <EventUserPage />
-          </RouteWrapper>
+          <RouteWrapper
+            exact
+            path="/events/:event"
+            component={EventUserPage}
+            layout={GeneralLayout}
+          />
           {/*<Route path="/test" component={EventUserPage} />*/}
           {/*<Route path="/amiauth" component={AmIAuthPage} />*/}
-          <RouteWrapper component={NotFound} layout={LoginLayout} />
+          <RouteWrapper
+            path="/notfound"
+            component={NotFound}
+            layout={LoginLayout}
+          />
         </Switch>
       );
     }
-    function RouteWrapper({ component: Component, layout: Layout, ...rest }) {
-      return (
-        <Route
-          {...rest}
-          render={(props) => (
-            <Layout {...props}>
-              <Component {...props} />
-            </Layout>
-          )}
-        />
-      );
-    }
   }
+}
+function RouteWrapper({ component: Component, layout: Layout, ...rest }) {
+  console.log(rest);
+  return (
+    <Route
+      {...rest}
+      render={(props) => (
+        <Layout {...props}>
+          <Component {...props} />
+        </Layout>
+      )}
+    />
+  );
 }
 
 export default App;

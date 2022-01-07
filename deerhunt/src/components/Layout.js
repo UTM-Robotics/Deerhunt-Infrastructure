@@ -4,24 +4,20 @@ import TopNav from "./TopNav";
 
 const LoginLayout = ({ children }) => {
   return (
-    <>
-      <div>
-        <ColourModeToggle />
-      </div>
-      <main>{children}</main>
-    </>
+    <div>
+      <ColourModeToggle />
+      {children}
+    </div>
   );
 };
 
 const GeneralLayout = ({ children }) => {
   return (
-    <>
-      <div>
-        <TopNav />
-        <ColourModeToggle />
-      </div>
-      <main>{children}</main>
-    </>
+    <div>
+      <TopNav />
+      <ColourModeToggle />
+      {children}
+    </div>
   );
 };
 
