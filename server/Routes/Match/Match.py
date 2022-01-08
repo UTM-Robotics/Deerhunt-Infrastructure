@@ -13,6 +13,7 @@ class MatchRoute(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument('token', type=str, required=True,
                             help='Must provide secret token to use this api')
+        parser.add_argument('match_id', type=str, required=True)
         parser.add_argument('event_id', type=str, required=True)
         parser.add_argument('winner_id', type=str, required=True)
         parser.add_argument('loser_id', type=str, required=True)
