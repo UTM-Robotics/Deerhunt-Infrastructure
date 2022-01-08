@@ -3,6 +3,8 @@ from http import HTTPStatus
 from flask import make_response, abort, jsonify
 from flask_restful import Resource, reqparse
 from bson.json_util import dumps
+
+from Managers.Teams.TeamManager import TeamManager
 from server.Managers.Events.AdminEvents import EventsManager
 
 from server.Managers.Teams.TeamsManager import TeamsManager
@@ -26,6 +28,14 @@ class TeamsRoute(Resource):
         help="If not provided, return all teams that the user is on",
     )
 
+    put_parser = reqparse.RequestParser()
+    put_parser.add_argument(
+        "name", type=str, required=False, help="This field cannot be left blank"
+    )
+    put_parser.add_argument(
+        "email", type=str, required=True, help="This field cannot be left blank"
+    )
+
     @User_auth.login_required
     def post(self):
         parser = reqparse.RequestParser()
@@ -40,22 +50,29 @@ class TeamsRoute(Resource):
         )
         data = parser.parse_args()
         with EventsManager(data["event_name"]) as eventmanager:
-            eventdata = eventmanager.find_event()
-            data["event_id"] = eventdata["_id"]
-        with TeamsManager(data["name"]) as teamsmanager:
-            result = teamsmanager.create_team(data, User_auth.current_user())
-            if result:
-                with TeamsManager(data["name"]) as teamsmanager:
-                    team_data = teamsmanager.find_team()
-                with LeaderboardManager() as leaderboardmanager:
-                    leaderboardmanager.add_to_leaderboard(team_data)
-                return make_response(
-                    jsonify({"message": "Team created successfuly."}),
-                    HTTPStatus.CREATED,
-                )
-        abort(
-            HTTPStatus.UNPROCESSABLE_ENTITY, "Team with provided name already exists."
-        )
+            pass
+            # eventdata = eventmanager.find_event()
+            # data["event_id"] = eventdata["_id"]
+            with TeamsManager(data["name"]) as teamsmanager:
+                teams = teamsmanager.get_teams(User_auth.current_user())
+                for team in teams:
+                    if team["event_id"] == eventmanager.event.get_id():
+                        return make_response(jsonify({"message": "You are already on a team for this event."}),
+                                             HTTPStatus.UNPROCESSABLE_ENTITY)
+                result = teamsmanager.create_team(str(eventmanager.event.get_id()), User_auth.current_user())
+                if result:
+                    with TeamsManager(data["name"]) as teamsmanager:
+                        team_data = teamsmanager.find_team()
+                        team_data["_id"] = str(team_data["_id"])
+                        team_data["event_id"] = str(team_data["event_id"])
+                        print(team_data)
+                        with LeaderboardManager() as leaderboardmanager:
+                            leaderboardmanager.add_to_leaderboard(team_data)
+                        return make_response(
+                            jsonify({"message": "Team created successfully.", "team": team_data}),
+                            HTTPStatus.CREATED,
+                        )
+            make_response(jsonify({"message": "Team with that name already exists."}), HTTPStatus.UNPROCESSABLE_ENTITY)
 
     @User_auth.login_required
     def get(self):
@@ -68,8 +85,8 @@ class TeamsRoute(Resource):
                     for event in result:
                         if event["game"] == data["game"]:
                             event_id = str(event["_id"])
-        if data["game"] != None and event_id == None:
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, "No event found")
+        if data["game"] is not None and event_id is None:
+            return make_response(jsonify({"message": "No event with that name exists."}), HTTPStatus.NOT_FOUND)
         with TeamsManager() as teamsmanager:
             result = teamsmanager.get_teams(User_auth.current_user())
 
@@ -78,30 +95,12 @@ class TeamsRoute(Resource):
                     for team in result:
                         if team["event_id"] == event_id:
                             return make_response(dumps(team), HTTPStatus.OK)
-                    abort(HTTPStatus.UNPROCESSABLE_ENTITY, "No team for this event")
+                    return make_response(jsonify({"message": "No teams for this event."}), HTTPStatus.NOT_FOUND)
                 return make_response(
                     dumps(result),
                     HTTPStatus.OK,
                 )
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not fetch teams of user.")
-
-    # @User_auth.login_required
-    # def put(self):
-    #     TeamsRoute.parser.add_argument('members', type=str, action="append")
-    #     TeamsRoute.parser.add_argument('event_id', type=str)
-    #     data = TeamsRoute.parser.parse_args()
-    #     with TeamsManager(data['name']) as teamsmanager:
-    #         if not teamsmanager.is_owner(User_auth.current_user()):
-    #             return abort(HTTPStatus.UNAUTHORIZED, 'You are not the owner of this team.')
-    #         result = teamsmanager.update_team(data)
-    #         if result:
-    #             return make_response(
-    #                 jsonify(
-    #                     {
-    #                         'message': 'Successfully update the team'
-    #                     }),
-    #                 HTTPStatus.OK)
-    #         return abort(HTTPStatus.BAD_REQUEST)
+            return make_response(jsonify({"message": "Could not fetch teams of user."}), HTTPStatus.UNPROCESSABLE_ENTITY)
 
     # @User_auth.login_required
     # def delete(self):

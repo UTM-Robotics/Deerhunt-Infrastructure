@@ -31,11 +31,11 @@ class TeamsManager:
         # self.session.end_session()  <- mongodb mutex unlock
         pass
 
-    def create_team(self, teamdata: dict, owner: str) -> bool:
+    def create_team(self, event_id: str, owner: str) -> bool:
         if not self.found:
             self.team.set_owner(owner)
             self.team.set_members([owner])
-            self.team.set_event_id(ObjectId(teamdata['event_id']))
+            self.team.set_event_id(ObjectId(event_id))
             self.team.set_created_timestamp(datetime.now())
             self.commit()
             return True

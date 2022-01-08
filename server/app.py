@@ -3,6 +3,8 @@ from flask_restful import Api
 from flask_cors import CORS
 
 # Importing Auth routes
+from Routes.Auth.UserTeamRoute import UserTeamRoute
+from Routes.Teams.AddTeam import AddTeam
 from server.Routes.Auth.AmIAuthRoute import AmIAuthRoute
 from server.Routes.Auth.UserInfoRoute import UserInfoRoute
 from server.Routes.Auth.UserRoute import UserRoute
@@ -19,7 +21,6 @@ from server.Routes.Match.Match import MatchRoute
 from server.Routes.Submissions.Submissions import SubmissionsRoute
 from server.Routes.Teams.Team import TeamRoute
 from server.Routes.Teams.Teams import TeamsRoute
-from server.Routes.Teams.UserTeams import UserTeamsRoute
 from server.Routes.Leaderboard.LeaderboardRoute import LeaderboardRoute
 
 app = Flask(__name__)
@@ -36,13 +37,14 @@ api.add_resource(ForgotPasswordResetRoute, "/api/user/forgotpassword/<code>")
 api.add_resource(AdminAuthRoute, "/api/admin/auth")
 api.add_resource(AmIAuthRoute, "/api/amiauth")
 api.add_resource(UserInfoRoute, "/api/user/info")
+api.add_resource(UserTeamRoute, "/api/user/team")
 
 # Initializing other routes
 api.add_resource(ConsumerRoute, '/api/requests')
 api.add_resource(MatchRoute, '/api/match')
 api.add_resource(EventRoute, "/api/events")
-api.add_resource(UserTeamsRoute, "/api/user/teams")
 api.add_resource(TeamsRoute, "/api/teams")
+api.add_resource(AddTeam, "/api/addmember")
 api.add_resource(TeamRoute, "/api/team")
 api.add_resource(SubmissionsRoute, "/api/submissions")
 api.add_resource(LeaderboardRoute, "/api/leaderboard")

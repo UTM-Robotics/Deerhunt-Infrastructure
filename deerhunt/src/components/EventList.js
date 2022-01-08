@@ -37,7 +37,9 @@ export default function EventList() {
       m={6}
     >
       {eventsData.map((eventItem) => (
-        <Link to={`/events/${eventItem.game}`}>
+        <Link to={`/events/${eventItem.name}`}>
+          {/*the above change makes it so that the links are the event names but also passes in the event name*/}
+          {/*to the sub panels instead of the game name which fixes things, so we can use the controllers*/}
           <GridItem>
             <Box>
               <Box
@@ -75,7 +77,7 @@ export default function EventList() {
                     fontSize={"2xl"}
                     fontFamily={"body"}
                   >
-                    {eventItem.game}
+                    {eventItem.name}
                   </Heading>
                   <Text color={"gray.500"} fontSize={"sm"}>
                     {eventItem.description}

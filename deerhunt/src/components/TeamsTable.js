@@ -17,15 +17,12 @@ import EditTeamModal from "./EditTeamModal.js";
 
 const TeamsTable = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [teamsData, setTeamsData] = useState([]);
-  const [membersList, setMembersList] = useState([]);
 
   useEffect(() => {
     axios
       .get("/api/teams", { params: { game: props.event } })
       .then((response) => {
-        setTeamsData(response.data);
-        setMembersList(response.data.members);
+        props.setTeamsData(response.data);
       });
   }, []);
 
@@ -40,18 +37,20 @@ const TeamsTable = (props) => {
           <EditTeamModal
             isOpen={isOpen}
             onClose={onClose}
-            teamsData={teamsData}
+            teamsData={props.teamsData}
+            setTeamsData={props.setTeamsData}
           />
         </Heading>
         <Heading size={"lg"}>Name</Heading>
-        <Text>{teamsData.name}</Text>
+        <Text>{props.teamsData.name}</Text>
         <Heading size={"lg"}>Owner</Heading>
-        <Text>{teamsData.owner}</Text>
+        <Text>{props.teamsData.owner}</Text>
         <Heading size={"lg"}>Members</Heading>
         <UnorderedList>
-          {membersList.map((member) => (
-            <ListItem>{member}</ListItem>
-          ))}
+          {props.teamsData.members ? props.teamsData.members.map((member) => (
+            <ListItem key={member}>{member}</ListItem>
+          )): <p>No members</p>
+          }
         </UnorderedList>
       </Stack>
     </Center>
