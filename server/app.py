@@ -27,6 +27,10 @@ app = Flask(__name__)
 CORS(app)
 api = Api(app)
 
+# cap on max content length
+# this is used mainly for submissions but also stops bad actors
+app.config['MAX_CONTENT_LENGTH'] = 50 * 1024 * 1024
+
 # Initializing user auth routes
 api.add_resource(UserRoute, "/api/user")
 api.add_resource(UserAuthRoute, "/api/user/auth")

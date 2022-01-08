@@ -22,6 +22,7 @@ class TeamsManager:
             self.team.set_last_submission_timestamp(result['last_submission_timestamp'])
             self.team.set_last_challenge_timestamp(result['last_challenge_timestamp'])
             self.team.set_created_timestamp(result['created_timestamp'])
+            self.team.set_submissions(result['submissions'])
             self.found = True
         else:
             self.found = False

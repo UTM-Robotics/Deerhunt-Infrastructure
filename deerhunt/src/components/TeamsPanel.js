@@ -41,25 +41,25 @@ export default function TeamsPanel(props) {
 
   return (
     <Box m={4}>
-      {teamsData._id === "" ? (
-        <Box textAlign="center">
-          <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
-            You're not currently in a team for this event.
-          </Heading>
-          <Button m={4} onClick={onOpen}>
-            Create a New Team
-            <AddTeamModal
-              isOpen={isOpen}
-              onClose={onClose}
-              event={props.event}
-            />
-          </Button>
-        </Box>
-      ) : (
+      {teamsData._id ? (
         <Box textAlign={"center"}>
           <TeamsTable event={props.event} teamsData={teamsData} setTeamsData={setTeamsData} />
           <SubmissionForm submissionCallback={Submit} />
         </Box>
+      ) : (
+          <Box textAlign="center">
+            <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
+              You're not currently in a team for this event.
+            </Heading>
+            <Button m={4} onClick={onOpen}>
+              Create a New Team
+              <AddTeamModal
+                  isOpen={isOpen}
+                  onClose={onClose}
+                  event={props.event}
+              />
+            </Button>
+          </Box>
       )}
     </Box>
   );
