@@ -7,7 +7,7 @@ const EventDetailsPanel = (props) => {
 
   useEffect(() => {
     axios
-      .get("/api/events", { params: { game: props.event } })
+      .get("/api/events", { params: { name: props.event } })
       .then((response) => {
         setEventData(response.data);
       });

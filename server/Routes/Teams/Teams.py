@@ -22,18 +22,10 @@ class TeamsRoute(Resource):
     # Flask parser for get request
     get_parser = reqparse.RequestParser()
     get_parser.add_argument(
-        "game",
+        "name",
         type=str,
         required=False,
         help="If not provided, return all teams that the user is on",
-    )
-
-    put_parser = reqparse.RequestParser()
-    put_parser.add_argument(
-        "name", type=str, required=False, help="This field cannot be left blank"
-    )
-    put_parser.add_argument(
-        "email", type=str, required=True, help="This field cannot be left blank"
     )
 
     @User_auth.login_required
@@ -76,17 +68,12 @@ class TeamsRoute(Resource):
 
     @User_auth.login_required
     def get(self):
-        event_id = None
-        with EventsManager() as eventmanager:
-            result = eventmanager.get_events()
-            if result:
-                data = TeamsRoute.get_parser.parse_args()
-                if data["game"]:
-                    for event in result:
-                        if event["game"] == data["game"]:
-                            event_id = str(event["_id"])
-        if data["game"] is not None and event_id is None:
-            return make_response(jsonify({"message": "No event with that name exists."}), HTTPStatus.NOT_FOUND)
+        event_id = ''
+        data = TeamsRoute.get_parser.parse_args()
+        with EventsManager(data['name']) as eventmanager:
+            if not eventmanager.found:
+                return make_response(jsonify({"message": "No event with that name exists."}), HTTPStatus.NOT_FOUND)
+            event_id = eventmanager.event.get_id()
         with TeamsManager() as teamsmanager:
             result = teamsmanager.get_teams(User_auth.current_user())
 

@@ -8,7 +8,6 @@ import axios from "../config/config";
 
 export default function TeamsPanel(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [teamID, setTeamID] = useState("");
   const [teamsData, setTeamsData] = useState({});
 
   async function Submit(values) {
@@ -16,8 +15,8 @@ export default function TeamsPanel(props) {
 
     // TODO: revert submissions back to event name and team name cause it's easier
     formData.append("file", values[0]);
-    formData.append("event_id", props.event);
-    formData.append("team_id", teamID);
+    formData.append("event_name", props.event);
+    formData.append("team_name", teamsData.name);
 
     await axios
       .post("api/submissions", formData)
@@ -36,14 +35,13 @@ export default function TeamsPanel(props) {
       .then((response) => {
         console.log(response);
         setTeamsData(response.data);
-        setTeamID(response.data._id)
       })
       .catch(() => {});
   }, []);
 
   return (
     <Box m={4}>
-      {teamID === "" ? (
+      {teamsData._id === "" ? (
         <Box textAlign="center">
           <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
             You're not currently in a team for this event.

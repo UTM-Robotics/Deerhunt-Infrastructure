@@ -19,7 +19,7 @@ const TeamsTable = (props) => {
 
   useEffect(() => {
     axios
-      .get("/api/teams", { params: { game: props.event } })
+      .get("/api/teams", { params: { name: props.event } })
       .then((response) => {
         props.setTeamsData(response.data);
       });
