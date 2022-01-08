@@ -16,6 +16,7 @@ import TeamsPage from "./components/TeamsPanel";
 import AmIAuthPage from "./pages/AmIAuthPage";
 import axios from "./config/config";
 import EventUserPage from "./pages/EventUserPage";
+import ChangePasswordPage from "./pages/ChangePasswordPage";
 
 class App extends React.Component {
   constructor(props) {
@@ -60,6 +61,7 @@ class App extends React.Component {
           <Route exact path="/events/:event">
             <EventUserPage />
           </Route>
+          <Route exact path="/changepassword" component={ChangePasswordPage} />
           {/*<Route path="/myevents" component={MyEventsPage} />*/}
           {/*<Route path="/teams" component={TeamsPage} />*/}
           <Route path="/admin" component={Admin} />
@@ -82,7 +84,7 @@ class App extends React.Component {
             path="/adminlogin"
             component={() => <AdminLoginPage onLogin={this.handleLogin} />}
           />
-          <Route path="/forgotpassword" component={ResetPasswordPage} />
+          <Route  path="/forgotpassword" component={ResetPasswordPage} />
           <Route exact path="/events" component={EventsPage} />
           <Route exact path="/events/:event">
             <EventUserPage />
