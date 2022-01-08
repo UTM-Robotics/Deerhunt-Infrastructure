@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Heading, useDisclosure } from "@chakra-ui/react";
 import SubmissionForm from "./SubmissionForm";
 
 import TeamsTable from "./TeamsTable";
@@ -36,19 +36,33 @@ export default function TeamsPanel(props) {
       .then((response) => {
         console.log(response);
         setTeamsData(response.data);
+        setTeamID(response.data._id)
       })
       .catch(() => {});
   }, []);
+
   return (
-    <Box>
-      <Box textAlign="left">
-        <Button m={4} onClick={onOpen}>
-          Create a New Team
-        </Button>
-        <AddTeamModal isOpen={isOpen} onClose={onClose} event={props.event} setTeamsData={setTeamsData} />
-        <TeamsTable event={props.event} teamsData={teamsData} setTeamsData={setTeamsData}/>
-        <SubmissionForm submissionCallback={Submit} />
-      </Box>
+    <Box m={4}>
+      {teamID === "" ? (
+        <Box textAlign="center">
+          <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
+            You're not currently in a team for this event.
+          </Heading>
+          <Button m={4} onClick={onOpen}>
+            Create a New Team
+            <AddTeamModal
+              isOpen={isOpen}
+              onClose={onClose}
+              event={props.event}
+            />
+          </Button>
+        </Box>
+      ) : (
+        <Box textAlign={"center"}>
+          <TeamsTable event={props.event} teamsData={teamsData} setTeamsData={setTeamsData} />
+          <SubmissionForm submissionCallback={Submit} />
+        </Box>
+      )}
     </Box>
   );
 }

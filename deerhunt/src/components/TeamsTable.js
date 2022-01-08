@@ -12,7 +12,6 @@ import {
 } from "@chakra-ui/react";
 import { FaEdit } from "react-icons/fa";
 import axios from "../config/config.js";
-import AddTeamModal from "./AddTeamModal.js";
 import EditTeamModal from "./EditTeamModal.js";
 
 const TeamsTable = (props) => {
@@ -29,7 +28,7 @@ const TeamsTable = (props) => {
   return (
     <Center>
       <Stack m={4}>
-        <Heading>
+        <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
           Current Team{" "}
           <Tooltip label="Edit team">
             <IconButton icon={<FaEdit />} onClick={onOpen} />
@@ -41,11 +40,13 @@ const TeamsTable = (props) => {
             setTeamsData={props.setTeamsData}
           />
         </Heading>
-        <Heading size={"lg"}>Name</Heading>
+        <Heading fontSize={{ base: "lg", sm: "xl", md: "2xl" }}>Name</Heading>
         <Text>{props.teamsData.name}</Text>
-        <Heading size={"lg"}>Owner</Heading>
+        <Heading fontSize={{ base: "lg", sm: "xl", md: "2xl" }}>Owner</Heading>
         <Text>{props.teamsData.owner}</Text>
-        <Heading size={"lg"}>Members</Heading>
+        <Heading fontSize={{ base: "lg", sm: "xl", md: "2xl" }}>
+          Members
+        </Heading>
         <UnorderedList>
           {props.teamsData.members ? props.teamsData.members.map((member) => (
             <ListItem key={member}>{member}</ListItem>

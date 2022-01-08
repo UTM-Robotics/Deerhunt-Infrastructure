@@ -19,7 +19,7 @@ const EventUserPage = () => {
   return (
     <>
       <Center>
-        <Heading size="lg" m={[4, 4, 4, 4]}>
+        <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }} m={4}>
           {event}
         </Heading>
       </Center>

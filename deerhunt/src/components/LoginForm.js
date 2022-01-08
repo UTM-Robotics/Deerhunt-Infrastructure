@@ -33,7 +33,6 @@ export default function LoginForm(props) {
           axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.token;
         }
-        console.log(values.email);
         props.onLogin(values.email.toString());
       })
       .catch(() => {});

@@ -22,14 +22,14 @@ const Home = () => {
               Infrastructure
             </Text>
           </Heading>
-          <Text color={"gray.500"}>
+          <Text>
             This is a project maintained by the Robotics Club at the University
             of Toronto Mississauga. To learn more about this project, visit our
             Github.
           </Text>
-          <Text as="i" color={"gray.500"}>
+          <Text as="i">
             Helping to bridge the gap between applied computer science and
-            robotics.
+            robotics
           </Text>
           <Stack
             direction={"column"}
