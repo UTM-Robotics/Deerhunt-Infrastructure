@@ -65,6 +65,12 @@ class TeamManager:
         self.commit()
         return True
 
+    def get_teams(self, email: str):
+        all_teams = list()
+        for team in self.db.find({'members': email}):
+            all_teams.append(team)
+        return all_teams
+
     def commit(self):
         query = {'name': self.team.get_name()}
         data = self.team.covert_to_dict()

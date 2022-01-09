@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Heading, Container, Text, Stack } from "@chakra-ui/react";
 import ConnectWithUs from "../components/ConnectWithUs";
+import axios from "../config/config.js";
 
-const Home = () => {
+const HomeLoggedIn = () => {
+  const [user, setUser] = useState("");
+
+  useEffect(() => {
+    axios.get("/api/user/info").then((response) => {
+      setUser(response.data.email);
+    });
+  }, []);
+
   return (
     <>
-      <Container maxW={"3xl"}>
+      <Container maxW={"5xl"}>
         <Stack
           as={Box}
           textAlign={"center"}
@@ -14,22 +23,22 @@ const Home = () => {
         >
           <Heading
             fontWeight={700}
-            fontSize={{ base: "4xl", sm: "6xl", md: "8xl" }}
+            fontSize={{ base: "2xl", sm: "4xl", md: "6xl" }}
             lineHeight={"110%"}
           >
-            Deerhunt <br />
+            Welcome back, <br />
             <Text as={"span"} color={"orange.400"}>
-              Infrastructure
+              {user}
             </Text>
           </Heading>
-          <Text color={"gray.500"}>
+          <Text>
             This is a project maintained by the Robotics Club at the University
             of Toronto Mississauga. To learn more about this project, visit our
             Github.
           </Text>
-          <Text as="i" color={"gray.500"}>
+          <Text as="i">
             Helping to bridge the gap between applied computer science and
-            robotics.
+            robotics
           </Text>
           <Stack
             direction={"column"}
@@ -46,4 +55,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default HomeLoggedIn;

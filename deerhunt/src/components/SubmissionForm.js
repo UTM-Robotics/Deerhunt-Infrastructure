@@ -53,7 +53,7 @@ function SubmissionForm(props) {
                 File:
               </Heading>
               <UnorderedList>{files}</UnorderedList>
-              <Button type="submit" isLoading={isSubmitting}>
+              <Button type="submit" isLoading={isSubmitting} m={4}>
                 Submit
               </Button>
             </FormControl>

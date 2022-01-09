@@ -27,6 +27,5 @@ class LeaderboardRoute(Resource):
                     teams_leaderboard = teamsmanager.find_teams(
                         all_team_ids["team_ids"]
                     )
-                    if teams_leaderboard:
-                        return make_response(dumps(teams_leaderboard), HTTPStatus.OK)
+                    return make_response(dumps(teams_leaderboard), HTTPStatus.OK)
         abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not fetch leaderboard for event")

@@ -17,7 +17,8 @@ from bson.objectid import ObjectId
 # TODO: testing and refactoring
 class SubmissionsRoute(Resource):
     parser = reqparse.RequestParser()
-    parser.add_argument('team_id', type=str, required=True, help='This field cannot be left blank')
+    parser.add_argument('event_name', type=str, required=True, help='This field cannot be left blank')
+    parser.add_argument('team_name', type=str, required=True, help='This field cannot be left blank')
 
     @User_auth.login_required
     def post(self):
@@ -34,71 +35,53 @@ class SubmissionsRoute(Resource):
             if not usermanager.is_verified():
                 return make_response(jsonify({'message': 'Please verify your email first'}), 401)
             user_email = usermanager.user.get_email()
-        with TeamsManager() as teamsmanager:
-            try:
-                id_object = ObjectId(data['team_id'])
-            except:
-                return make_response(jsonify({'message': 'Invalid team id'}), 400)
-
-            teams = teamsmanager.find_teams([id_object])
-            print(teams)
-            print(type(teams))
-            if not teams:
+        with TeamsManager(data["team_name"]) as teamsmanager:
+            if not teamsmanager.found:
                 return make_response(jsonify({'message': 'Team not found'}), 404)
-            team = teams[0]
-            print("team-type", type(team))
-            print(team)
 
-            teamsmanager.team.set_name(team['name'])
-            teamsmanager.team.set_id(team['_id'])
-            teamsmanager.team.set_owner(team['owner'])
-            teamsmanager.team.set_members(team['members'])
-            teamsmanager.team.set_event_id(team['event_id'])
-            teamsmanager.team.set_last_submission_timestamp(team['last_submission_timestamp'])
-            teamsmanager.team.set_created_timestamp(team['created_timestamp'])
-            teamsmanager.found = True
-
-            if user_email not in team['members']:
+            if user_email not in teamsmanager.team.get_members():
                 return make_response(jsonify({'message': 'You are not part of this team'}), 401)
 
-            with EventsManager() as eventsmanager:
-                events = eventsmanager.find_event()
-                filtered_events = [event for event in events if event['_id'] == ObjectId(team['event_id'])]
-                if not filtered_events:
+            with EventsManager(data["event_name"]) as eventsmanager:
+                if not eventsmanager.found:
                     return make_response(jsonify({'message': 'Event not found'}), 404)
+                if eventsmanager.event.get_id() != teamsmanager.team.get_event_id():
+                    return make_response(jsonify({'message': 'Team does not belong to this event'}), 401)
 
-                event = filtered_events[0]
+                start_time = datetime.fromisoformat(eventsmanager.event.get_starttime())
+                end_time = datetime.fromisoformat(eventsmanager.event.get_endtime())
 
-                start_time = datetime.fromisoformat(event['starttime'])
-                end_time = datetime.fromisoformat(event['endtime'])
-
-                if (not start_time < datetime.now() < end_time) or (not event['submission_open']):
+                if (not start_time < datetime.now() < end_time) or (not eventsmanager.event.get_submission_open()):
                     return make_response(jsonify({'message': 'Submission is not open'}), 401)
 
-            if team['last_submission_timestamp'] is not None:
-                print("checking last_submission_timestamp")
-                timestamp = team['last_submission_timestamp']
-                if timestamp + timedelta(minutes=5) > datetime.now():
-                    return make_response(jsonify({'message': 'You can only submit once every 5 minutes'}), 401)
+                print(teamsmanager.team.covert_to_dict())
 
-            blob_storage = BlobStorageModel()
-            container = blob_storage.get_container(str(event['_id']))
-            if not container:
-                container = blob_storage.create_container(str(event['_id']))
+                if teamsmanager.team.get_last_submission_timestamp() is not None:
+                    print("checking last_submission_timestamp")
+                    timestamp = teamsmanager.team.get_last_submission_timestamp()
+                    if timestamp + timedelta(minutes=5) > datetime.now():
+                        return make_response(jsonify({'message': 'You can only submit once every 5 minutes'}), 401)
 
-            if team['submissions']:
-                last_submission = sorted(team['submissions'])[-1]
-                last_sub_number = int(last_submission.split('_')[-1])
+                blob_storage = BlobStorageModel()
+                container = blob_storage.get_container(str(eventsmanager.event.get_id()))
+                if not container:
+                    container = blob_storage.create_container(str(eventsmanager.event.get_id()))
 
-                new_name = str(teamsmanager.team.get_id()) + '_' + str(last_sub_number + 1)
-            else:
-                new_name = str(teamsmanager.team.get_id()) + '_1'
+                if teamsmanager.team.get_last_submission_timestamp():
+                    last_submission = sorted(teamsmanager.team.get_submissions())[-1]
+                    last_sub_number = int(last_submission.split('_')[-1])
 
-            container.upload_blob(new_name, user_file)
+                    new_name = str(teamsmanager.team.get_id()) + '_' + str(last_sub_number + 1)
+                else:
+                    new_name = str(teamsmanager.team.get_id()) + '_1'
 
-            teamsmanager.team.set_last_submission_timestamp(datetime.now())
-            teamsmanager.team.set_submissions(team['submissions'] + [new_name])
-            teamsmanager.commit()
+                container.upload_blob(new_name, user_file)
+
+                teamsmanager.team.set_last_submission_timestamp(datetime.now())
+                teamsmanager.team.set_submissions(teamsmanager.team.get_submissions() + [new_name])
+                teamsmanager.commit()
+
+                return make_response(jsonify({'message': 'Submission successful'}), 200)
 
     @User_auth.login_required
     def get(self):
@@ -109,55 +92,31 @@ class SubmissionsRoute(Resource):
             if not usermanager.is_verified():
                 return make_response(jsonify({'message': 'Please verify your email first'}), 401)
             user_email = usermanager.user.get_email()
-        with TeamsManager() as teamsmanager:
-            try:
-                id_object = ObjectId(data['team_id'])
-            except:
-                return make_response(jsonify({'message': 'Invalid team id'}), 400)
+            with TeamsManager(data["team_name"]) as teamsmanager:
+                if not teamsmanager.found:
+                    return make_response(jsonify({'message': 'Team not found'}), 404)
 
-            teams = teamsmanager.find_teams([id_object])
-            print(teams)
-            print(type(teams))
-            if not teams:
-                return make_response(jsonify({'message': 'Team not found'}), 404)
-            team = teams[0]
-            print("team-type", type(team))
-            print(team)
+                if user_email not in teamsmanager.team.get_members():
+                    return make_response(jsonify({'message': 'You are not part of this team'}), 401)
 
-            teamsmanager.team.set_name(team['name'])
-            teamsmanager.team.set_id(team['_id'])
-            teamsmanager.team.set_owner(team['owner'])
-            teamsmanager.team.set_members(team['members'])
-            teamsmanager.team.set_event_id(team['event_id'])
-            teamsmanager.team.set_last_submission_timestamp(team['last_submission_timestamp'])
-            teamsmanager.team.set_created_timestamp(team['created_timestamp'])
-            teamsmanager.found = True
+                with EventsManager(data["event_name"]) as eventsmanager:
+                    if not eventsmanager.found:
+                        return make_response(jsonify({'message': 'Event not found'}), 404)
+                    if eventsmanager.event.get_id() != teamsmanager.team.get_event_id():
+                        return make_response(jsonify({'message': 'Team does not belong to this event'}), 401)
 
-            if user_email not in team['members']:
-                return make_response(jsonify({'message': 'You are not part of this team'}), 401)
+                    blob_storage = BlobStorageModel()
+                    container = blob_storage.get_container(str(eventsmanager.event.get_id()))
+                    if not container:
+                        return make_response(jsonify({'message': 'No submissions found'}), 404)
 
-            with EventsManager() as eventsmanager:
-                events = eventsmanager.find_event()
-                filtered_events = [event for event in events if event['_id'] == ObjectId(team['event_id'])]
-                if not filtered_events:
-                    return make_response(jsonify({'message': 'Event not found'}), 404)
+                    if teamsmanager.team.get_submissions():
+                        last_submission = sorted(teamsmanager.team.get_submissions())[-1]
+                    else:
+                        return make_response(jsonify({'message': 'No submissions found'}), 404)
 
-                event = filtered_events[0]
+                    blob = container.get_blob_client(last_submission)
 
-            blob_storage = BlobStorageModel()
-            container = blob_storage.get_container(str(event['_id']))
-            if not container:
-                return make_response(jsonify({'message': 'No submissions found'}), 404)
+                    user_submission = blob.download_blob().readall()
 
-            if team['submissions']:
-                last_submission = sorted(team['submissions'])[-1]
-            else:
-                return make_response(jsonify({'message': 'No submissions found'}), 404)
-
-            blob = container.get_blob_client(last_submission)
-
-            user_submission = blob.download_blob().readall()
-
-            # one of these two might work
-            # return send_file(blob.download_blob(), attachment_filename=last_submission+".zip", as_attachment=True)
-            return send_file(io.BytesIO(user_submission), attachment_filename=last_submission, as_attachment=True)
+                    return send_file(io.BytesIO(user_submission), attachment_filename=last_submission, as_attachment=True)

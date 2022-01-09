@@ -26,7 +26,7 @@ class LeaderboardManager:
 
     def add_to_leaderboard(self, team_data: dict):
         leaderboard = self.db.find_one({"event_id": ObjectId(team_data["event_id"])})
-        leaderboard["team_ids"].append(team_data["_id"])
+        leaderboard["team_ids"].append(ObjectId(team_data["_id"]))
         print(leaderboard)
         query = {"event_id": ObjectId(team_data["event_id"])}
         self.db.update_one(query, {"$set": leaderboard})

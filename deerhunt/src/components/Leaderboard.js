@@ -20,8 +20,10 @@ const Leaderboard = (props) => {
   const [myTeam, setMyTeam] = useState("");
 
   useEffect(() => {
+    let form = new FormData();
+    form.append("name", props.event);
     axios
-      .get("/api/teams", { params: { game: props.event } })
+      .post("/api/user/team", form)
       .then((response) => {
         setMyTeam(response.data);
       });

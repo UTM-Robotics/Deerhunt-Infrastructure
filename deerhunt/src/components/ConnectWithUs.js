@@ -6,9 +6,7 @@ const ConnectWithUs = () => {
   return (
     <Flex width="full" justifyContent="flex-end">
       <HStack>
-        <Text pr={4} color={"gray.500"}>
-          Connect With Us
-        </Text>
+        <Text pr={4}>Connect With Us</Text>
         <Link href="https://github.com/UTM-Robotics" isExternal>
           <IconButton isRound="true" icon={<FaGithub />}></IconButton>
         </Link>
