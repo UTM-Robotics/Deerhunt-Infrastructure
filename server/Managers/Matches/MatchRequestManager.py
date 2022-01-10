@@ -56,6 +56,6 @@ class MatchRequestManager:
     def delete_request(self, id) -> bool:
         return self.db.delete_one({'_id': ObjectId(id)})
 
-    def commit(self) -> None:
+    def commit(self):
         self.db.insert_one({'event_id': self.request.event_id, 'teams': self.request.teams,
                            'created_timestamp': self.request.created_timestamp})

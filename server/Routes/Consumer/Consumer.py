@@ -1,13 +1,13 @@
 from datetime import datetime
 from http import HTTPStatus
-from flask import make_response, request, abort, jsonify
+from flask import make_response, abort, jsonify
 from bson.json_util import dumps, ObjectId
 from flask_restful import Resource, reqparse
+from server.Managers.Auth.UserManager import User_auth
 
 from server.Managers.Matches.MatchRequestManager import MatchRequestManager
 from server.Managers.Events.AdminEvents import EventsManager
 from server.Managers.Teams.TeamsManager import TeamsManager
-from server.Managers.Auth.UserManager import User_auth
 from server.config import Configuration
 
 
