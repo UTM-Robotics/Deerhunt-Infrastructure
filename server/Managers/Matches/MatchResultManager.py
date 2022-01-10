@@ -1,7 +1,7 @@
 from datetime import datetime
-from typing import List, Optional
 
 from bson import ObjectId
+from dotenv.main import set_key
 
 from server.Database import Mongo
 from server.Models.Matches.Matches import MatchResultModel
@@ -28,7 +28,6 @@ class MatchResultManager:
 
     def create_match(self, data) -> bool:
         try:
-            self._id = data['match_id']
             self.pass_data(data)
             self.match.set_created_timestamp(str(datetime.utcnow()))
             self.commit()
@@ -46,4 +45,5 @@ class MatchResultManager:
         return None
 
     def commit(self) -> None:
-        self.db.insert_one({'_id': ObjectId(self.get_id()), 'event_id': self.match.event_id, 'winner_id': self.match.winner_id, 'loser_id': self.match.loser_id, 'created_timestamp': self.match.created_timestamp})
+        res = self.db.insert_one({'event_id': self.match.event_id, 'winner_id': self.match.winner_id, 'loser_id': self.match.loser_id, 'created_timestamp': self.match.created_timestamp})
+        self._id = res.inserted_id
