@@ -44,7 +44,7 @@ const Leaderboard = (props) => {
       form.append("team2_id", opponent._id);
       axios
         .post("/api/requests", form)
-        .then((response) => console.log(response));
+        .then((response) => console.log(response)).catch((e)=>console.log(e));
     };
   };
 

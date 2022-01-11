@@ -31,9 +31,13 @@ class ConsumerRoute(Resource):
             eventdata = eventmanager.find_event()
             data['event_id'] = eventdata['_id']
             with TeamsManager() as teamsmanager:
+                defending_team = teamsmanager.find_team_by_id(ObjectId(data['team2_id']))
+                if not defending_team:
+                    abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Invalid defending team submission')
+            with TeamsManager() as teamsmanager:
                 challenging_team = teamsmanager.find_team_by_id(ObjectId(data['team1_id']))
                 if challenging_team['last_challenge_timestamp'] == None:
-                    with MatchRequestManager() as requestmanager:
+                    with MatchRequestManager() as requestmanager:# this is duplicate code, need a function
                         if requestmanager.create_request(data):
                             challenging_team['last_challenge_timestamp'] = str(datetime.utcnow())
                             teamsmanager.commit_data(challenging_team)
