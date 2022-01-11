@@ -52,7 +52,7 @@ class ConsumerRoute(Resource):
                     )
                     curr_time = datetime.utcnow()
                     time_delta = curr_time - last_challenge
-                    if time_delta.seconds >= 1:#300:
+                    if time_delta.seconds >= 300:
                         with MatchRequestManager() as requestmanager:
                             if requestmanager.create_request(data):
                                 challenging_team['last_challenge_timestamp'] = str(datetime.utcnow())
