@@ -21,12 +21,15 @@ const MatchList = (props) => {
       loser: "Team B",
     },
   ];
-  let DownloadMatch = (match) => { 
-    return () => { 
-      axios.get("/api/match/download", {params:{match_id: match._id}}).then((response) => {
-      }).catch((e)=>{console.log(e);});
+  let DownloadMatch = (match) => {
+    return () => {
+      axios
+        .get("/api/match/download", { params: { match_id: match._id } })
+        .then((response) => {})
+        .catch((e) => {
+          console.log(e);
+        });
     };
-  
   };
   useEffect(() => {
     axios
@@ -35,6 +38,7 @@ const MatchList = (props) => {
         setMatches(response.data);
         console.log("Data params");
         console.log(response.data);
+        console.log("abcdefg".substring(0, 5));
       });
   }, []);
 
@@ -48,7 +52,6 @@ const MatchList = (props) => {
           base: "repeat(1, 1fr)",
           sm: "repeat(2, 1fr)",
           md: "repeat(3, 1fr)",
-          lg: "repeat(4, 1fr)",
         }}
         gap={6}
         m={6}
@@ -66,29 +69,38 @@ const MatchList = (props) => {
               >
                 <Center>
                   <div>
-                    <Stack direction={"row"} spacing={{ base: 1, md: 2 }}>
+                    <Stack direction={"column"} spacing={{ base: 1, md: 2 }}>
                       <Heading
                         color="green.600"
-                        fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
+                        fontSize={{ base: "md", sm: "lg", md: "xl" }}
                       >
-                        {match.winner}
+                        {match.winner.length > 20
+                          ? match.winner.substring(0, 21) + "..."
+                          : match.winner}
                       </Heading>
                       <Heading
                         color="gray.700"
-                        fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
+                        fontSize={{ base: "md", sm: "lg", md: "xl" }}
                       >
                         vs.{" "}
                       </Heading>
                       <Heading
                         color="red.600"
-                        fontSize={{ base: "lg", sm: "xl", md: "2xl" }}
+                        fontSize={{ base: "md", sm: "lg", md: "xl" }}
                       >
-                        {match.loser}
+                        {match.loser.length > 20
+                          ? match.loser.substring(0, 21) + "..."
+                          : match.loser}
                       </Heading>
                     </Stack>
-                    <Stack>
-                      <Text color={"gray.700"}>Match ID: {match.match_id}</Text>
-                      <Button colorScheme={"orange"} onClick={DownloadMatch(match)}>Download</Button>
+                    <Stack m={3}>
+                      <Text color={"gray.700"}>Match ID: {match._id}</Text>
+                      <Button
+                        colorScheme={"orange"}
+                        onClick={DownloadMatch(match)}
+                      >
+                        Download
+                      </Button>
                     </Stack>
                   </div>
                 </Center>
