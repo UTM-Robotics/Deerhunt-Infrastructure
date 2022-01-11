@@ -1,9 +1,11 @@
+from logging import raiseExceptions
 from os import environ
 
 from pymongo.message import _Query
 from server.Database import Mongo
 from bson.objectid import ObjectId
 from server.Models.Leaderboard.Leaderboard import LeaderboardModel
+from server.Models.Teams.Teams import TeamsModel
 
 
 class LeaderboardManager:
@@ -47,4 +49,19 @@ class LeaderboardManager:
                 teams[loser_index],
                 teams[winner_index],
             )
+        self.db.update_one(query, {"$set": {"team_ids": teams}})
+
+    def delete_from_leaderboard(self, team_data: TeamsModel):
+        leaderboard = self.db.find_one({"event_id": ObjectId(team_data.event_id)})
+        query = {"_id": leaderboard["_id"]}
+        teams = leaderboard["team_ids"]
+        idx = None
+        for i in range(len(teams)):
+            if teams[i] == ObjectId(team_data._id):
+                idx = i
+        if idx:
+            teams.pop(i)
+        else:
+            raise Exception("No such team to delete")
+
         self.db.update_one(query, {"$set": {"team_ids": teams}})

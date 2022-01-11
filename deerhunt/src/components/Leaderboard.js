@@ -8,10 +8,6 @@ import {
   Td,
   TableCaption,
   Button,
-  AlertIcon,
-  Alert,
-  AlertDescription,
-  CloseButton,
 } from "@chakra-ui/react";
 import axios from "../config/config.js";
 
@@ -26,14 +22,20 @@ const Leaderboard = (props) => {
       .post("/api/user/team", form)
       .then((response) => {
         setMyTeam(response.data);
-      }).catch();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
     axios
       .get("/api/leaderboard", {
         params: { name: props.event },
       })
       .then((response) => {
         setLeaderboard(response.data);
-      }).catch();
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   const getChallengeFunction = (team, opponent) => {
@@ -46,16 +48,6 @@ const Leaderboard = (props) => {
         .post("/api/requests", form)
         .then((response) => console.log(response));
     };
-  };
-
-  const InvalidChallenge = () => {
-    return (
-      <Alert>
-        <AlertIcon />
-        <AlertDescription>Cannot challenge your own team!</AlertDescription>
-        <CloseButton position="absolute" right={4} top={4} />
-      </Alert>
-    );
   };
 
   return (
@@ -76,17 +68,11 @@ const Leaderboard = (props) => {
             <Td>{index + 1}</Td>
             <Td>{team.name}</Td>
             <Td>
-              <Button
-                onClick={
-                  myTeam._id !== team._id ? (
-                    getChallengeFunction(myTeam, team)
-                  ) : (
-                    <InvalidChallenge />
-                  )
-                }
-              >
-                Challenge
-              </Button>
+              {index < leaderboard.map((e) => e.name).indexOf(myTeam.name) ? (
+                <Button onClick={getChallengeFunction(myTeam, team)}>
+                  Challenge
+                </Button>
+              ) : null}
             </Td>
           </Tr>
         ))}
