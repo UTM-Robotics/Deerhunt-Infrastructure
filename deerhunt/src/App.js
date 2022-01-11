@@ -10,12 +10,10 @@ import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
-import MyEventsPage from "./pages/MyEventsPage";
 import EventsPage from "./pages/EventsPage";
-import TeamsPage from "./components/TeamsPanel";
-import AmIAuthPage from "./pages/AmIAuthPage";
 import axios from "./config/config";
 import EventUserPage from "./pages/EventUserPage";
+import { LoginLayout, GeneralLayout } from "./components/Layout";
 
 class App extends React.Component {
   constructor(props) {
@@ -54,46 +52,111 @@ class App extends React.Component {
     if (this.state.email !== "") {
       return (
         <Switch>
-          <Route path="/login" component={() => <HomeLoggedIn />} exact />
-          <Route path="/" component={() => <HomeLoggedIn />} exact />
-          <Route exact path="/events" component={EventsPage} />
-          <Route exact path="/events/:event">
-            <EventUserPage />
-          </Route>
+          <RouteWrapper
+            path="/login"
+            component={() => <HomeLoggedIn />}
+            exact
+            layout={LoginLayout}
+          />
+          <RouteWrapper
+            path="/signup"
+            component={() => <HomeLoggedIn />}
+            exact
+            layout={LoginLayout}
+          />
+          <RouteWrapper
+            path="/"
+            component={() => <HomeLoggedIn />}
+            exact
+            layout={GeneralLayout}
+          />
+          <RouteWrapper
+            exact
+            path="/events"
+            component={EventsPage}
+            layout={GeneralLayout}
+          />
+          <RouteWrapper
+            exact
+            path="/events/:event"
+            component={EventUserPage}
+            layout={GeneralLayout}
+          />
+
           {/*<Route path="/myevents" component={MyEventsPage} />*/}
           {/*<Route path="/teams" component={TeamsPage} />*/}
           <Route path="/admin" component={Admin} />
-          <Route component={NotFound} />
+          <RouteWrapper
+            path="/notfound"
+            component={NotFound}
+            layout={LoginLayout}
+          />
         </Switch>
       );
     } else {
       return (
         <Switch>
-          <Route path="/" component={() => <Home />} exact />
-          <Route
+          <RouteWrapper
+            path="/"
+            component={() => <Home />}
+            exact
+            layout={GeneralLayout}
+          />
+          <RouteWrapper
             path="/login"
             component={() => <LoginPage onLogin={this.handleLogin} />}
+            layout={LoginLayout}
           />
-          <Route
+          <RouteWrapper
             path="/signup"
             component={() => <SignUpPage onLogin={this.handleSignup} />}
+            layout={LoginLayout}
           />
-          <Route
+          <RouteWrapper
             path="/adminlogin"
             component={() => <AdminLoginPage onLogin={this.handleLogin} />}
+            layout={LoginLayout}
           />
-          <Route path="/forgotpassword" component={ResetPasswordPage} />
-          <Route exact path="/events" component={EventsPage} />
-          <Route exact path="/events/:event">
-            <EventUserPage />
-          </Route>
+          <RouteWrapper
+            path="/forgotpassword"
+            component={ResetPasswordPage}
+            layout={LoginLayout}
+          />
+          <RouteWrapper
+            exact
+            path="/events"
+            component={EventsPage}
+            layout={GeneralLayout}
+          />
+          <RouteWrapper
+            exact
+            path="/events/:event"
+            component={EventUserPage}
+            layout={GeneralLayout}
+          />
           {/*<Route path="/test" component={EventUserPage} />*/}
           {/*<Route path="/amiauth" component={AmIAuthPage} />*/}
-          <Route component={NotFound} />
+          <RouteWrapper
+            path="/notfound"
+            component={NotFound}
+            layout={LoginLayout}
+          />
         </Switch>
       );
     }
   }
+}
+function RouteWrapper({ component: Component, layout: Layout, ...rest }) {
+  return (
+    <Route
+      {...rest}
+      render={(props) => (
+        <Layout {...props}>
+          <Component {...props} />
+        </Layout>
+      )}
+    />
+  );
 }
 
 export default App;

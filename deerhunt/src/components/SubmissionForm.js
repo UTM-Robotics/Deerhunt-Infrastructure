@@ -32,7 +32,7 @@ function SubmissionForm(props) {
   return (
     <Center>
       <Box display={"inline-block"} textAlign={"center"}>
-        <Heading size={"lg"} m={4}>
+        <Heading size={"lg"} mb={4}>
           Submission
         </Heading>
         <Box alignItems={"center"}>
@@ -53,7 +53,7 @@ function SubmissionForm(props) {
                 File:
               </Heading>
               <UnorderedList>{files}</UnorderedList>
-              <Button type="submit" isLoading={isSubmitting}>
+              <Button type="submit" isLoading={isSubmitting} m={4}>
                 Submit
               </Button>
             </FormControl>

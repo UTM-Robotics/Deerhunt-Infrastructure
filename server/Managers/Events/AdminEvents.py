@@ -24,6 +24,8 @@ class EventsManager:
             self.event.set_endtime(result['endtime'])
             self.event.set_created_timestamp(result['created_timestamp'])
             self.event.set_submission_open(result['submission_open'])
+            self.event.set_tutorial(result['tutorial'])
+            self.event.set_description(result['description'])
             self.found = True
         else:
             self.all_events = result

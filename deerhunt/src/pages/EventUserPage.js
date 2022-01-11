@@ -8,7 +8,6 @@ import {
   TabPanel,
   Center,
 } from "@chakra-ui/react";
-import TopNav from "../components/TopNav";
 import TeamsPanel from "../components/TeamsPanel";
 import { useParams } from "react-router-dom";
 import Leaderboard from "../components/Leaderboard";
@@ -19,9 +18,8 @@ const EventUserPage = () => {
   let { event } = useParams();
   return (
     <>
-      <TopNav />
       <Center>
-        <Heading size="lg" m={[4, 4, 4, 4]}>
+        <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }} m={4}>
           {event}
         </Heading>
       </Center>

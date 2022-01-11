@@ -1,13 +1,13 @@
 from datetime import datetime
 from http import HTTPStatus
-from flask import make_response, request, abort, jsonify
+from flask import make_response, abort, jsonify
 from bson.json_util import dumps, ObjectId
 from flask_restful import Resource, reqparse
+from server.Managers.Auth.UserManager import User_auth
 
 from server.Managers.Matches.MatchRequestManager import MatchRequestManager
 from server.Managers.Events.AdminEvents import EventsManager
 from server.Managers.Teams.TeamsManager import TeamsManager
-from server.Managers.Auth.UserManager import User_auth
 from server.config import Configuration
 
 
@@ -31,13 +31,19 @@ class ConsumerRoute(Resource):
             eventdata = eventmanager.find_event()
             data['event_id'] = eventdata['_id']
             with TeamsManager() as teamsmanager:
+                defending_team = teamsmanager.find_team_by_id(ObjectId(data['team2_id']))
+                if not defending_team:
+                    abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Invalid defending team id')
+            with TeamsManager() as teamsmanager:
                 challenging_team = teamsmanager.find_team_by_id(ObjectId(data['team1_id']))
+                if challenging_team['last_submission_timestamp'] == None:
+                    abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Please submit before attempting to challenge.')
                 if challenging_team['last_challenge_timestamp'] == None:
-                    with MatchRequestManager() as requestmanager:
+                    with MatchRequestManager() as requestmanager:# this is duplicate code, need a function
                         if requestmanager.create_request(data):
                             challenging_team['last_challenge_timestamp'] = str(datetime.utcnow())
                             teamsmanager.commit_data(challenging_team)
-                            return make_response(jsonify({'message': 'Successfully created a match request'}), HTTPStatus.OK)
+                            return make_response(jsonify({'message': 'Successfully created a match request. Please wait as we compute.'}), HTTPStatus.OK)
                         else:
                             raise SystemError("Error occurs when create request")
                 else:
@@ -53,7 +59,8 @@ class ConsumerRoute(Resource):
                                 teamsmanager.commit_data(challenging_team)
                                 return make_response(jsonify({'message': 'Successfully created a match request'}), HTTPStatus.OK)
                             else:
-                                raise SystemError("Error occurs when create request")
+                                print("An error may have occurred. Either already in queue or time out.")
+                                abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'There is currently a request in queue, please wait.')
                     else:
                         abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Need to wait 5 minutes till you can challenge again.')
 
@@ -65,9 +72,11 @@ class ConsumerRoute(Resource):
         data = parser.parse_args()
         with MatchRequestManager() as requestmanager:
             result = requestmanager.find_first_request(data['event_id'])
+            
             if result:
+                result["_id"] = str(result["_id"])
                 return make_response(dumps([result]), HTTPStatus.OK)
-
+            return make_response(jsonify({"message": "No match found"}), HTTPStatus.UNPROCESSABLE_ENTITY)
     def delete(self):
         self.check_auth()
         parser = reqparse.RequestParser()
