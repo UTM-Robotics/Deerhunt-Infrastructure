@@ -32,7 +32,7 @@ function SubmissionForm(props) {
   return (
     <Center>
       <Box display={"inline-block"} textAlign={"center"}>
-        <Heading size={"lg"} m={4}>
+        <Heading size={"lg"} mb={4}>
           Submission
         </Heading>
         <Box alignItems={"center"}>
