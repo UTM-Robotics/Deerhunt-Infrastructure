@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Box, Heading, Container, Text, Stack } from "@chakra-ui/react";
+import { Box, Heading, Text, VStack } from "@chakra-ui/react";
 import ConnectWithUs from "../components/ConnectWithUs";
 import axios from "../config/config.js";
+import ProjectContributors from "../components/ProjectContributors";
+import { FaLongArrowAltDown } from "react-icons/fa";
 
 const HomeLoggedIn = () => {
   const [user, setUser] = useState("");
@@ -14,9 +16,8 @@ const HomeLoggedIn = () => {
 
   return (
     <>
-      <Container maxW={"5xl"}>
-        <Stack
-          as={Box}
+      <Box minH="100vh" textAlign={"center"}>
+        <VStack
           textAlign={"center"}
           spacing={{ base: 6, md: 12 }}
           py={{ base: 20, md: 36 }}
@@ -40,17 +41,26 @@ const HomeLoggedIn = () => {
             Helping to bridge the gap between applied computer science and
             robotics
           </Text>
-          <Stack
-            direction={"column"}
-            spacing={3}
-            align={"center"}
-            alignSelf={"center"}
-            position={"relative"}
-          >
-            <ConnectWithUs />
-          </Stack>
-        </Stack>
-      </Container>
+          <ConnectWithUs />
+        </VStack>
+        <Box bottom={0} textAlign={"center"}>
+          <VStack>
+            <Text as="b">Scroll to learn more!</Text>
+            <FaLongArrowAltDown />
+          </VStack>
+        </Box>
+      </Box>
+      <Box minH="100vh">
+        <VStack
+          spacing={3}
+          align={"center"}
+          alignSelf={"center"}
+          position={"relative"}
+          mt={8}
+        >
+          <ProjectContributors />
+        </VStack>
+      </Box>
     </>
   );
 };
