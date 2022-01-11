@@ -27,7 +27,7 @@ class ConsumerDownloadRoute(Resource):
         ''' Given a team id, allows a consumer to retrieve that team's submission zip.'''
         self.check_auth()
         parser = reqparse.RequestParser()
-        parser.add_argument('team_name', type=str, required=True)
+        parser.add_argument('team_id', type=str, required=True)
         parser.add_argument('event_name', type=str, required=True)
         data = parser.parse_args()
         with TeamsManager() as teamsmanager:
