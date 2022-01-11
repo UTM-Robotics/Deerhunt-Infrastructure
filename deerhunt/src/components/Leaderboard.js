@@ -26,14 +26,14 @@ const Leaderboard = (props) => {
       .post("/api/user/team", form)
       .then((response) => {
         setMyTeam(response.data);
-      });
+      }).catch();
     axios
       .get("/api/leaderboard", {
         params: { name: props.event },
       })
       .then((response) => {
         setLeaderboard(response.data);
-      });
+      }).catch();
   }, []);
 
   const getChallengeFunction = (team, opponent) => {
