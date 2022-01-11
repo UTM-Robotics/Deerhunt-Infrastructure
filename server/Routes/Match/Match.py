@@ -25,9 +25,9 @@ class MatchRoute(Resource):
             return abort(HTTPStatus.UNAUTHORIZED)
         with MatchResultManager() as matchmanager:
             if matchmanager.create_match(data):
-                # with LeaderboardManager() as leaderboardmanager:
-                #     all_team_ids = leaderboardmanager.get_leaderboard(data['event_id'])
-                #     leaderboardmanager.update_leaderboard(all_team_ids, data)
+                with LeaderboardManager() as leaderboardmanager:
+                    all_team_ids = leaderboardmanager.get_leaderboard(data['event_id'])
+                    leaderboardmanager.update_leaderboard(all_team_ids, data)
                 blob_storage = BlobStorageModel()
                 container = blob_storage.get_container(data['event_id'])
                 if not container:
