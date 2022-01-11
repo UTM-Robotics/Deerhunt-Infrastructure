@@ -64,10 +64,6 @@ class MatchRoute(Resource):
             if event_id:
                 result = matchmanager.find_all_matches(event_id)
                 with TeamsManager() as teamsmanager:
-                    total = 30
-                    print(result)
-                    if len(result) < 30:
-                        total = len(result)
                     results = []
                     val = next(result, None)
                     while len(results) < 30 and val:

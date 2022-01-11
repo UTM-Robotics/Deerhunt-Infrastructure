@@ -14,7 +14,7 @@ import axios from "../config/config.js";
 const Leaderboard = (props) => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [myTeam, setMyTeam] = useState("");
-
+  const [challengeMessage, setChallengeMessage] = useState("");
   useEffect(() => {
     let form = new FormData();
     form.append("name", props.event);
