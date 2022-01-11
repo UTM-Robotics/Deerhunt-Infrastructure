@@ -50,14 +50,15 @@ class ConsumerRoute(Resource):
                     )
                     curr_time = datetime.utcnow()
                     time_delta = curr_time - last_challenge
-                    if time_delta.seconds >= 300:
+                    if time_delta.seconds >= 1:#300:
                         with MatchRequestManager() as requestmanager:
                             if requestmanager.create_request(data):
                                 challenging_team['last_challenge_timestamp'] = str(datetime.utcnow())
                                 teamsmanager.commit_data(challenging_team)
                                 return make_response(jsonify({'message': 'Successfully created a match request'}), HTTPStatus.OK)
                             else:
-                                raise SystemError("Error occurs when create request")
+                                print("An error may have occurred. Like")
+                                abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'There is currently a request in queue, please wait.')
                     else:
                         abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Need to wait 5 minutes till you can challenge again.')
 
@@ -69,9 +70,11 @@ class ConsumerRoute(Resource):
         data = parser.parse_args()
         with MatchRequestManager() as requestmanager:
             result = requestmanager.find_first_request(data['event_id'])
+            
             if result:
+                result["_id"] = str(result["_id"])
                 return make_response(dumps([result]), HTTPStatus.OK)
-
+            return make_response(jsonify({"message": "No match found"}), HTTPStatus.UNPROCESSABLE_ENTITY)
     def delete(self):
         self.check_auth()
         parser = reqparse.RequestParser()
