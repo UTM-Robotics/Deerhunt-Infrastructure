@@ -38,7 +38,6 @@ const MatchList = (props) => {
         setMatches(response.data);
         console.log("Data params");
         console.log(response.data);
-        console.log("abcdefg".substring(0, 5));
       });
   }, []);
 
