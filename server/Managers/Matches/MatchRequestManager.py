@@ -21,7 +21,8 @@ class MatchRequestManager:
         return self._id
 
     def pass_data(self, data) -> None:
-        self.request.set_teams([ObjectId(data['team1_id']), ObjectId(data['team2_id'])])
+        # Defender, challenger
+        self.request.set_teams([ObjectId(data['team2_id']), ObjectId(data['team1_id'])])
         self.request.set_event(data['event_id'])
 
     def create_request(self, data) -> bool:

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Text,
   Table,
   Thead,
   Tbody,
@@ -8,13 +9,14 @@ import {
   Td,
   TableCaption,
   Button,
+  Center
 } from "@chakra-ui/react";
 import axios from "../config/config.js";
 
 const Leaderboard = (props) => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [myTeam, setMyTeam] = useState("");
-
+  const [challengeMessage, setChallengeMessage] = useState("");
   useEffect(() => {
     let form = new FormData();
     form.append("name", props.event);
@@ -46,14 +48,26 @@ const Leaderboard = (props) => {
       form.append("team2_id", opponent._id);
       axios
         .post("/api/requests", form)
-        .then((response) => console.log(response));
+        .then((response) => setChallengeMessage(response.data.message))
+        .catch((error)=>{
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+          }
+
+        }
+        );
     };
   };
-
   return (
+    <>
+    <Center>
+       <Text>See recent matches on the Team tab.</Text>
+    </Center>
     <Table>
       <TableCaption>
-        Press challenge to play a team and overtake them on the leaderboard!
+        {leaderboard.length == 0?"Press challenge to play a team and overtake them on the leaderboard!": "Please log in to see the leaderboard!"}
       </TableCaption>
       <Thead>
         <Tr>
@@ -78,6 +92,7 @@ const Leaderboard = (props) => {
         ))}
       </Tbody>
     </Table>
+    </>
   );
 };
 
