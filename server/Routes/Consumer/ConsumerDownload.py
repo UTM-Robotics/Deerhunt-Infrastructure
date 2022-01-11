@@ -37,16 +37,14 @@ class ConsumerDownloadRoute(Resource):
             with EventsManager(data["event_name"]) as eventsmanager:
                 if not eventsmanager.found:
                     return make_response(jsonify({'message': 'Event not found'}), 404)
-                if eventsmanager.event.get_id() != teamsmanager.team.get_event_id():
+                if eventsmanager.event.get_id() != team['event_id']:
                     return make_response(jsonify({'message': 'Team does not belong to this event'}), 401)
-
                 blob_storage = BlobStorageModel()
                 container = blob_storage.get_container(str(eventsmanager.event.get_id()))
                 if not container:
                     return make_response(jsonify({'message': 'No submissions found'}), 404)
-
-                if teamsmanager.team.get_submissions():
-                    last_submission = sorted(teamsmanager.team.get_submissions())[-1]
+                if team['submissions']:
+                    last_submission = sorted(team['submissions'])[-1]
                 else:
                     return make_response(jsonify({'message': 'No submissions found'}), 404)
                 blob = container.get_blob_client(last_submission)

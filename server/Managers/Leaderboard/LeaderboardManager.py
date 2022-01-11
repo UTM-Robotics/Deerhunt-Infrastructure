@@ -37,6 +37,10 @@ class LeaderboardManager:
         leaderboard = self.db.find_one({"name": name})
         return leaderboard
 
+    def get_leaderboard_id(self, event_id: str):
+        leaderboard = self.db.find_one({"event_id": ObjectId(event_id)})
+        return leaderboard
+
     def update_leaderboard(self, leaderboard_data: dict, data: dict):
         query = {"_id": leaderboard_data["_id"]}
         winner = ObjectId(data["winner_id"])
