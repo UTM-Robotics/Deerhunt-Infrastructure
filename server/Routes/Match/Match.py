@@ -70,7 +70,7 @@ class MatchRoute(Resource):
                         total = len(result)
                     results = []
                     val = next(result, None)
-                    while len(results) < 30 and result:
+                    while len(results) < 30 and val:
                         results.append(val)
                         val = next(result, None)
                     for match in result:
