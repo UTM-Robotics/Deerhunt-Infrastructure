@@ -33,6 +33,7 @@ const MatchList = (props) => {
       .get("/api/match", { params: { event_name: props.event } })
       .then((response) => {
         setMatches(response.data);
+        console.log("Data params");
         console.log(response.data);
       });
   }, []);

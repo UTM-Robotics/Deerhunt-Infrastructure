@@ -21,10 +21,10 @@ class MatchDownloadRoute(Resource):
                 container = blob_storage.get_container(match['event_id'])
                 if not container:
                     return make_response(jsonify({'message': 'No event container found'}), 404)
-                blobname = f'match_{ObjectId(match._id)}'
+                blobname = 'match_' + data['match_id']
                 blob = container.get_blob_client(blobname)
                 match_zip = blob.download_blob().readall()
-                return send_file(io.BytesIO(match_zip), attachment_filename="blobname.zip", as_attachment=True)
+                return send_file(io.BytesIO(match_zip), attachment_filename=f"blobname.zip", as_attachment=True)
             else:
                 abort(
                         HTTPStatus.BAD_REQUEST,

@@ -43,7 +43,7 @@ class ConsumerRoute(Resource):
                         if requestmanager.create_request(data):
                             challenging_team['last_challenge_timestamp'] = str(datetime.utcnow())
                             teamsmanager.commit_data(challenging_team)
-                            return make_response(jsonify({'message': 'Successfully created a match request'}), HTTPStatus.OK)
+                            return make_response(jsonify({'message': 'Successfully created a match request. Please wait as we compute.'}), HTTPStatus.OK)
                         else:
                             raise SystemError("Error occurs when create request")
                 else:
@@ -59,7 +59,7 @@ class ConsumerRoute(Resource):
                                 teamsmanager.commit_data(challenging_team)
                                 return make_response(jsonify({'message': 'Successfully created a match request'}), HTTPStatus.OK)
                             else:
-                                print("An error may have occurred. Like")
+                                print("An error may have occurred. Either already in queue or time out.")
                                 abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'There is currently a request in queue, please wait.')
                     else:
                         abort(HTTPStatus.UNPROCESSABLE_ENTITY, 'Need to wait 5 minutes till you can challenge again.')
