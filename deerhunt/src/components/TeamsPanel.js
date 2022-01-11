@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Heading, useDisclosure } from "@chakra-ui/react";
+import { Box, Button, Heading, useDisclosure, Stack } from "@chakra-ui/react";
 import SubmissionForm from "./SubmissionForm";
 
 import TeamsTable from "./TeamsTable";
 import AddTeamModal from "./AddTeamModal";
 import axios from "../config/config";
+import MatchList from "./MatchList";
 
 export default function TeamsPanel(props) {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -42,24 +43,29 @@ export default function TeamsPanel(props) {
   return (
     <Box m={4}>
       {teamsData._id ? (
-        <Box textAlign={"center"}>
-          <TeamsTable event={props.event} teamsData={teamsData} setTeamsData={setTeamsData} />
+        <Stack textAlign={"center"} spacing={12}>
+          <TeamsTable
+            event={props.event}
+            teamsData={teamsData}
+            setTeamsData={setTeamsData}
+          />
           <SubmissionForm submissionCallback={Submit} />
-        </Box>
+          <MatchList event={props.event} />
+        </Stack>
       ) : (
-          <Box textAlign="center">
-            <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
-              You're not currently in a team for this event.
-            </Heading>
-            <Button m={4} onClick={onOpen}>
-              Create a New Team
-              <AddTeamModal
-                  isOpen={isOpen}
-                  onClose={onClose}
-                  event={props.event}
-              />
-            </Button>
-          </Box>
+        <Box textAlign="center">
+          <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
+            You're not currently in a team for this event.
+          </Heading>
+          <Button m={4} onClick={onOpen}>
+            Create a New Team
+            <AddTeamModal
+              isOpen={isOpen}
+              onClose={onClose}
+              event={props.event}
+            />
+          </Button>
+        </Box>
       )}
     </Box>
   );
