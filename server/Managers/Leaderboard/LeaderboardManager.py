@@ -37,6 +37,10 @@ class LeaderboardManager:
         leaderboard = self.db.find_one({"name": name})
         return leaderboard
 
+    def get_leaderboard_id(self, event_id: str):
+        leaderboard = self.db.find_one({"event_id": ObjectId(event_id)})
+        return leaderboard
+
     def update_leaderboard(self, leaderboard_data: dict, data: dict):
         query = {"_id": leaderboard_data["_id"]}
         winner = ObjectId(data["winner_id"])
@@ -45,10 +49,11 @@ class LeaderboardManager:
         winner_index = teams.index(winner)
         loser_index = teams.index(loser)
         if winner_index > loser_index:
-            teams[winner_index], teams[loser_index] = (
-                teams[loser_index],
-                teams[winner_index],
-            )
+            # teams[winner_index], teams[loser_index] = (
+            #     teams[loser_index],
+            #     teams[winner_index],
+            # )
+            teams.insert(loser_index, teams.pop(winner_index))
         self.db.update_one(query, {"$set": {"team_ids": teams}})
 
     def delete_from_leaderboard(self, team_data: TeamsModel):
