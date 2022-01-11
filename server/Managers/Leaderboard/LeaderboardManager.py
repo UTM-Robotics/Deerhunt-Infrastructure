@@ -56,7 +56,6 @@ class LeaderboardManager:
         query = {"_id": leaderboard["_id"]}
         teams = leaderboard["team_ids"]
         idx = None
-        print(team_data._id)
         for i in range(len(teams)):
             if teams[i] == ObjectId(team_data._id):
                 idx = i

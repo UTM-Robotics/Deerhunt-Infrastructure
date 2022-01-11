@@ -32,12 +32,12 @@ const EditTeamModal = (props) => {
     await axios
       .post("/api/addmember", form)
       .then((response) => {
-        console.log(response.data);
-        console.log("Successfully added user");
         props.setTeamsData(response.data);
         props.onClose();
       })
-      .catch(() => {});
+      .catch((e) => {
+        console.log(e);
+      });
   }
 
   const LeaveTeam = () => {
@@ -47,10 +47,11 @@ const EditTeamModal = (props) => {
     axios
       .put("/api/team", form)
       .then((response) => {
-        console.log("Left team successfully");
         props.onClose();
       })
-      .catch(() => {});
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   return (

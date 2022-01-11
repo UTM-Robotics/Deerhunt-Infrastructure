@@ -23,7 +23,9 @@ const Leaderboard = (props) => {
       .then((response) => {
         setMyTeam(response.data);
       })
-      .catch();
+      .catch((e) => {
+        console.log(e);
+      });
     axios
       .get("/api/leaderboard", {
         params: { name: props.event },
@@ -31,7 +33,9 @@ const Leaderboard = (props) => {
       .then((response) => {
         setLeaderboard(response.data);
       })
-      .catch();
+      .catch((e) => {
+        console.log(e);
+      });
   }, []);
 
   const getChallengeFunction = (team, opponent) => {
