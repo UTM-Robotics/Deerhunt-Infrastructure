@@ -3,8 +3,8 @@ from flask_restful import Api
 from flask_cors import CORS
 
 # Importing Auth routes
-from Routes.Auth.UserTeamRoute import UserTeamRoute
-from Routes.Teams.AddTeam import AddTeam
+from server.Routes.Auth.UserTeamRoute import UserTeamRoute
+from server.Routes.Teams.AddTeam import AddTeam
 from server.Routes.Auth.AmIAuthRoute import AmIAuthRoute
 from server.Routes.Auth.UserInfoRoute import UserInfoRoute
 from server.Routes.Auth.UserRoute import UserRoute
@@ -52,7 +52,7 @@ api.add_resource(AddTeam, "/api/addmember")
 api.add_resource(TeamRoute, "/api/team")
 api.add_resource(SubmissionsRoute, "/api/submissions")
 api.add_resource(LeaderboardRoute, "/api/leaderboard")
-app.debug = True
+
 
 if __name__ == "__main__":
     app.run()

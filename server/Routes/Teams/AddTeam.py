@@ -4,7 +4,7 @@ from flask import make_response, abort, jsonify
 from flask_restful import Resource, reqparse
 from bson.json_util import dumps
 
-from Managers.Teams.TeamManager import TeamManager
+from server.Managers.Teams.TeamManager import TeamManager
 from server.Managers.Events.AdminEvents import EventsManager
 
 from server.Managers.Teams.TeamsManager import TeamsManager
