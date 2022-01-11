@@ -3,9 +3,8 @@ from http import HTTPStatus
 from flask import make_response, request, abort, jsonify
 from flask_restful import Resource, reqparse
 
-from Database import Mongo
-from Managers.Events.AdminEvents import EventsManager
-from Managers.Teams.TeamsManager import TeamsManager
+from server.Managers.Events.AdminEvents import EventsManager
+from server.Managers.Teams.TeamsManager import TeamsManager
 from server.Managers.Auth.UserManager import UserManager, User_auth
 from server.Models.User import AdminUser, GeneralUser
 
