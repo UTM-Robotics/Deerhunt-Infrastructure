@@ -20,10 +20,11 @@ class NotFound extends React.Component {
             boxShadow="lg"
             width="full"
             maxWidth="500px"
-            bg="gray.300"
           >
             <Box textAlign="center" mb={4}>
-              <Heading size="lg">Page not Found!</Heading>
+              <Heading size="lg" m={4}>
+                Page not Found!
+              </Heading>
               <Text>
                 If this page should exist, please let us know through the
                 Discord!

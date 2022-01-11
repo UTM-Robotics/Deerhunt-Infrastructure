@@ -12,27 +12,23 @@ import {
 } from "@chakra-ui/react";
 import { FaEdit } from "react-icons/fa";
 import axios from "../config/config.js";
-import AddTeamModal from "./AddTeamModal.js";
 import EditTeamModal from "./EditTeamModal.js";
 
 const TeamsTable = (props) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [teamsData, setTeamsData] = useState([]);
-  const [membersList, setMembersList] = useState([]);
 
   useEffect(() => {
     axios
-      .get("/api/teams", { params: { game: props.event } })
+      .get("/api/teams", { params: { name: props.event } })
       .then((response) => {
-        setTeamsData(response.data);
-        setMembersList(response.data.members);
+        props.setTeamsData(response.data);
       });
   }, []);
 
   return (
     <Center>
       <Stack m={4}>
-        <Heading>
+        <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
           Current Team{" "}
           <Tooltip label="Edit team">
             <IconButton icon={<FaEdit />} onClick={onOpen} />
@@ -40,18 +36,22 @@ const TeamsTable = (props) => {
           <EditTeamModal
             isOpen={isOpen}
             onClose={onClose}
-            teamsData={teamsData}
+            teamsData={props.teamsData}
+            setTeamsData={props.setTeamsData}
           />
         </Heading>
-        <Heading size={"lg"}>Name</Heading>
-        <Text>{teamsData.name}</Text>
-        <Heading size={"lg"}>Owner</Heading>
-        <Text>{teamsData.owner}</Text>
-        <Heading size={"lg"}>Members</Heading>
+        <Heading fontSize={{ base: "lg", sm: "xl", md: "2xl" }}>Name</Heading>
+        <Text>{props.teamsData.name}</Text>
+        <Heading fontSize={{ base: "lg", sm: "xl", md: "2xl" }}>Owner</Heading>
+        <Text>{props.teamsData.owner}</Text>
+        <Heading fontSize={{ base: "lg", sm: "xl", md: "2xl" }}>
+          Members
+        </Heading>
         <UnorderedList>
-          {membersList.map((member) => (
-            <ListItem>{member}</ListItem>
-          ))}
+          {props.teamsData.members ? props.teamsData.members.map((member) => (
+            <ListItem key={member}>{member}</ListItem>
+          )): <p>No members</p>
+          }
         </UnorderedList>
       </Stack>
     </Center>

@@ -35,7 +35,7 @@ class EventRoute(Resource):
     # flask parser for get request
     get_parser = reqparse.RequestParser()
     get_parser.add_argument(
-        "game", type=str, required=False, help="If not provided, return all events"
+        "name", type=str, required=False, help="If not provided, return all events"
     )
 
     @Admin_auth.login_required
@@ -61,17 +61,19 @@ class EventRoute(Resource):
 
     # Get either a list of all events or details for a specific event if a "game" parameter is provided
     def get(self):
-        with EventsManager() as eventmanager:
-            result = eventmanager.get_events()
-            if result:
-                data = EventRoute.get_parser.parse_args()
-                if data["game"]:
-                    for event in result:
-                        if event["game"] == data["game"]:
-                            return make_response(dumps(event), HTTPStatus.OK)
-                    abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Event does not exist")
-                return make_response(dumps(result), HTTPStatus.OK)
-            abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not get events list")
+        data = EventRoute.get_parser.parse_args()
+        if data["name"]:
+            with EventsManager(data["name"]) as eventmanager:
+                if eventmanager.found:
+                    return make_response(dumps(eventmanager.event.covert_to_dict()), HTTPStatus.OK)
+                abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not find event")
+        else:
+            with EventsManager() as eventmanager:
+                eventmanager.find_event()
+                result = eventmanager.get_events()
+                if result:
+                    return make_response(dumps(result), HTTPStatus.OK)
+                abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not get events list")
 
     # Flask parser for delete request
     delete_parser = reqparse.RequestParser()

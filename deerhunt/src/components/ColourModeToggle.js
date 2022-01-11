@@ -1,17 +1,20 @@
 import React from "react";
-import { IconButton, Flex, useColorMode, Box } from "@chakra-ui/react";
+import { IconButton, useColorMode, Tooltip } from "@chakra-ui/react";
 import { FaMoon } from "react-icons/fa";
+import { FaSun } from "react-icons/fa";
 
 const ColourModeToggle = () => {
   const { colorMode, toggleColorMode } = useColorMode();
-
   return (
-    <Box position="fixed" bottom={0} right={0}>
-      <IconButton icon={<FaMoon />} onClick={() => toggleColorMode()}>
-        Toggle Mode {colorMode}
-      </IconButton>
-    </Box>
+    <Tooltip label="Toggle colour mode!" placement="left">
+      <IconButton
+        position={"fixed"}
+        right={3}
+        bottom={3}
+        onClick={toggleColorMode}
+        icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
+      />
+    </Tooltip>
   );
 };
-
 export default ColourModeToggle;

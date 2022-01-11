@@ -7,7 +7,7 @@ const EventDetailsPanel = (props) => {
 
   useEffect(() => {
     axios
-      .get("/api/events", { params: { game: props.event } })
+      .get("/api/events", { params: { name: props.event } })
       .then((response) => {
         setEventData(response.data);
       });
@@ -15,13 +15,19 @@ const EventDetailsPanel = (props) => {
 
   return (
     <Stack>
-      <Heading>Game</Heading>
+      <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>Game</Heading>
       <Text>{eventData.game}</Text>
-      <Heading>Description</Heading>
+      <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
+        Description
+      </Heading>
       <Text>{eventData.description}</Text>
-      <Heading>Start Time</Heading>
+      <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
+        Start Time
+      </Heading>
       <Text>{eventData.starttime}</Text>
-      <Heading>End Time</Heading>
+      <Heading fontSize={{ base: "xl", sm: "2xl", md: "3xl" }}>
+        End Time
+      </Heading>
       <Text>{eventData.endtime}</Text>
     </Stack>
   );

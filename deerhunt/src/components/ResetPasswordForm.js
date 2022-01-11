@@ -71,7 +71,6 @@ export default function ResetPasswordForm() {
           boxShadow="lg"
           width="full"
           maxWidth="500px"
-          bg="gray.300"
         >
           <Box textAlign="center" mb={4}>
             <Heading size="md" mb={4}>

@@ -21,7 +21,8 @@ class MatchRequestManager:
         return self._id
 
     def pass_data(self, data) -> None:
-        self.request.set_teams([ObjectId(data['team1_id']), ObjectId(data['team2_id'])])
+        # Defender, challenger
+        self.request.set_teams([ObjectId(data['team2_id']), ObjectId(data['team1_id'])])
         self.request.set_event(data['event_id'])
 
     def create_request(self, data) -> bool:
@@ -56,6 +57,6 @@ class MatchRequestManager:
     def delete_request(self, id) -> bool:
         return self.db.delete_one({'_id': ObjectId(id)})
 
-    def commit(self) -> None:
+    def commit(self):
         self.db.insert_one({'event_id': self.request.event_id, 'teams': self.request.teams,
                            'created_timestamp': self.request.created_timestamp})

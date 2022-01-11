@@ -1,5 +1,6 @@
 class EventsModel:
     def __init__(self, name=None):
+        self.tutorial = None
         self._id = None
         self.name = name
         self.game = None

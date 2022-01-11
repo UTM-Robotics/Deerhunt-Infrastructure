@@ -33,7 +33,6 @@ export default function LoginForm(props) {
           axios.defaults.headers.common["Authorization"] =
             "Bearer " + response.data.token;
         }
-        console.log(values.email);
         props.onLogin(values.email.toString());
       })
       .catch(() => {});
@@ -55,7 +54,6 @@ export default function LoginForm(props) {
           boxShadow="lg"
           width="full"
           maxWidth="500px"
-          bg="gray.300"
         >
           <Box textAlign="center" mb={4}>
             <Heading size="md">Login to Deerhunt</Heading>

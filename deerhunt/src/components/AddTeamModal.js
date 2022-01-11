@@ -23,13 +23,16 @@ const CreateTeam = (props) => {
   } = useForm();
 
   async function CreateTeam(values) {
-    var form = new FormData();
+    let form = new FormData();
     form.append("name", values.name);
     form.append("event_name", props.event);
     await axios
       .post("api/teams", form)
       .then((response) => {
+        console.log(response.data);
         console.log("Sucessfully created a team");
+        props.setTeamsData(response.data.team);
+        props.onClose();
       })
       .catch(() => {});
   }

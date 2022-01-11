@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
+  Text,
   Table,
   Thead,
   Tbody,
@@ -8,22 +9,24 @@ import {
   Td,
   TableCaption,
   Button,
-  AlertIcon,
-  Alert,
-  AlertDescription,
-  CloseButton,
+  Center
 } from "@chakra-ui/react";
 import axios from "../config/config.js";
 
 const Leaderboard = (props) => {
   const [leaderboard, setLeaderboard] = useState([]);
   const [myTeam, setMyTeam] = useState("");
-
+  const [challengeMessage, setChallengeMessage] = useState("");
   useEffect(() => {
+    let form = new FormData();
+    form.append("name", props.event);
     axios
-      .get("/api/teams", { params: { game: props.event } })
+      .post("/api/user/team", form)
       .then((response) => {
         setMyTeam(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
       });
     axios
       .get("/api/leaderboard", {
@@ -31,6 +34,9 @@ const Leaderboard = (props) => {
       })
       .then((response) => {
         setLeaderboard(response.data);
+      })
+      .catch((e) => {
+        console.log(e);
       });
   }, []);
 
@@ -42,24 +48,26 @@ const Leaderboard = (props) => {
       form.append("team2_id", opponent._id);
       axios
         .post("/api/requests", form)
-        .then((response) => console.log(response));
+        .then((response) => setChallengeMessage(response.data.message))
+        .catch((error)=>{
+          if (error.response) {
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+          }
+
+        }
+        );
     };
   };
-
-  const InvalidChallenge = () => {
-    return (
-      <Alert>
-        <AlertIcon />
-        <AlertDescription>Cannot challenge your own team!</AlertDescription>
-        <CloseButton position="absolute" right={4} top={4} />
-      </Alert>
-    );
-  };
-
   return (
+    <>
+    <Center>
+       <Text>See recent matches on the Team tab.</Text>
+    </Center>
     <Table>
       <TableCaption>
-        Press challenge to play a team and overtake them on the leaderboard!
+        {leaderboard.length == 0?"Press challenge to play a team and overtake them on the leaderboard!": "Please log in to see the leaderboard!"}
       </TableCaption>
       <Thead>
         <Tr>
@@ -74,22 +82,17 @@ const Leaderboard = (props) => {
             <Td>{index + 1}</Td>
             <Td>{team.name}</Td>
             <Td>
-              <Button
-                onClick={
-                  myTeam._id != team._id ? (
-                    getChallengeFunction(myTeam, team)
-                  ) : (
-                    <InvalidChallenge />
-                  )
-                }
-              >
-                Challenge
-              </Button>
+              {index < leaderboard.map((e) => e.name).indexOf(myTeam.name) ? (
+                <Button onClick={getChallengeFunction(myTeam, team)}>
+                  Challenge
+                </Button>
+              ) : null}
             </Td>
           </Tr>
         ))}
       </Tbody>
     </Table>
+    </>
   );
 };
 
