@@ -64,8 +64,20 @@ class MatchRoute(Resource):
             if event_id:
                 result = matchmanager.find_all_matches(event_id)
                 with TeamsManager() as teamsmanager:
+                    total = 30
+                    print(result)
+                    if len(result) < 30:
+                        total = len(result)
+                    results = []
+                    val = next(result, None)
+                    while len(results) < 30 and result:
+                        results.append(val)
+                        val = next(result, None)
                     for match in result:
-                        
+                        loser = teamsmanager.find_team_by_id(match['loser_id'])
+                        match['loser'] = loser['name']
+                        winner = teamsmanager.find_team_by_id(match['winner_id'])
+                        match['winner'] = winner['name']
                     return make_response(dumps(result), HTTPStatus.OK)
             else:
                 result = matchmanager.find_match(event_id)

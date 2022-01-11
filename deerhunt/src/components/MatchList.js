@@ -21,7 +21,13 @@ const MatchList = (props) => {
       loser: "Team B",
     },
   ];
-
+  let DownloadMatch = (match) => { 
+    return () => { 
+      axios.get("/api/match/download", {params:{match_id: match._id}}).then((response) => {
+      }).catch((e)=>{console.log(e);});
+    };
+  
+  };
   useEffect(() => {
     axios
       .get("/api/match", { params: { event_name: props.event } })
@@ -46,7 +52,7 @@ const MatchList = (props) => {
         gap={6}
         m={6}
       >
-        {mockData.map((match, index) => (
+        {matches.map((match, index) => (
           <GridItem key={index}>
             <Box>
               <Box
@@ -81,7 +87,7 @@ const MatchList = (props) => {
                     </Stack>
                     <Stack>
                       <Text color={"gray.700"}>Match ID: {match.match_id}</Text>
-                      <Button colorScheme={"orange"}>Download</Button>
+                      <Button colorScheme={"orange"} onClick={DownloadMatch(match)}>Download</Button>
                     </Stack>
                   </div>
                 </Center>
