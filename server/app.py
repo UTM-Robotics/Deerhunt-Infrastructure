@@ -24,7 +24,7 @@ from server.Routes.Leaderboard.LeaderboardRoute import LeaderboardRoute
 
 from server.Routes.Consumer.Consumer import ConsumerRoute
 from server.Routes.Consumer.ConsumerDownload import ConsumerDownloadRoute
-
+from server.Routes.Match.MatchDownload import MatchDownloadRoute
 app = Flask(__name__)
 CORS(app)
 api = Api(app)
@@ -50,6 +50,7 @@ api.add_resource(ConsumerRoute, '/api/requests')
 api.add_resource(ConsumerDownloadRoute, '/api/consumer/downloads')
 
 api.add_resource(MatchRoute, '/api/match')
+api.add_resource(MatchDownloadRoute, '/api/match/download')
 api.add_resource(EventRoute, "/api/events")
 api.add_resource(TeamsRoute, "/api/teams")
 api.add_resource(AddTeam, "/api/addmember")
