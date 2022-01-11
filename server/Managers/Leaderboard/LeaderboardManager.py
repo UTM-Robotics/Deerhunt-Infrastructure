@@ -49,10 +49,11 @@ class LeaderboardManager:
         winner_index = teams.index(winner)
         loser_index = teams.index(loser)
         if winner_index > loser_index:
-            teams[winner_index], teams[loser_index] = (
-                teams[loser_index],
-                teams[winner_index],
-            )
+            # teams[winner_index], teams[loser_index] = (
+            #     teams[loser_index],
+            #     teams[winner_index],
+            # )
+            teams.insert(loser_index, teams.pop(winner_index))
         self.db.update_one(query, {"$set": {"team_ids": teams}})
 
     def delete_from_leaderboard(self, team_data: TeamsModel):
