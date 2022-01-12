@@ -62,10 +62,9 @@ class LeaderboardManager:
         teams = leaderboard["team_ids"]
         idx = None
         for i in range(len(teams)):
-            print(leaderboard)
             if teams[i] == ObjectId(team_data._id):
                 idx = i
-        if idx:
+        if idx is not None:
             teams.pop(i)
         else:
             raise Exception("No such team to delete")
