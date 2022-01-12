@@ -25,9 +25,12 @@ class MatchRoute(Resource):
         parser.add_argument("winner_id", type=str, required=True)
         parser.add_argument("loser_id", type=str, required=True)
         data = parser.parse_args()
-        match_file = request.files["file"]
-        if not match_file.filename.endswith(".zip"):
-            return make_response(jsonify({"message": "File must be a zip file"}), 400)
+        match_file = None
+        if "file" in request.files:
+            match_file = request.files["file"]
+            if not match_file.filename.endswith(".zip"):
+                return make_response(jsonify({"message": "File must be a zip file"}), 400)
+            # TODO better zip verification here.
         if data["token"] != Configuration.CONSUMER_TOKEN:
             return abort(HTTPStatus.UNAUTHORIZED)
         with MatchResultManager() as matchmanager:
@@ -35,12 +38,13 @@ class MatchRoute(Resource):
                 with LeaderboardManager() as leaderboardmanager:
                     all_team_ids = leaderboardmanager.get_leaderboard_id(data['event_id'])
                     leaderboardmanager.update_leaderboard(all_team_ids, data)
-                blob_storage = BlobStorageModel()
-                container = blob_storage.get_container(data["event_id"])
-                if not container:
-                    container = blob_storage.create_container(data["event_id"])
-                name = f"match_{matchmanager.get_id()}"
-                container.upload_blob(name, match_file)
+                if "file" in request.files:
+                    blob_storage = BlobStorageModel()
+                    container = blob_storage.get_container(data["event_id"])
+                    if not container:
+                        container = blob_storage.create_container(data["event_id"])
+                    name = f"match_{matchmanager.get_id()}"
+                    container.upload_blob(name, match_file)
                 return make_response(
                     jsonify({"message": "Successfully created a match record"}),
                     HTTPStatus.OK,

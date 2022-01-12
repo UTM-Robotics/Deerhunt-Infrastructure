@@ -68,10 +68,13 @@ class SubmissionsRoute(Resource):
                     container = blob_storage.create_container(str(eventsmanager.event.get_id()))
 
                 if teamsmanager.team.get_last_submission_timestamp():
-                    last_submission = sorted(teamsmanager.team.get_submissions())[-1]
-                    last_sub_number = int(last_submission.split('_')[-1])
+                    if len(teamsmanager.team.get_submissions()) > 0:
+                        last_submission = teamsmanager.team.get_submissions()[-1]
+                        last_sub_number = int(last_submission.split('_')[-1])
 
-                    new_name = str(teamsmanager.team.get_id()) + '_' + str(last_sub_number + 1)
+                        new_name = str(teamsmanager.team.get_id()) + '_' + str(last_sub_number + 1)
+                    else: 
+                        new_name = str(teamsmanager.team.get_id()) + "_1"
                 else:
                     new_name = str(teamsmanager.team.get_id()) + '_1'
 
