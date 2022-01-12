@@ -24,7 +24,7 @@ function TopNav(props) {
   if (localStorage.getItem("token")) {
     signOutButton = (
       <Button bg="transparent" border="1px" onClick={signOut}>
-        Sign-out
+        Logout
       </Button>
     );
   } else {

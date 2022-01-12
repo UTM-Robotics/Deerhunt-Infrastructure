@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, Flex, HStack, IconButton, Link } from "@chakra-ui/react";
+import { Text, HStack, IconButton, Link } from "@chakra-ui/react";
 import { FaGithub, FaTwitter, FaInstagram, FaDiscord } from "react-icons/fa";
 
 const ConnectWithUs = () => {
