@@ -59,7 +59,7 @@ class SubmissionsRoute(Resource):
                 if teamsmanager.team.get_last_submission_timestamp() is not None:
                     print("checking last_submission_timestamp")
                     timestamp = teamsmanager.team.get_last_submission_timestamp()
-                    if timestamp + timedelta(minutes=5) > datetime.now():
+                    if timestamp + timedelta(minutes=2) > datetime.now():
                         return make_response(jsonify({'message': 'You can only submit once every 5 minutes'}), 401)
 
                 blob_storage = BlobStorageModel()
