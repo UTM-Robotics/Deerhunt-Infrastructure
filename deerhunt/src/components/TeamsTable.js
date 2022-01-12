@@ -24,7 +24,7 @@ const TeamsTable = (props) => {
         props.setTeamsData(response.data);
       });
   }, []);
-
+  console.log(props.teamsData);
   return (
     <Center>
       <Stack m={4}>
@@ -56,6 +56,9 @@ const TeamsTable = (props) => {
             <p>No members</p>
           )}
         </UnorderedList>
+        <Text>{ props.teamsData.last_submission_timestamp ?  "Last Submission: "+props.teamsData.last_submission_timestamp.$date: "No submission made. Please try again with a zip file." }</Text>
+        <Text>{ props.teamsData.last_challenge_timestamp ?  "Last Submission: "+props.teamsData.last_challenge_timestamp.$date: "No challenges made." }</Text>
+
       </Stack>
     </Center>
   );
