@@ -3,10 +3,11 @@ from typing import List
 
 import re
 
-email_regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+email_regex = r"\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b"
+
 
 class TeamsModel:
-    def __init__(self, name = None) -> None:
+    def __init__(self, name=None) -> None:
         self._id = None
         self.name = name
         self.owner = None
@@ -80,23 +81,25 @@ class TeamsModel:
 
     def covert_to_dict(self) -> dict:
         if self.get_id():
-            return {'_id': self.get_id(),
-                    'name': self.get_name(),
-                    'owner': self.get_owner(),
-                    'members': self.get_members(),
-                    'event_id': self.get_event_id(),
-                    'last_submission_timestamp': self.get_last_submission_timestamp(),
-                    'last_challenge_timestamp': self.get_last_challenge_timestamp(),
-                    'submissions': self.get_submissions(),
-                    'created_timestamp': self.get_created_timestamp()
-                    }
+            return {
+                "_id": self.get_id(),
+                "name": self.get_name(),
+                "owner": self.get_owner(),
+                "members": self.get_members(),
+                "event_id": self.get_event_id(),
+                "last_submission_timestamp": self.get_last_submission_timestamp(),
+                "last_challenge_timestamp": self.get_last_challenge_timestamp(),
+                "submissions": self.get_submissions(),
+                "created_timestamp": self.get_created_timestamp(),
+            }
         else:
-            return {'name': self.get_name(),
-                    'owner': self.get_owner(),
-                    'members': self.get_members(),
-                    'event_id': self.get_event_id(),
-                    'last_submission_timestamp': self.get_last_submission_timestamp(),
-                    'last_challenge_timestamp': self.get_last_challenge_timestamp(),
-                    'submissions': self.get_submissions(),
-                    'created_timestamp': self.get_created_timestamp()
-                    }
+            return {
+                "name": self.get_name(),
+                "owner": self.get_owner(),
+                "members": self.get_members(),
+                "event_id": self.get_event_id(),
+                "last_submission_timestamp": self.get_last_submission_timestamp(),
+                "last_challenge_timestamp": self.get_last_challenge_timestamp(),
+                "submissions": self.get_submissions(),
+                "created_timestamp": self.get_created_timestamp(),
+            }
