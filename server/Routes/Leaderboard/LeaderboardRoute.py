@@ -24,10 +24,14 @@ class LeaderboardRoute(Resource):
             all_team_ids = leaderboardmanager.get_leaderboard(data["name"])
             if all_team_ids:
                 with TeamsManager() as teamsmanager:
+                    print(all)
                     teams_leaderboard = teamsmanager.find_teams(
                         all_team_ids["team_ids"]
                     )
+                    teams = []
                     for team in teams_leaderboard:
-                        team["_id"] =  str(team["_id"])
-                    return make_response(dumps(teams_leaderboard), HTTPStatus.OK)
+                        if team != None:
+                            team["_id"] =  str(team["_id"])
+                            teams.append(team)
+                    return make_response(dumps(teams), HTTPStatus.OK)
         abort(HTTPStatus.UNPROCESSABLE_ENTITY, "Could not fetch leaderboard for event")
