@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Modal,
   ModalContent,
@@ -17,8 +17,13 @@ import {
 } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import axios from "../config/config";
+import FeedbackAlert from "./FeedbackAlert";
 
 const EditTeamModal = (props) => {
+  const [addMemberFeedback, setAddMemberFeedback] = useState("");
+  const [leaveTeamFeedback, setLeaveTeamFeedback] = useState("");
+  const [addMemberFeedbackMessage, setAddMemberFeedbackMessage] = useState("");
+  const [leaveTeamFeedbackMessage, setLeaveTeamFeedbackMessage] = useState("");
   const {
     handleSubmit,
     register,
@@ -32,11 +37,22 @@ const EditTeamModal = (props) => {
     await axios
       .post("/api/addmember", form)
       .then((response) => {
-        props.setTeamsData(response.data);
-        props.onClose();
+        setAddMemberFeedback("success");
+        setAddMemberFeedbackMessage(response.data.message);
       })
-      .catch((e) => {
-        console.log(e);
+      .catch((error) => {
+        setAddMemberFeedback("error");
+        if (error.response) {
+          if (error.response.data) {
+            setAddMemberFeedbackMessage(error.response.message);
+          } else {
+            setAddMemberFeedbackMessage("Unknown error, please try again!");
+          }
+        } else {
+          setAddMemberFeedbackMessage(
+            "Could not reach server, please try again!"
+          );
+        }
       });
   }
 
@@ -47,10 +63,22 @@ const EditTeamModal = (props) => {
     axios
       .put("/api/team", form)
       .then((response) => {
-        props.onClose();
+        setLeaveTeamFeedback("success");
+        setLeaveTeamFeedbackMessage(response.data.message);
       })
-      .catch((e) => {
-        console.log(e);
+      .catch((error) => {
+        setLeaveTeamFeedback("error");
+        if (error.response) {
+          if (error.response.data) {
+            setLeaveTeamFeedbackMessage(error.response.message);
+          } else {
+            setLeaveTeamFeedbackMessage("Unknown error, please try again!");
+          }
+        } else {
+          setLeaveTeamFeedbackMessage(
+            "Could not reach server, please try again!"
+          );
+        }
       });
   };
 
@@ -105,6 +133,30 @@ const EditTeamModal = (props) => {
                 Leave team
               </Button>
             </ModalFooter>
+            {addMemberFeedback === "success" ? (
+              <FeedbackAlert
+                status={addMemberFeedback}
+                description={addMemberFeedbackMessage}
+              />
+            ) : null}
+            {addMemberFeedback === "error" ? (
+              <FeedbackAlert
+                status={addMemberFeedback}
+                description={addMemberFeedbackMessage}
+              />
+            ) : null}
+            {leaveTeamFeedback === "success" ? (
+              <FeedbackAlert
+                status={leaveTeamFeedback}
+                description={leaveTeamFeedbackMessage}
+              />
+            ) : null}
+            {leaveTeamFeedback === "error" ? (
+              <FeedbackAlert
+                status={leaveTeamFeedback}
+                description={leaveTeamFeedbackMessage}
+              />
+            ) : null}
           </ModalContent>
         </ModalOverlay>
       </Modal>

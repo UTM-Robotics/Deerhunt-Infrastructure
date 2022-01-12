@@ -34,7 +34,6 @@ export default function TeamsPanel(props) {
     axios
       .post("/api/user/team", form)
       .then((response) => {
-        console.log(response);
         setTeamsData(response.data);
       })
       .catch(() => {});
