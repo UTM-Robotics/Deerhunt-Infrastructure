@@ -40,7 +40,12 @@ const CreateTeam = (props) => {
         setFeedback("error");
         if (error.response) {
           if (error.response.data) {
-            setFeedbackMessage(error.response.data);
+            if(error.response.data.message){
+              setFeedbackMessage(error.response.data.message);
+            }
+            else{
+              setFeedbackMessage("Unknown error, please try again!");
+            }
           } else {
             setFeedbackMessage("Unknown error, please try again!");
           }

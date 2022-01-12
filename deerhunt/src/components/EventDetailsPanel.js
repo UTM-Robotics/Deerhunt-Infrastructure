@@ -10,7 +10,7 @@ const EventDetailsPanel = (props) => {
       .get("/api/events", { params: { name: props.event } })
       .then((response) => {
         setEventData(response.data);
-      });
+      }).catch((error)=>{console.log(error)});
   }, []);
 
   return (
