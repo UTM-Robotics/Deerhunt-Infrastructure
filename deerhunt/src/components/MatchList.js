@@ -103,7 +103,7 @@ const MatchList = (props) => {
                         Download
                       </Button> */}
 
-                    <Link href={'https://mcss.utmrobotics.com/api/match/download?'+match._id} color={"red.700"} isExternal>
+                    <Link href={'https://mcss.utmrobotics.com/api/match/download?match_id='+match._id} color={"red.700"} isExternal>
                         Download Match
                     </Link>
                     </Stack>
