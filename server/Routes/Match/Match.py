@@ -7,6 +7,7 @@ from server.Managers.Events.AdminEvents import EventsManager
 from server.Managers.Leaderboard.LeaderboardManager import LeaderboardManager
 
 from server.Managers.Matches.MatchResultManager import MatchResultManager
+from server.Managers.Teams.TeamManager import TeamManager
 from server.Managers.Teams.TeamsManager import TeamsManager
 from server.config import Configuration
 
