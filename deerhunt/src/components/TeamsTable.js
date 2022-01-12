@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   Heading,
   Stack,
@@ -48,10 +48,13 @@ const TeamsTable = (props) => {
           Members
         </Heading>
         <UnorderedList>
-          {props.teamsData.members ? props.teamsData.members.map((member) => (
-            <ListItem key={member}>{member}</ListItem>
-          )): <p>No members</p>
-          }
+          {props.teamsData.members ? (
+            props.teamsData.members.map((member) => (
+              <ListItem key={member}>{member}</ListItem>
+            ))
+          ) : (
+            <p>No members</p>
+          )}
         </UnorderedList>
       </Stack>
     </Center>

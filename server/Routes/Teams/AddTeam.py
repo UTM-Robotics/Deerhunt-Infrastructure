@@ -25,20 +25,34 @@ class AddTeam(Resource):
     @User_auth.login_required
     def post(self):
         data = AddTeam.put_parser.parse_args()
-        with TeamManager(data['name']) as teamsmanager:
+        with TeamManager(data["name"]) as teamsmanager:
             if not teamsmanager.is_owner(User_auth.current_user()):
-                return make_response(jsonify({"message": "You are not the owner of this team."}),
-                                     HTTPStatus.UNAUTHORIZED)
-            teams = teamsmanager.get_teams(data['email'])
+                return make_response(
+                    jsonify({"message": "You are not the owner of this team"}),
+                    HTTPStatus.UNAUTHORIZED,
+                )
+            teams = teamsmanager.get_teams(data["email"])
             if teams:
-                return make_response(jsonify({"message": "User is already on a team."}),
-                                     HTTPStatus.UNPROCESSABLE_ENTITY)
+                return make_response(
+                    jsonify({"message": "User is already on a team"}),
+                    HTTPStatus.UNPROCESSABLE_ENTITY,
+                )
             if len(teamsmanager.team.get_members()) >= 4:
-                return make_response(jsonify({"message": "Team is full."}), HTTPStatus.UNPROCESSABLE_ENTITY)
-            result = teamsmanager.update_members(teamsmanager.team.get_members() + [data['email']])
+                return make_response(
+                    jsonify({"message": "Team is full"}),
+                    HTTPStatus.UNPROCESSABLE_ENTITY,
+                )
+            result = teamsmanager.update_members(
+                teamsmanager.team.get_members() + [data["email"]]
+            )
             if result is True:
                 team = teamsmanager.team.covert_to_dict()
-                team['_id'] = str(team['_id'])
-                team['event_id'] = str(team['event_id'])
-                return make_response(jsonify(team), HTTPStatus.OK)
-            make_response(jsonify({"message": "Something went wrong."}), HTTPStatus.INTERNAL_SERVER_ERROR)
+                team["_id"] = str(team["_id"])
+                team["event_id"] = str(team["event_id"])
+                return make_response(
+                    jsonify({"message": "Member has been added to team"}), HTTPStatus.OK
+                )
+            make_response(
+                jsonify({"message": "Something went wrong"}),
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+            )

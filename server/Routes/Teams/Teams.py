@@ -3,7 +3,7 @@ from http import HTTPStatus
 from flask import make_response, abort, jsonify
 from flask_restful import Resource, reqparse
 from bson.json_util import dumps
-
+import re
 from server.Managers.Teams.TeamManager import TeamManager
 from server.Managers.Events.AdminEvents import EventsManager
 
@@ -28,6 +28,18 @@ class TeamsRoute(Resource):
         help="If not provided, return all teams that the user is on",
     )
 
+    def is_valid_name(self, name):
+        ''' Used to restrict the domain of valid team names upon creation'''
+        blockedNames = ["deleted", "admin"]
+        regexString = "^[a-zA-Z0-9_.-]{3,20}$"
+        print("name:", name)
+        print("regex:", re.search(name, regexString))
+        regex_output = re.search(name, regexString)
+        print(regex_output == None)
+        if regex_output == None or name.lower() in blockedNames:
+            return False
+        return True
+
     @User_auth.login_required
     def post(self):
         parser = reqparse.RequestParser()
@@ -41,10 +53,9 @@ class TeamsRoute(Resource):
             help="This field cannot be left blank",
         )
         data = parser.parse_args()
+        if not self.is_valid_name(data["name"]):
+            return make_response(jsonify({"message": "Invalid characters in teamname."}), HTTPStatus.UNPROCESSABLE_ENTITY)
         with EventsManager(data["event_name"]) as eventmanager:
-            pass
-            # eventdata = eventmanager.find_event()
-            # data["event_id"] = eventdata["_id"]
             with TeamsManager(data["name"]) as teamsmanager:
                 teams = teamsmanager.get_teams(User_auth.current_user())
                 for team in teams:
@@ -57,7 +68,6 @@ class TeamsRoute(Resource):
                         team_data = teamsmanager.find_team()
                         team_data["_id"] = str(team_data["_id"])
                         team_data["event_id"] = str(team_data["event_id"])
-                        print(team_data)
                         with LeaderboardManager() as leaderboardmanager:
                             leaderboardmanager.add_to_leaderboard(team_data)
                         return make_response(

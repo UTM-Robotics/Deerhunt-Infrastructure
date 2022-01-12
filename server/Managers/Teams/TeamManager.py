@@ -65,7 +65,7 @@ class TeamManager:
         if self.is_owner(user):
             for member in self.team.members:
                 if member != user:
-                    new_owner = self.team.members
+                    new_owner = member
         self.team.set_owner(new_owner)
         self.team.members.remove(user)
         self.commit()
