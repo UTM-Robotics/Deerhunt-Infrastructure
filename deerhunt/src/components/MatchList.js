@@ -4,6 +4,7 @@ import {
   Text,
   Stack,
   Button,
+  Link,
   Grid,
   GridItem,
   Center,
@@ -95,12 +96,16 @@ const MatchList = (props) => {
                     </Stack>
                     <Stack m={3}>
                       <Text color={"gray.700"}>Match ID: {match._id}</Text>
-                      <Button
+                      {/* <Button
                         colorScheme={"orange"}
                         onClick={DownloadMatch(match)}
                       >
                         Download
-                      </Button>
+                      </Button> */}
+
+                    <Link href={'https://mcss.utmrobotics.com/api/match/download?'+match._id} color={"red.700"} isExternal>
+                        Download Match
+                    </Link>
                     </Stack>
                   </div>
                 </Center>

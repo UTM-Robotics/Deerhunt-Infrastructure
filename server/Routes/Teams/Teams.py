@@ -31,11 +31,8 @@ class TeamsRoute(Resource):
     def is_valid_name(self, name):
         ''' Used to restrict the domain of valid team names upon creation'''
         blockedNames = ["deleted", "admin"]
-        regexString = "^[a-zA-Z0-9_.-]{3,20}$"
-        print("name:", name)
-        print("regex:", re.search(name, regexString))
-        regex_output = re.search(name, regexString)
-        print(regex_output == None)
+        regexString = "^[a-zA-Z0-9_]{3,20}$"
+        regex_output = re.search(regexString, name)
         if regex_output == None or name.lower() in blockedNames:
             return False
         return True
