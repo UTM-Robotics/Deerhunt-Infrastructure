@@ -78,7 +78,7 @@ class SubmissionsRoute(Resource):
                 else:
                     new_name = str(teamsmanager.team.get_id()) + '_1'
 
-                container.upload_blob(new_name, user_file)
+                container.upload_blob(new_name, user_file, overwrite=True)
 
                 teamsmanager.team.set_last_submission_timestamp(datetime.now())
                 teamsmanager.team.set_submissions(teamsmanager.team.get_submissions() + [new_name])
