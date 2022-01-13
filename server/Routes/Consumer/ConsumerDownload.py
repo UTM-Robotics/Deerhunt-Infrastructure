@@ -44,7 +44,7 @@ class ConsumerDownloadRoute(Resource):
                 if not container:
                     return make_response(jsonify({'message': 'No submissions found'}), 404)
                 if team['submissions']:
-                    last_submission = sorted(team['submissions'])[-1]
+                    last_submission = team['submissions'][-1]
                 else:
                     return make_response(jsonify({'message': 'No submissions found'}), 404)
                 blob = container.get_blob_client(last_submission)

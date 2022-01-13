@@ -16,15 +16,19 @@ class MatchDownloadRoute(Resource):
         with MatchResultManager() as matchmanager:
             match = matchmanager.find_match(data['match_id'])
             if match:
+
                 # Get the container , this is common, maybe
                 blob_storage = BlobStorageModel()
                 container = blob_storage.get_container(match['event_id'])
                 if not container:
                     return make_response(jsonify({'message': 'No event container found'}), 404)
-                blobname = 'match_' + data['match_id']
-                blob = container.get_blob_client(blobname)
-                match_zip = blob.download_blob().readall()
-                return send_file(io.BytesIO(match_zip), attachment_filename=f"blobname.zip", as_attachment=True)
+                try:
+                    blobname = 'match_' + data['match_id']
+                    blob = container.get_blob_client(blobname)
+                    match_zip = blob.download_blob().readall()
+                except Exception as e:
+                    return make_response(jsonify({'message': 'Match was won by default(Code doesnt run or code doesnt unzip). No log required'}), 404)
+                return send_file(io.BytesIO(match_zip), attachment_filename=f"{blobname}.zip", as_attachment=True)
             else:
                 abort(
                         HTTPStatus.BAD_REQUEST,
