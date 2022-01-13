@@ -57,7 +57,7 @@ const TeamsTable = (props) => {
           )}
         </UnorderedList>
         <Text>{ props.teamsData.last_submission_timestamp ?  "Last Submission: "+props.teamsData.last_submission_timestamp.$date: "No submission made. Please try again with a zip file." }</Text>
-        <Text>{ props.teamsData.last_challenge_timestamp ?  "Last Submission: "+props.teamsData.last_challenge_timestamp.$date: "No challenges made." }</Text>
+        <Text>{ props.teamsData.last_challenge_timestamp ?  "Last Challenge: "+props.teamsData.last_challenge_timestamp: "No challenges made." }</Text>
 
       </Stack>
     </Center>
