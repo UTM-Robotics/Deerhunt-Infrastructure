@@ -10,8 +10,6 @@ from server.Managers.Matches.MatchResultManager import MatchResultManager
 from server.Managers.Teams.TeamManager import TeamManager
 from server.Managers.Teams.TeamsManager import TeamsManager
 from server.config import Configuration
-
-
 class MatchRoute(Resource):
     def post(self):
         parser = reqparse.RequestParser()
@@ -33,6 +31,7 @@ class MatchRoute(Resource):
             # TODO better zip verification here.
         if data["token"] != Configuration.CONSUMER_TOKEN:
             return abort(HTTPStatus.UNAUTHORIZED)
+
         with MatchResultManager() as matchmanager:
             if matchmanager.create_match(data):
                 with LeaderboardManager() as leaderboardmanager:
@@ -71,7 +70,7 @@ class MatchRoute(Resource):
                 with TeamsManager() as teamsmanager:
                     results = []
                     val = next(result, None)
-                    while len(results) < 30 and val:
+                    while val:
                         results.append(val)
                         val = next(result, None)
                     for match in results:
@@ -86,6 +85,8 @@ class MatchRoute(Resource):
                             match['winner'] = winner['name']
                         except:
                             match['winner'] = "Deleted"
+
+                    results.sort(key = lambda e:  e["created_timestamp"], reverse=True)
                     return make_response(dumps(results), HTTPStatus.OK)
             else:
                 result = matchmanager.find_match(event_id)
