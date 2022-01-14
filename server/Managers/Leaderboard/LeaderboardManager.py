@@ -54,7 +54,7 @@ class LeaderboardManager:
             #     teams[winner_index],
             # )
             teams.insert(loser_index, teams.pop(winner_index))
-        self.db.update_one(query, {"$set": {"team_ids": teams}})
+            self.db.update_one(query, {"$set": {"team_ids": teams}})
 
     def delete_from_leaderboard(self, team_data: TeamsModel):
         leaderboard = self.db.find_one({"event_id": ObjectId(team_data.event_id)})
