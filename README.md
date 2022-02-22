@@ -1,3 +1,4 @@
+
 #  Official Deerhunt Infrastructure
 
 This is the official repo of the Deerhunt Website developed and run by the UTM Robotics Club. This is an open source project maintained by our students.
@@ -5,6 +6,25 @@ This is the official repo of the Deerhunt Website developed and run by the UTM R
 The Deerhunt Infrastructure project is a full stack application built for the purpose of hosting and running AI competitions.
 
 For more on the project structure, check out the [use-case diagram](https://docs.google.com/drawings/d/1g27NYuGy7EOh-BjOJ5ivY8iGT_Yk4H1zTYuXLu_msW8/edit?usp=sharing) and [storyboard](https://docs.google.com/drawings/d/1T8kFRi2JBQRj8-ogstJT3UTrvXxLSBnhUbPJa4i5ucg/edit?usp=sharing).
+## Documentation
+All documentation is written with the help of [mkdocs](https://www.mkdocs.org/), a python pip package which allows us to write documentation in markdown and convert it all to a beautiful static site that can be hosted. It is included in the `requirements.txt` file so your virtual environment should have it installed. You can find everything under the `docs/` folder. You will see a `mkdocs.yml` file as well as another `docs/` folder where all the actual markdown files are. 
+```
+docs/
+├── docs/
+│   └── index.md
+└── mkdocs.yml
+```
+Mkdocs comes with a built in static server that you can host locally and see your documentation changes happen instantly in the browser.
+```
+$ (venv) cd docs
+$ (venv) mkdocs serve
+INFO     -  Building documentation...
+INFO     -  Cleaning site directory
+INFO     -  Documentation built in 0.08 seconds
+INFO     -  [14:05:26] Serving on http://127.0.0.1:8000/
+```
+Open your favorite web browser and navigate to `http://127.0.0.1:8000/`. 
+Happy documenting!
 
 ## Folder Structure
 ```
@@ -65,10 +85,9 @@ $ ./install.sh
 $ source venv/bin/activate
 ```
 
-### Windows (2 methods)
-There are two options for windows users to run the environment
-- WSL (Recommended)
-- SSH/Remote
+### Windows
+Windows users can technically develop locally in their windows environment but we highly recommend using Linux for consistency. You can partition your hard-drive and install Linux next to your Windows or you can use WSL. There is WSL 1 and WSL 2. We recommend WSL 2 because it is newer but either one should still work.
+
 #### WSL (Windows Subsystem for Linux)
 ##### What is WSL 2:
 https://docs.microsoft.com/en-us/windows/wsl/about
@@ -77,27 +96,9 @@ https://docs.microsoft.com/en-us/windows/wsl/about
 ##### Enable WSL 2:
 https://docs.microsoft.com/en-us/windows/wsl/install-win10
 
-Using WSL 2, users should be able to open a Linux Shell in linux, and follow the steps from "Ubuntu/Debian".
-
-#### Ubuntu SSH at Deerfield Hall - Not recommended
-~~It is highly recommended to setup your development environment on a unix environment. If you are on Windows and don't have access to a local Ubuntu / Debian computer, you can ssh into the UTM Deerfield CS lab which hosts Ubuntu by doing the following:~~
-```
-$ ssh <UTORid>@dh<XXXX>pc<YY>.utm.utoronto.ca
-Where:
-<UTORid> is your UofT acorn username.
-<XXXX> is CS Lab number (eg: 2020 or 2026).
-<YY> is the computer number in the lab.
-
-Example:
-$ ssh linalex7@dh2026pc01.utm.utoronto.ca
-```
-## Running Tests
-Read about testing [here](tests/README.md).
+Using WSL, users should be able to open a Linux Shell in linux, and follow the steps from "Ubuntu/Debian".
 
 ## Contributing
 Pull requests are welcomed. Check out our [Deerhunt Infrastructure Trello board](https://trello.com/b/hRKytFnG/deerhunt-infra-board) for outlined changes that the team is looking to work on. 
 
 A timeline for project tasks is outlined [here](https://docs.google.com/spreadsheets/d/1Sa-3uzRZ_Iij_ZZ43PbxutlVTsftbJ5iLF-hyRE50l0/edit?usp=sharing).
-
-##  Production
-To be completed when infrastructure is ready for production.
