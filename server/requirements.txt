@@ -11,3 +11,4 @@ python-dotenv
 pyjwt
 azure-storage-blob
 gunicorn
+mkdocs
