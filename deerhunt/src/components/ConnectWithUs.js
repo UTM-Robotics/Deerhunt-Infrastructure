@@ -6,7 +6,7 @@ const ConnectWithUs = () => {
   return (
     <HStack>
       <Text pr={4}>Connect With Us</Text>
-      <Link href="https://github.com/UTM-Robotics" isExternal>
+      <Link href="https://github.com/UTM-Robotics/Deerhunt-Infrastructure" isExternal>
         <IconButton isRound="true" icon={<FaGithub />}></IconButton>
       </Link>
       <Link href="https://twitter.com/utmrobotics" isExternal>
