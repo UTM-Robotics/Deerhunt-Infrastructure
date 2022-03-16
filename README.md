@@ -101,3 +101,6 @@ A timeline for project tasks is outlined [here](https://docs.google.com/spreadsh
 
 ##  Production
 To be completed when infrastructure is ready for production.
+
+## Confused?
+Here's a link to our [documentation](https://drive.google.com/drive/folders/1auJ_RshZZMvsJ3aXbQB2yZAfv4-5panh?usp=sharing)
