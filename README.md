@@ -100,7 +100,7 @@ Pull requests are welcomed. Check out our [Deerhunt Infrastructure Trello board]
 A timeline for project tasks is outlined [here](https://docs.google.com/spreadsheets/d/1Sa-3uzRZ_Iij_ZZ43PbxutlVTsftbJ5iLF-hyRE50l0/edit?usp=sharing).
 
 ##  Production
-To be completed when infrastructure is ready for production.
+In progress... To be completed when infrastructure is ready for production.
 
 ## Confused?
 Here's a link to our [documentation](https://drive.google.com/drive/folders/1auJ_RshZZMvsJ3aXbQB2yZAfv4-5panh?usp=sharing)
